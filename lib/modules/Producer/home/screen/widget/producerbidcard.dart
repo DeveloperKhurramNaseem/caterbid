@@ -1,3 +1,4 @@
+import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class ProducerBidCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: h * 0.015),
       padding: EdgeInsets.all(w * 0.035),
       decoration: BoxDecoration(
-        color: Colors.teal.withOpacity(0.04),
+        color: AppColors.cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(

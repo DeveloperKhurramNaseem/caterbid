@@ -3,6 +3,7 @@ import 'package:caterbid/core/widgets/custom_textfield.dart';
 import 'package:caterbid/core/widgets/navigationbar_title.dart';
 import 'package:caterbid/core/widgets/special_instructions_field.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/widgets/location_field.dart';
+import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/config/app_colors.dart';
@@ -14,6 +15,7 @@ import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/widgets/next_button.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/widgets/upload_picture_box.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/widgets/business_type_dropdown.dart';
+import 'package:go_router/go_router.dart';
 
 class SetBusinessProfileScreen extends StatefulWidget {
   static const String path = '/setbusinessprofile';
@@ -124,26 +126,27 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
 
             NextButton(
               onPressed: () {
-                if (selectedBusinessType == null ||
-                    _businessNameController.text.isEmpty ||
-                    _phoneController.text.isEmpty ||
-                    _locationController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please fill all required fields'),
-                      backgroundColor: Colors.redAccent,
-                    ),
-                  );
-                  return;
+                context.go(MyBidsScreen.path);
+                // if (selectedBusinessType == null ||
+                //     _businessNameController.text.isEmpty ||
+                //     _phoneController.text.isEmpty ||
+                //     _locationController.text.isEmpty) {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     const SnackBar(
+                //       content: Text('Please fill all required fields'),
+                //       backgroundColor: Colors.redAccent,
+                //     ),
+                //   );
+                //   return;
                 }
 
-                // TODO: Add navigation or API call here
-                debugPrint("Business Type: $selectedBusinessType");
-                debugPrint("Business Name: ${_businessNameController.text}");
-                debugPrint("Phone: ${_phoneController.text}");
-                debugPrint("Location: ${_locationController.text}");
-                debugPrint("Description: ${_descriptionController.text}");
-              },
+                // // TODO: Add navigation or API call here
+                // debugPrint("Business Type: $selectedBusinessType");
+                // debugPrint("Business Name: ${_businessNameController.text}");
+                // debugPrint("Phone: ${_phoneController.text}");
+                // debugPrint("Location: ${_locationController.text}");
+                // debugPrint("Description: ${_descriptionController.text}");
+              
             ),
           ],
         ),

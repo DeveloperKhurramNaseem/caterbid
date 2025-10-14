@@ -14,6 +14,8 @@ class AppColors {
   static const Color c900 = Color(0xFF204F59);
   static const Color c950 = Color(0xFF10343C);
   static const Color password = Color(0xFF2BAC47);
+  static const Color cardColor = Color(0xFFF4FAFA);
   static const textDark = Color(0xFF10343C);
   static const icon = Color(0xFFEA7C00);
+  
 }

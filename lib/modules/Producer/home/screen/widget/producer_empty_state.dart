@@ -1,3 +1,4 @@
+import 'package:caterbid/modules/Producer/home/screen/widget/producer_create_request_button.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/core/utils/responsive.dart';
@@ -30,14 +31,20 @@ class ProducerEmptyState extends StatelessWidget {
           padding: EdgeInsets.symmetric(
             horizontal: Responsive.responsiveSize(context, 20, 30, 40),
           ),
-          child: Text(
-            "You haven't created any catering requests yet. Once you do, restaurants, caterers, and event managers will send you their bids.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: AppFonts.nunito,
-              fontWeight: FontWeight.w600,
-              fontSize: Responsive.responsiveSize(context, 14, 16, 18),
-            ),
+          child: Column(
+            children: [
+              Text(
+                "You haven't created any catering requests yet. Once you do, restaurants, caterers, and event managers will send you their bids.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: AppFonts.nunito,
+                  fontWeight: FontWeight.w600,
+                  fontSize: Responsive.responsiveSize(context, 14, 16, 18),
+                ),
+              ),
+                      SizedBox(height: h * 0.03),
+        const ProducerCreateRequestButton(),
+            ],
           ),
         ),
       ],

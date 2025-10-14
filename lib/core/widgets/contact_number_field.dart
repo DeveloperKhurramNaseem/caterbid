@@ -22,19 +22,13 @@ class ContactNumberField extends StatefulWidget {
 
 class _ContactNumberFieldState extends State<ContactNumberField> {
   String? phoneNumber;
-  String? countryCode = "+92";
+  String? countryCode = "+1"; 
   bool isValid = true;
 
   void _validateNumber(String number) {
-    final len = number.replaceAll(RegExp(r'[^0-9]'), '').length;
-
-    if (countryCode == "+92" && (len < 10 || len > 11)) {
-      isValid = false;
-    } else if (countryCode == "+971" && len != 9) {
-      isValid = false;
-    } else if (countryCode == "+1" && len != 10) {
-      isValid = false;
-    } else if (countryCode == "+44" && len != 10) {
+    final cleanNumber = number.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    if (countryCode == "+1" && !RegExp(r'^[0-9]{10}$').hasMatch(cleanNumber)) {
       isValid = false;
     } else {
       isValid = true;
@@ -51,7 +45,7 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
     return Theme(
       data: Theme.of(context).copyWith(
         inputDecorationTheme: const InputDecorationTheme(
-          errorStyle: TextStyle(height: 0), // hides bottom space for error text
+          errorStyle: TextStyle(height: 0), 
         ),
       ),
       child: IntlPhoneField(
@@ -59,13 +53,15 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         showDropdownIcon: true,
         dropdownIconPosition: IconPosition.trailing,
-        dropdownIcon:
-            const Icon(Icons.arrow_drop_down, color: AppColors.textDark),
+        dropdownIcon: const Icon(Icons.arrow_drop_down, color: AppColors.textDark),
         flagsButtonPadding: const EdgeInsets.only(left: 10),
         disableLengthCheck: true,
         cursorColor: AppColors.textDark,
-        initialCountryCode: 'PK',
-
+        initialCountryCode: 'US', // Set to US for +1
+        validator: (phone) {
+          _validateNumber(phone?.number ?? '');
+          return isValid ? null : "Please enter a valid 10-digit number";
+        },
         decoration: InputDecoration(
           labelText: 'Contact Number',
           labelStyle: TextStyle(
@@ -74,11 +70,9 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
             fontWeight: FontWeight.w600,
             fontSize: fontSize,
           ),
-          errorText: isValid ? null : " ",
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
-            borderSide:
-                BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
+            borderSide: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
@@ -86,28 +80,26 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
-            borderSide:
-                const BorderSide(width: 1.5, color: Colors.redAccent),
+            borderSide: const BorderSide(width: 1.5, color: Colors.redAccent),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
-            borderSide:
-                const BorderSide(width: 1.5, color: Colors.redAccent),
+            borderSide: const BorderSide(width: 1.5, color: Colors.redAccent),
           ),
           contentPadding: EdgeInsets.symmetric(
             vertical: verticalPadding,
             horizontal: horizontalPadding,
           ),
         ),
-
         onChanged: (PhoneNumber phone) {
           setState(() {
             phoneNumber = phone.number;
             countryCode = phone.countryCode;
             _validateNumber(phone.number);
           });
-
-          widget.onChanged?.call('${phone.countryCode}${phone.number}');
+          // Cleaning number as api expecting without +, simple number)
+          final cleanNumber = phone.number.replaceAll(RegExp(r'[^0-9]'), '');
+          widget.onChanged?.call(cleanNumber);
         },
         onCountryChanged: (country) {
           setState(() => countryCode = "+${country.dialCode}");

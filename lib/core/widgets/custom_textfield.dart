@@ -3,11 +3,13 @@ import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String label;
   final bool obscureText;
   final TextEditingController? controller;
-  final Widget? suffixIcon; 
+  final Widget? suffixIcon;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType; // ✅ Optional keyboard type added
 
   const CustomTextField({
     super.key,
@@ -15,7 +17,24 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.controller,
     this.suffixIcon,
+    this.validator,
+    this.keyboardType, // ✅
   });
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  String? _errorText;
+
+  void _validate(String value) {
+    if (widget.validator != null) {
+      setState(() {
+        _errorText = widget.validator!(value);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +44,11 @@ class CustomTextField extends StatelessWidget {
     double horizontalPadding = Responsive.responsiveSize(context, 12, 16, 20);
 
     return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
+      controller: widget.controller,
+      obscureText: widget.obscureText,
+      validator: widget.validator,
+      keyboardType: widget.keyboardType, // ✅ Apply keyboard type
+      onChanged: _validate,
       style: TextStyle(
         color: AppColors.textDark,
         fontFamily: AppFonts.nunito,
@@ -35,16 +57,14 @@ class CustomTextField extends StatelessWidget {
       ),
       cursorColor: AppColors.textDark,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: widget.label,
         labelStyle: TextStyle(
           color: AppColors.textDark,
           fontFamily: AppFonts.nunito,
           fontWeight: FontWeight.w600,
           fontSize: fontSize,
         ),
-
-        suffixIcon: suffixIcon,
-
+        suffixIcon: widget.suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
@@ -57,6 +77,11 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: const BorderSide(width: 1.5, color: Colors.redAccent),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: const BorderSide(width: 1.5, color: Colors.redAccent),
+        ),
+        errorText: _errorText,
         contentPadding: EdgeInsets.symmetric(
           horizontal: horizontalPadding,
           vertical: verticalPadding,

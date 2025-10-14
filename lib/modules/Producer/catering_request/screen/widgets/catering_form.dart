@@ -1,12 +1,16 @@
+import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
+import 'package:caterbid/modules/Producer/catering_request/model/catering_request_model.dart';
+import 'package:caterbid/modules/Producer/home/bloc/producer_home_bloc.dart';
 import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/widgets/custom_textfield.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'catering_date_time_picker.dart';
 import 'catering_special_instructions_field.dart';
 import 'catering_submit_button.dart';
-import 'package:go_router/go_router.dart';
 
 class CateringForm extends StatefulWidget {
   const CateringForm({super.key});
@@ -30,86 +34,163 @@ class _CateringFormState extends State<CateringForm> {
   Widget build(BuildContext context) {
     final h = Responsive.height(context);
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CustomTextField(label: "Title", controller: _titleController),
-          SizedBox(height: h * 0.02),
-
-          CustomTextField(
-            label: "Number of People",
-            controller: _peopleController,
-          ),
-          SizedBox(height: h * 0.02),
-
-          CustomTextField(
-            label: "Budget",
-            controller: _budgetController,
-            suffixIcon: const Padding(
-              padding: EdgeInsets.only(right: 2),
-              child: Icon(
-                Icons.attach_money_rounded,
-                color: AppColors.icon,
-                size: 22,
-              ),
+    return BlocConsumer<CateringrequestBloc, CateringrequestState>(
+      listener: (context, state) {
+        if (state is CateringSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Catering request created successfully!'),
             ),
-          ),
+          );
+          // Refresh producer requests immediately
+          context.read<ProducerHomeBloc>().add(FetchProducerRequests());
+          context.go(ProducerHomeScreen.path, extra: true);
+        } else if (state is CateringFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is CateringLoading;
 
-          SizedBox(height: h * 0.02),
-
-          CateringDateTimePicker(
-            selectedDate: _selectedDate,
-            selectedTime: _selectedTime,
-            onDateChanged: (date) => setState(() => _selectedDate = date),
-            onTimeChanged: (time) => setState(() => _selectedTime = time),
-          ),
-
-          SizedBox(height: h * 0.02),
-
-          CustomTextField(label: "Location", controller: _locationController),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+        return Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Choose from Map',
-                  style: TextStyle(
+              /// --- Title Field ---
+              CustomTextField(
+                label: "Title",
+                controller: _titleController,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Title is required';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: h * 0.02),
+
+              /// --- Number of People ---
+              CustomTextField(
+                label: "Number of People",
+                controller: _peopleController,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Number of people is required';
+                  }
+                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                    return 'Enter a valid number';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: h * 0.02),
+
+              /// --- Budget Field ---
+              CustomTextField(
+                label: "Budget",
+                controller: _budgetController,
+                keyboardType: TextInputType.number,
+                suffixIcon: const Padding(
+                  padding: EdgeInsets.only(right: 2),
+                  child: Icon(
+                    Icons.attach_money_rounded,
                     color: AppColors.icon,
-                    fontWeight: FontWeight.w600,
+                    size: 22,
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Budget is required';
+                  }
+                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                    return 'Enter a valid amount';
+                  }
+                  return null;
+                },
               ),
+              SizedBox(height: h * 0.02),
+
+              /// --- Date & Time Picker ---
+              CateringDateTimePicker(
+                selectedDate: _selectedDate,
+                selectedTime: _selectedTime,
+                onDateChanged: (date) => setState(() => _selectedDate = date),
+                onTimeChanged: (time) => setState(() => _selectedTime = time),
+              ),
+              SizedBox(height: h * 0.02),
+
+              /// --- Location Field ---
+              CustomTextField(
+                label: "Location",
+                controller: _locationController,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      // Future: Open map picker here
+                    },
+                    child: const Text(
+                      'Choose from Map',
+                      style: TextStyle(
+                        color: AppColors.icon,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              /// --- Optional Field ---
+              CateringSpecialInstructionsField(controller: _specialController),
+              SizedBox(height: h * 0.04),
+
+              /// --- Submit Button ---
+              isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : CateringSubmitButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          final dateTime = DateTime(
+                            _selectedDate.year,
+                            _selectedDate.month,
+                            _selectedDate.day,
+                            _selectedTime.hour,
+                            _selectedTime.minute,
+                          );
+
+                          // Hardcoded lat/lng for now
+                          const lat = 37.7749;
+                          const lng = -122.4194;
+
+                          final requestModel = CateringRequestModel(
+                            title: _titleController.text.trim(),
+                            budgetCents:
+                                int.tryParse(_budgetController.text) ?? 0,
+                            currency: 'usd',
+                            peopleCount:
+                                int.tryParse(_peopleController.text) ?? 1,
+                            date: dateTime,
+                            lat: lat,
+                            lng: lng,
+                            specialInstructions: _specialController.text.trim(),
+                          );
+
+                          context.read<CateringrequestBloc>().add(
+                            CreateCateringRequest(requestModel),
+                          );
+                        }
+                      },
+                    ),
             ],
           ),
-
-          CateringSpecialInstructionsField(controller: _specialController),
-
-          SizedBox(height: h * 0.04),
-
-          CateringSubmitButton(
-            onPressed: () {
-              context.go(ProducerHomeScreen.path, extra: true);
-
-              if (_formKey.currentState!.validate()) {
-                final dateTime = DateTime(
-                  _selectedDate.year,
-                  _selectedDate.month,
-                  _selectedDate.day,
-                  _selectedTime.hour,
-                  _selectedTime.minute,
-                );
-
-                debugPrint("📅 Date: $dateTime");
-                debugPrint("📝 Title: ${_titleController.text}");
-              }
-            },
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
