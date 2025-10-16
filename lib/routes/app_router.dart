@@ -20,7 +20,7 @@ import 'package:caterbid/modules/auth/signup/screen/main_screen/signup_screen.da
 import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: LoginScreen.path,
   routes: [
     // ---------- AUTH ROUTES ----------
     GoRoute(
@@ -48,6 +48,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ForgetPasswordScreen(),
     ),
 
+
+
     // ---------- App Settings ROUTES ----------
     GoRoute(
       path: SettingsScreen.path,
@@ -65,6 +67,8 @@ final GoRouter appRouter = GoRouter(
       path: DeleteAccountScreen.path,
       builder: (context, state) => const DeleteAccountScreen(),
     ),
+
+
 
     // ---------- PRODUCER APP ROUTES ----------
     GoRoute(

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:caterbid/core/widgets/custom_textfield.dart';
 import 'package:caterbid/core/widgets/custom_button.dart';
 import 'package:caterbid/core/widgets/contact_number_field.dart';
@@ -24,6 +23,7 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   final _storage = const FlutterSecureStorage();
+  final ScrollController _scrollController = ScrollController();
 
   bool _agree = false;
   bool _isDropdownFocused = false;
@@ -39,13 +39,6 @@ class _SignUpFormState extends State<SignUpForm> {
   final _company = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // clear any previous session
-    _storage.deleteAll();
-  }
-
-  @override
   void dispose() {
     _email.dispose();
     _password.dispose();
@@ -53,6 +46,7 @@ class _SignUpFormState extends State<SignUpForm> {
     _name.dispose();
     _phone.dispose();
     _company.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -68,11 +62,25 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   void _showSnack(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      _scrollToTop();
+      return;
+    }
+
     if (_selectedRole == null) {
       _showSnack('Please select a role');
       return;
@@ -91,7 +99,6 @@ class _SignUpFormState extends State<SignUpForm> {
       name: _name.text.trim(),
       phoneNumber: _fullPhoneNumber ?? _phone.text.trim(),
       companyName: roleApi == 'provider' ? _company.text.trim() : null,
-
     );
 
     context.read<SignUpBloc>().add(SignUpButtonPressed(model));
@@ -100,6 +107,8 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     final h = Responsive.height(context);
+    final isSmall = MediaQuery.of(context).size.height < 700;
+
     return BlocConsumer<SignUpBloc, SignUpState>(
       listener: (context, state) {
         if (state is SignUpSuccess) {
@@ -117,13 +126,15 @@ class _SignUpFormState extends State<SignUpForm> {
       },
       builder: (context, state) {
         final isLoading = state is SignUpLoading;
-        return Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Column(
+
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              controller: _scrollController,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 RoleDropdown(
                   roles: const ['Provide', 'Requestee'],
@@ -132,15 +143,15 @@ class _SignUpFormState extends State<SignUpForm> {
                   onChanged: (v) => setState(() => _selectedRole = v),
                   onFocusChange: (f) => setState(() => _isDropdownFocused = f),
                 ),
-                SizedBox(height: h * 0.015),
+                SizedBox(height: isSmall ? 10 : h * 0.015),
                 CustomTextField(
                   label: "Full Name",
                   controller: _name,
                   validator: (v) =>
                       v == null || v.isEmpty ? 'Enter your full name' : null,
-                      capitalizeFirstLetter: true,
+                  capitalizeFirstLetter: true,
                 ),
-                SizedBox(height: h * 0.02),
+                SizedBox(height: isSmall ? 12 : h * 0.02),
                 CustomTextField(
                   label: "Email",
                   controller: _email,
@@ -154,12 +165,12 @@ class _SignUpFormState extends State<SignUpForm> {
                     return null;
                   },
                 ),
-                SizedBox(height: h * 0.02),
+                SizedBox(height: isSmall ? 12 : h * 0.02),
                 ContactNumberField(
                   controller: _phone,
                   onChanged: (value) => _fullPhoneNumber = value,
                 ),
-                SizedBox(height: h * 0.02),
+                SizedBox(height: isSmall ? 12 : h * 0.02),
                 if (_selectedRole?.toLowerCase() == 'provide') ...[
                   CustomTextField(
                     label: "Company Name",
@@ -167,7 +178,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Enter company name' : null,
                   ),
-                  SizedBox(height: h * 0.02),
+                  SizedBox(height: isSmall ? 12 : h * 0.02),
                 ],
                 CustomTextField(
                   label: "Password",
@@ -179,7 +190,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     return null;
                   },
                 ),
-                SizedBox(height: h * 0.02),
+                SizedBox(height: isSmall ? 12 : h * 0.02),
                 CustomTextField(
                   label: "Confirm Password",
                   obscureText: true,
@@ -187,17 +198,15 @@ class _SignUpFormState extends State<SignUpForm> {
                   validator: (v) =>
                       v != _password.text ? 'Passwords do not match' : null,
                 ),
-                SizedBox(height: h * 0.015),
+                SizedBox(height: isSmall ? 8 : h * 0.015),
                 AgreePolicyRow(
                   agree: _agree,
                   onChanged: (v) => setState(() => _agree = v ?? false),
                 ),
-                SizedBox(height: h * 0.03),
+                SizedBox(height: isSmall ? 16 : h * 0.03),
                 CustomButton(
                   title: "Sign Up",
-                  isEnabled:
-                      !isLoading &&
-                      _agree, // disabled if loading or policy not agreed
+                  isEnabled: !isLoading && _agree,
                   onPressed: _submit,
                 ),
               ],

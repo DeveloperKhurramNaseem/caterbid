@@ -129,6 +129,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           child: AbsorbPointer(
             absorbing: isLoading,
             child: Scaffold(
+              appBar: AppLogoAppBar(),
               backgroundColor: AppColors.appBackground,
               body: SafeArea(
                 child: SingleChildScrollView(
@@ -138,8 +139,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: h * 0.02),
-                        const Center(child: AppLogo()),
                         SizedBox(height: h * 0.06),
                         const VerifyEmailHeading(),
                         SizedBox(height: h * 0.04),

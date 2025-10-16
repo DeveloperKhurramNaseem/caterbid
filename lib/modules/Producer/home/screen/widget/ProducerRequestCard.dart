@@ -17,8 +17,11 @@ class ProducerRequestCard extends StatelessWidget {
 
     final formattedDate = DateFormatter.format(request.date);
 
-    final budget = request.budgetCents / 100;
-    final currency = request.currency.toUpperCase();
+    final budget = request.budgetDollars;
+    //For later used
+    // final currency = request.currency.toUpperCase();
+    final formatCurrency = NumberFormat.currency(symbol: '\$');
+    String formatted = formatCurrency.format(budget); // $1,234.56
 
     return Container(
       padding: EdgeInsets.all(w * 0.04),
@@ -87,7 +90,7 @@ class ProducerRequestCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    "$currency ${budget.toStringAsFixed(0)}",
+                    formatted,
                     style: TextStyle(
                       color: AppColors.icon,
                       fontWeight: FontWeight.bold,

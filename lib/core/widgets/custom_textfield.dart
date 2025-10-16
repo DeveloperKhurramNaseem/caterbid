@@ -30,7 +30,7 @@ class CustomTextField extends StatefulWidget {
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
 
-  /// ✅ Raw value for API (unformatted)
+  ///  Raw value for API (unformatted)
   String get rawValue => controller?.text.replaceAll(',', '') ?? '';
 }
 

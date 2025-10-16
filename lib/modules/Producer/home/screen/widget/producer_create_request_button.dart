@@ -1,3 +1,4 @@
+import 'package:caterbid/modules/Producer/catering_request/screen/main_screen/request_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
@@ -20,7 +21,7 @@ class ProducerCreateRequestButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          context.push('/createCateringRequest');
+          context.push(NewCateringRequestScreen.path);
         },
         child: Text(
           'Create Request',

@@ -1,10 +1,10 @@
 import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/widgets/app_logo.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_button.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_email_field.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_forgot_password.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_password_field.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_signup_text.dart';
-import 'package:caterbid/modules/auth/login/screen/widgets/login_title.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_welcome_text.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
             absorbing: isLoading, //  disables all taps behind the overlay
 
             child: Scaffold(
+              appBar: AppLogoAppBar(),
               backgroundColor: AppColors.appBackground,
               body: SafeArea(
                 child: SingleChildScrollView(
@@ -55,8 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 20),
-                            const LoginTitle(),
                             SizedBox(height: 40),
                             const LoginWelcomeText(),
                             SizedBox(height: 40),

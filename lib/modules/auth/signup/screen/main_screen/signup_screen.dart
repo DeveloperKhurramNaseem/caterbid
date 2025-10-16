@@ -25,17 +25,15 @@ class SignUpScreen extends StatelessWidget {
 
         return OverlayLoaderWithAppIcon(
           isLoading: isLoading,
-          appIcon: Image.asset(
-            'assets/icons/app_icon.png',
-            width: 80,
-            height: 80,
-          ),
+          appIcon: Image.asset('assets/icons/app_icon.png', width: 80, height: 80),
           circularProgressColor: AppColors.c500,
           overlayBackgroundColor: Colors.black.withOpacity(0.4),
           child: AbsorbPointer(
             absorbing: isLoading,
             child: Scaffold(
+              resizeToAvoidBottomInset: true,
               backgroundColor: AppColors.appBackground,
+              appBar: AppLogoAppBar(),
               body: SafeArea(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: w * 0.06),
@@ -46,11 +44,9 @@ class SignUpScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: h * 0.02),
-                          Center(child: const AppLogo()),
-                          SizedBox(height: h * 0.04),
                           const SignUpHeading(),
                           SizedBox(height: h * 0.03),
-                          const SignUpForm(), 
+                          const SignUpForm(),
                           SizedBox(height: h * 0.03),
                           const SignUpFooter(),
                           SizedBox(height: h * 0.05),
@@ -67,4 +63,3 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 }
-
