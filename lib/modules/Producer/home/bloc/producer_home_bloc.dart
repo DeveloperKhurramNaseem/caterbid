@@ -16,28 +16,39 @@ class ProducerHomeBloc extends Bloc<ProducerHomeEvent, ProducerHomeState> {
   }
 
   Future<void> _onFetchRequests(
-      FetchProducerRequests event, Emitter<ProducerHomeState> emit) async {
+    FetchProducerRequests event,
+    Emitter<ProducerHomeState> emit,
+  ) async {
+    // Show shimmer in both cases
     emit(ProducerHomeLoading());
-    try {
-      final requests = await repository.fetchRequests();
-      if (requests.isEmpty) {
-        emit(ProducerHomeEmpty());
-      } else {
-        emit(ProducerHomeLoaded(requests));
-      }
-    } catch (error) {
-      emit(ProducerHomeError(ApiErrorHandler.handle(error).message));
-    }
+
+    // If this is after creation, skip showing empty state temporarily
+    await _fetchAndEmitRequests(emit, skipEmptyState: event.afterCreation);
   }
 
   Future<void> _onRefreshRequests(
-      RefreshProducerRequests event, Emitter<ProducerHomeState> emit) async {
+    RefreshProducerRequests event,
+    Emitter<ProducerHomeState> emit,
+  ) async {
+    await _fetchAndEmitRequests(emit);
+  }
+
+  /// Shared logic for fetching and emitting requests
+  Future<void> _fetchAndEmitRequests(
+    Emitter<ProducerHomeState> emit, {
+    bool skipEmptyState = false,
+  }) async {
     try {
       final requests = await repository.fetchRequests();
+
       if (requests.isEmpty) {
-        emit(ProducerHomeEmpty());
+        // Don’t show empty immediately after creation
+        if (!skipEmptyState) emit(ProducerHomeEmpty());
       } else {
-        emit(ProducerHomeLoaded(requests));
+        final sortedRequests = List<ProducerRequest>.from(requests)
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        emit(ProducerHomeLoaded(sortedRequests));
       }
     } catch (error) {
       emit(ProducerHomeError(ApiErrorHandler.handle(error).message));

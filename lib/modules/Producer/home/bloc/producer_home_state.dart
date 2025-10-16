@@ -29,3 +29,4 @@ class ProducerHomeError extends ProducerHomeState {
   @override
   List<Object> get props => [message];
 }
+

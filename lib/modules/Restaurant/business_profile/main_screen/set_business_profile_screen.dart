@@ -83,7 +83,7 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                 color: AppColors.textDark,
               ),
             ),
-            SizedBox(height: h * 0.02),
+            SizedBox(height: h * 0.01),
 
             BusinessTypeDropdown(
               selectedType: selectedBusinessType,
@@ -93,7 +93,7 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
               onFocusChange: (focus) =>
                   setState(() => isDropdownFocused = focus),
             ),
-            SizedBox(height: h * 0.02),
+            SizedBox(height: h * 0.01),
 
             CustomTextField(
               label: 'Business Name',
@@ -108,11 +108,11 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
               },
             ),
 
-            SizedBox(height: h * 0.02),
+            SizedBox(height: h * 0.01),
 
             CustomTextField(label: 'Location', controller: _locationController),
 
-            SizedBox(height: h * 0.02),
+            SizedBox(height: h * 0.01),
 
             ///  Location
             LocationField(),

@@ -10,7 +10,9 @@ class ProducerRepository {
     try {
       final response = await _apiService.get(ApiEndpoints.getMyRequests);
 
+      // Ensure the response is a list
       if (response is List) {
+        // Parse list into ProducerRequest models
         return response
             .map((item) => ProducerRequest.fromJson(item as Map<String, dynamic>))
             .toList();
@@ -23,3 +25,5 @@ class ProducerRepository {
     }
   }
 }
+
+

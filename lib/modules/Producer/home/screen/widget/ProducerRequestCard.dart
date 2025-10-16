@@ -1,4 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/utils/helpers/formatted_date.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/modules/Producer/home/model/producer_request_model.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,7 @@ class ProducerRequestCard extends StatelessWidget {
     final w = Responsive.width(context);
     final h = Responsive.height(context);
 
-    final formattedDate =
-        DateFormat('MMM d, yyyy, h:mm a').format(request.date);
+    final formattedDate = DateFormatter.format(request.date);
 
     final budget = request.budgetCents / 100;
     final currency = request.currency.toUpperCase();

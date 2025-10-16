@@ -1,5 +1,6 @@
-import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/widgets/custom_button.dart';
 import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
 import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
 import 'package:caterbid/modules/auth/login/model/login_request_model.dart';
@@ -25,50 +26,39 @@ class LoginButton extends StatelessWidget {
       listener: (context, state) {
         if (state is LoginSuccess) {
           final user = state.user;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Welcome ${user.email}!')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Welcome ${user.email}!')));
 
           if (user.role == 'requestee') {
             context.go(ProducerHomeScreen.path);
           } else if (user.role == 'provider') {
+            if (user.locationRequired == true){
+              context.go(SetBusinessProfileScreen.path);
+            }else if (user.locationRequired == false){
             context.go(MyBidsScreen.path);
+
+            }
           }
         } else if (state is LoginFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.error)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
       builder: (context, state) {
-        if (state is LoginLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        final isLoading = state is LoginLoading;
 
-        return SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.c500,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                final model = LoginRequestModel(
-                  email: emailController.text.trim(),
-                  password: passwordController.text.trim(),
-                );
-                context.read<LoginBloc>().add(LoginButtonPressed(model));
-              }
-            },
-            child: const Text(
-              "Sign In",
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
+        return CustomButton(
+          title: "Login",
+          isEnabled: !isLoading, 
+          onPressed: () {
+            if (formKey.currentState!.validate()) {
+              final model = LoginRequestModel(
+                email: emailController.text.trim(),
+                password: passwordController.text.trim(),
+              );
+              context.read<LoginBloc>().add(LoginButtonPressed(model));
+            }
+          },
         );
       },
     );

@@ -91,8 +91,7 @@ class _SignUpFormState extends State<SignUpForm> {
       name: _name.text.trim(),
       phoneNumber: _fullPhoneNumber ?? _phone.text.trim(),
       companyName: roleApi == 'provider' ? _company.text.trim() : null,
-      lat: roleApi == 'provider' ? 37.7749 : null,
-      lng: roleApi == 'provider' ? -122.4194 : null,
+
     );
 
     context.read<SignUpBloc>().add(SignUpButtonPressed(model));
@@ -121,7 +120,9 @@ class _SignUpFormState extends State<SignUpForm> {
         return Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Column(
               children: [
                 RoleDropdown(
@@ -135,7 +136,9 @@ class _SignUpFormState extends State<SignUpForm> {
                 CustomTextField(
                   label: "Full Name",
                   controller: _name,
-                  validator: (v) => v == null || v.isEmpty ? 'Enter your full name' : null,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Enter your full name' : null,
+                      capitalizeFirstLetter: true,
                 ),
                 SizedBox(height: h * 0.02),
                 CustomTextField(
@@ -144,7 +147,9 @@ class _SignUpFormState extends State<SignUpForm> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Enter valid email';
-                    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    final emailRegex = RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    );
                     if (!emailRegex.hasMatch(v)) return 'Invalid email';
                     return null;
                   },
@@ -159,7 +164,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   CustomTextField(
                     label: "Company Name",
                     controller: _company,
-                    validator: (v) => v == null || v.isEmpty ? 'Enter company name' : null,
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Enter company name' : null,
                   ),
                   SizedBox(height: h * 0.02),
                 ],
@@ -187,9 +193,13 @@ class _SignUpFormState extends State<SignUpForm> {
                   onChanged: (v) => setState(() => _agree = v ?? false),
                 ),
                 SizedBox(height: h * 0.03),
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : CustomButton(title: "Sign Up", isEnabled: _agree, onPressed: _submit),
+                CustomButton(
+                  title: "Sign Up",
+                  isEnabled:
+                      !isLoading &&
+                      _agree, // disabled if loading or policy not agreed
+                  onPressed: _submit,
+                ),
               ],
             ),
           ),

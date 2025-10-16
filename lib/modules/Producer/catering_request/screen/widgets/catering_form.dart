@@ -2,6 +2,7 @@ import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_
 import 'package:caterbid/modules/Producer/catering_request/model/catering_request_model.dart';
 import 'package:caterbid/modules/Producer/home/bloc/producer_home_bloc.dart';
 import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
@@ -37,13 +38,19 @@ class _CateringFormState extends State<CateringForm> {
     return BlocConsumer<CateringrequestBloc, CateringrequestState>(
       listener: (context, state) {
         if (state is CateringSuccess) {
+
+          context.read<RequestsBloc>().add(RefreshMyRequests());
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Catering request created successfully!'),
             ),
           );
-          // Refresh producer requests immediately
-          context.read<ProducerHomeBloc>().add(FetchProducerRequests());
+
+          // Refresh home only after API confirms request creation
+          context.read<ProducerHomeBloc>().add(
+            FetchProducerRequests(afterCreation: true),
+          );
+
           context.go(ProducerHomeScreen.path, extra: true);
         } else if (state is CateringFailure) {
           ScaffoldMessenger.of(
@@ -69,6 +76,7 @@ class _CateringFormState extends State<CateringForm> {
                   }
                   return null;
                 },
+                capitalizeFirstLetter: true,
               ),
               SizedBox(height: h * 0.02),
 
@@ -78,15 +86,15 @@ class _CateringFormState extends State<CateringForm> {
                 controller: _peopleController,
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Number of people is required';
-                  }
-                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
-                    return 'Enter a valid number';
+                  final people = int.tryParse(value?.replaceAll(',', '') ?? '');
+                  if (people == null || people <= 0) {
+                    return 'Enter a valid number of people';
                   }
                   return null;
                 },
+                formatNumber: true,
               ),
+
               SizedBox(height: h * 0.02),
 
               /// --- Budget Field ---
@@ -103,15 +111,15 @@ class _CateringFormState extends State<CateringForm> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Budget is required';
-                  }
-                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
-                    return 'Enter a valid amount';
+                  final budget = int.tryParse(value?.replaceAll(',', '') ?? '');
+                  if (budget == null || budget <= 0) {
+                    return 'Enter a valid budget';
                   }
                   return null;
                 },
+                formatNumber: true,
               ),
+
               SizedBox(height: h * 0.02),
 
               /// --- Date & Time Picker ---
@@ -170,11 +178,13 @@ class _CateringFormState extends State<CateringForm> {
 
                           final requestModel = CateringRequestModel(
                             title: _titleController.text.trim(),
-                            budgetCents:
-                                int.tryParse(_budgetController.text) ?? 0,
+                            budget:
+                                int.tryParse(_budgetController.rawValue) ?? 0,
+
                             currency: 'usd',
                             peopleCount:
-                                int.tryParse(_peopleController.text) ?? 1,
+                                int.tryParse(_peopleController.rawValue) ?? 1,
+
                             date: dateTime,
                             lat: lat,
                             lng: lng,

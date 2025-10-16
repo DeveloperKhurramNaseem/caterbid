@@ -1,7 +1,9 @@
 import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
+import 'package:intl/intl.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -9,7 +11,9 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
-  final TextInputType? keyboardType; // ✅ Optional keyboard type added
+  final TextInputType? keyboardType;
+  final bool capitalizeFirstLetter;
+  final bool formatNumber;
 
   const CustomTextField({
     super.key,
@@ -18,15 +22,21 @@ class CustomTextField extends StatefulWidget {
     this.controller,
     this.suffixIcon,
     this.validator,
-    this.keyboardType, // ✅
+    this.keyboardType,
+    this.capitalizeFirstLetter = false,
+    this.formatNumber = false,
   });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
+
+  /// ✅ Raw value for API (unformatted)
+  String get rawValue => controller?.text.replaceAll(',', '') ?? '';
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
   String? _errorText;
+  final _formatter = NumberFormat('#,###');
 
   void _validate(String value) {
     if (widget.validator != null) {
@@ -34,6 +44,30 @@ class _CustomTextFieldState extends State<CustomTextField> {
         _errorText = widget.validator!(value);
       });
     }
+  }
+
+  String _formatIfNeeded(String value) {
+    if (!widget.formatNumber) return value;
+
+    String clean = value.replaceAll(',', '');
+    if (clean.isEmpty) return '';
+
+    List<String> parts = clean.split('.');
+    String intPart = parts[0];
+    String decimalPart = parts.length > 1 ? parts[1] : '';
+
+    try {
+      int number = int.parse(intPart);
+      String formattedInt = _formatter.format(number);
+      return decimalPart.isNotEmpty ? '$formattedInt.$decimalPart' : formattedInt;
+    } catch (_) {
+      return value;
+    }
+  }
+
+  String _capitalizeFirstLetter(String value) {
+    if (!widget.capitalizeFirstLetter || value.isEmpty) return value;
+    return value[0].toUpperCase() + value.substring(1);
   }
 
   @override
@@ -47,8 +81,32 @@ class _CustomTextFieldState extends State<CustomTextField> {
       controller: widget.controller,
       obscureText: widget.obscureText,
       validator: widget.validator,
-      keyboardType: widget.keyboardType, // ✅ Apply keyboard type
-      onChanged: _validate,
+      keyboardType: widget.keyboardType,
+      inputFormatters: widget.formatNumber
+          ? [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))]
+          : null,
+      onChanged: (value) {
+        String newValue = value;
+
+        // Format number if needed
+        if (widget.formatNumber) {
+          newValue = _formatIfNeeded(newValue);
+        }
+
+        // Capitalize first letter if needed
+        if (widget.capitalizeFirstLetter) {
+          newValue = _capitalizeFirstLetter(newValue);
+        }
+
+        if (widget.controller?.text != newValue) {
+          widget.controller?.value = TextEditingValue(
+            text: newValue,
+            selection: TextSelection.collapsed(offset: newValue.length),
+          );
+        }
+
+        _validate(newValue);
+      },
       style: TextStyle(
         color: AppColors.textDark,
         fontFamily: AppFonts.nunito,
@@ -89,4 +147,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
       ),
     );
   }
+}
+
+extension TextControllerExtension on TextEditingController {
+  String get rawValue => text.replaceAll(',', '');
 }

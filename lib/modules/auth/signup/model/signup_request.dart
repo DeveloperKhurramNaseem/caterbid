@@ -5,8 +5,8 @@ class SignUpRequestModel {
   final String name;
   final String phoneNumber;
   final String? companyName;
-  final double? lat;
-  final double? lng;
+  // final double? lat;
+  // final double? lng;
 
   SignUpRequestModel({
     required this.role,
@@ -15,8 +15,8 @@ class SignUpRequestModel {
     required this.name,
     required this.phoneNumber,
     this.companyName,
-    this.lat,
-    this.lng,
+    // this.lat,
+    // this.lng,
   });
 
   Map<String, dynamic> toJson() {
@@ -30,7 +30,7 @@ class SignUpRequestModel {
 
     if (role == "provider") {
       data["companyName"] = companyName;
-      data["location"] = {"lat": lat, "lng": lng};
+      // data["location"] = {"lat": lat, "lng": lng};
     }
 
     return data;

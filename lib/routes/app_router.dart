@@ -68,7 +68,7 @@ final GoRouter appRouter = GoRouter(
 
     // ---------- PRODUCER APP ROUTES ----------
     GoRoute(
-      path: '/createCateringRequest',
+      path: NewCateringRequestScreen.path,
       builder: (context, state) => const NewCateringRequestScreen(),
     ),
     GoRoute(

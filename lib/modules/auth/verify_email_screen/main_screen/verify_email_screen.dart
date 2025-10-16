@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
-import 'package:caterbid/modules/Restaurant/my_bids/screen/my_bids.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/model/verify_otp_request.dart';
 import 'package:flutter/material.dart';
@@ -14,26 +12,24 @@ import 'package:caterbid/modules/auth/verify_email_screen/widgets/verify_button.
 import 'package:caterbid/modules/auth/verify_email_screen/widgets/verify_email_footer.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/widgets/verify_email_heading.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/bloc/verify_otp_bloc.dart';
-
+import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   static const path = '/verifyemail';
   final String email;
   final String role;
 
-  const VerifyEmailScreen({
-    super.key,
-    required this.email,
-    required this.role,
-  });
+  const VerifyEmailScreen({super.key, required this.email, required this.role});
 
   @override
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
 }
 
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
   Timer? _timer;
@@ -105,60 +101,73 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     final w = Responsive.width(context);
     final h = Responsive.height(context);
 
-    return Scaffold(
-      backgroundColor: AppColors.appBackground,
-      body: SafeArea(
-        child: BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
-          listener: (context, state) {
-            if (state is VerifyOtpSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("OTP Verified Successfully!")),
-              );
+    return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
+      listener: (context, state) {
+        if (state is VerifyOtpSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP Verified Successfully!")),
+          );
+          context.go(LoginScreen.path);
+        } else if (state is VerifyOtpFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error)));
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is VerifyOtpLoading;
 
-              context.go(LoginScreen.path);
-            } else if (state is VerifyOtpFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
-              );
-            }
-          },
-          builder: (context, state) {
-            final isLoading = state is VerifyOtpLoading;
-
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: w * 0.06),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: h * 0.02),
-                    const Center(child: AppLogo()),
-                    SizedBox(height: h * 0.06),
-                    const VerifyEmailHeading(),
-                    SizedBox(height: h * 0.04),
-                    OTPFields(controllers: _controllers, focusNodes: _focusNodes),
-                    SizedBox(height: h * 0.05),
-                    isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : VerifyButton(
-                            isEnabled: _isButtonEnabled,
-                            onPressed: _onVerifyPressed,
+        return OverlayLoaderWithAppIcon(
+          isLoading: isLoading,
+          appIcon: Image.asset(
+            'assets/icons/app_icon.png',
+            width: 80,
+            height: 80,
+          ),
+          circularProgressColor: AppColors.c500,
+          overlayBackgroundColor: Colors.black.withOpacity(0.4),
+          child: AbsorbPointer(
+            absorbing: isLoading,
+            child: Scaffold(
+              backgroundColor: AppColors.appBackground,
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.06),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: h * 0.02),
+                        const Center(child: AppLogo()),
+                        SizedBox(height: h * 0.06),
+                        const VerifyEmailHeading(),
+                        SizedBox(height: h * 0.04),
+                        OTPFields(
+                          controllers: _controllers,
+                          focusNodes: _focusNodes,
+                        ),
+                        SizedBox(height: h * 0.05),
+                        VerifyButton(
+                          isEnabled: _isButtonEnabled,
+                          onPressed: _onVerifyPressed,
+                        ),
+                        SizedBox(height: h * 0.03),
+                        Center(
+                          child: VerifyEmailFooter(
+                            seconds: _seconds,
+                            onResend: _resetTimer,
                           ),
-                    SizedBox(height: h * 0.03),
-                    Center(
-                      child: VerifyEmailFooter(
-                        seconds: _seconds,
-                        onResend: _resetTimer,
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

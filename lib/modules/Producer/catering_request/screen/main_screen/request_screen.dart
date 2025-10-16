@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 
 class NewCateringRequestScreen extends StatelessWidget {
+  static const String path = '/newcateringrequest';
   const NewCateringRequestScreen({super.key});
 
   @override

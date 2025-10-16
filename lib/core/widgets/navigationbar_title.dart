@@ -11,7 +11,10 @@ class NavigationbarTitle extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title),
+      title: Padding(
+        padding: const EdgeInsets.only(left: 16.0), // Adjust left space here
+        child: Text(title),
+      ),
       titleTextStyle: TextStyle(
         fontSize: Responsive.responsiveSize(context, 22, 25, 28),
         color: Colors.black,
@@ -20,11 +23,10 @@ class NavigationbarTitle extends StatelessWidget
       ),
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-
       elevation: 0,
       iconTheme: const IconThemeData(color: Colors.black),
       centerTitle: false,
-      titleSpacing: 0,
+      titleSpacing: 0, 
     );
   }
 

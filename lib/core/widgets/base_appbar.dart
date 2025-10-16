@@ -21,6 +21,8 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontFamily: AppFonts.poppins,
         ),
       ),
+      surfaceTintColor: Colors.white,
+
       automaticallyImplyLeading: true,
       actions: const [NotificationIcon(), ProfileAvatar()],
     );

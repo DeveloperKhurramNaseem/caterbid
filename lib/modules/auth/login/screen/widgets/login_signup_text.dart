@@ -13,7 +13,7 @@ class LoginSignupText extends StatelessWidget {
       child: Center(
         child: RichText(
           text: const TextSpan(
-            text: "Do you have an account? ",
+            text: "Don't have account? ",
             style: TextStyle(color: AppColors.textDark, fontSize: 14),
             children: [
               TextSpan(

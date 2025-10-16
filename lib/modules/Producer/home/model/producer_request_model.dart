@@ -109,4 +109,23 @@ class Location {
       'coordinates': coordinates,
     };
   }
+
+    ///helper to safely return a formatted string
+  String get formattedCoordinates {
+    if (coordinates.length >= 2) {
+      final lat = coordinates[1];
+      final lng = coordinates[0];
+      return "Lat: ${lat.toStringAsFixed(4)}, Lng: ${lng.toStringAsFixed(4)}";
+    }
+    return "Location not available";
+  }
+
+  
 }
+
+
+extension ProducerRequestHelpers on ProducerRequest {
+  String get formattedLocation => location.formattedCoordinates;
+}
+
+

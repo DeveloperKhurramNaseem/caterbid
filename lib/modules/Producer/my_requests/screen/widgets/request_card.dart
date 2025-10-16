@@ -8,7 +8,7 @@ class RequestCard extends StatelessWidget {
   final String title;
   final String location;
   final String dateTime;
-  final String amount;
+  final int amount;
   final int peopleCount;
   final String status;
 
@@ -24,11 +24,12 @@ class RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isActive = status.toLowerCase() == "active";
+    final bool isActive = status.toLowerCase() == "open";
 
     // Responsive measurements
     final double w = Responsive.width(context);
     final double h = Responsive.height(context);
+
 
     return Container(
       margin: EdgeInsets.only(bottom: h * 0.02),
@@ -102,7 +103,7 @@ class RequestCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                amount,
+                "\$ $amount",
                 style: TextStyle(
                   color: AppColors.icon,
                   fontSize: priceSize,

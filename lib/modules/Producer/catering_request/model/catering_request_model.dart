@@ -1,6 +1,6 @@
 class CateringRequestModel {
   final String title;
-  final int budgetCents;
+  final int budget;
   final String currency;
   final int peopleCount;
   final DateTime date;
@@ -10,7 +10,7 @@ class CateringRequestModel {
 
   CateringRequestModel({
     required this.title,
-    required this.budgetCents,
+    required this.budget,
     required this.currency,
     required this.peopleCount,
     required this.date,
@@ -20,12 +20,13 @@ class CateringRequestModel {
   });
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'budgetCents': budgetCents,
-        'currency': currency,
-        'peopleCount': peopleCount,
-        'date': date.toIso8601String(),
-        'location': {'lat': lat, 'lng': lng},
-        'specialInstructions': specialInstructions,
+        "title": title,
+        "budget": budget,
+        "currency": currency,
+        "peopleCount": peopleCount,
+        "date": date.toIso8601String(),
+        "location": {"lat": lat, "lng": lng},
+        if (specialInstructions != null)
+          "specialInstructions": specialInstructions,
       };
 }
