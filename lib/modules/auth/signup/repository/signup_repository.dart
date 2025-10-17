@@ -12,7 +12,6 @@ class SignUpRepository {
       return response;
     } catch (error) {
       // Converting any thrown error to a clean ApiException
-
       throw ApiErrorHandler.handle(error);
     }
   }

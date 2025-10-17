@@ -12,8 +12,15 @@ import 'package:caterbid/modules/Restaurant/business_profile/main_screen/set_bus
 import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/screen/my_bids.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/screen/place_bid_screen.dart';
-import 'package:caterbid/modules/auth/screens/forgetPassword/forgetpassword_screen/main_screen/forgetpassword_screen.dart';
+import 'package:caterbid/modules/auth/forget_Password/Change_password_request/bloc/change_password_request_bloc.dart';
+import 'package:caterbid/modules/auth/forget_Password/Change_password_request/repository/change_password_request_repository.dart';
+import 'package:caterbid/modules/auth/forget_Password/Change_password_request/screen/mainscreen/ChangePasswordScreen.dart';
+import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/bloc/verify_reset_otp_bloc.dart';
+import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/main_screen/OTPScreen.dart';
+import 'package:caterbid/modules/auth/forget_Password/forget_password_email/screen/main_screen/forgetpassword_screen.dart';
+import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/repository/verify_otp_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:caterbid/modules/auth/signup/screen/main_screen/signup_screen.dart';
@@ -35,7 +42,10 @@ final GoRouter appRouter = GoRouter(
       path: VerifyEmailScreen.path,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        assert(extra != null, 'You must pass data using "extra" when navigating to VerifyEmailScreen');
+        assert(
+          extra != null,
+          'You must pass data using "extra" when navigating to VerifyEmailScreen',
+        );
 
         final email = extra?['email'] ?? '';
         final role = extra?['role'] ?? '';
@@ -43,12 +53,38 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
+    // ---------- ForgetPassword ROUTES ----------
     GoRoute(
       path: ForgetPasswordScreen.path,
       builder: (context, state) => const ForgetPasswordScreen(),
     ),
+    GoRoute(
+      path: OTPScreen.path,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final email = extra?['email'] ?? '';
 
+        return BlocProvider(
+          create: (_) => VerifyResetOtpBloc(VerifyOtpRepository()),
+          child: OTPScreen(email: email),
+        );
+      },
+    ),
+    GoRoute(
+      path: ChangePasswordScreen.path,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        //For Testing
+        // assert(extra != null && extra['email'] != null, 'Email required');
 
+        final email = extra!['email'] as String;
+
+        return BlocProvider(
+          create: (_) => ChangePasswordRequestBloc(ChangePasswordRepository()),
+          child: ChangePasswordScreen(email: email),
+        );
+      },
+    ),
 
     // ---------- App Settings ROUTES ----------
     GoRoute(
@@ -60,15 +96,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const EditProfileScreen(),
     ),
     GoRoute(
-      path: ChangePasswordScreen.path,
-      builder: (context, state) => const ChangePasswordScreen(),
+      path: settingsChangePassword.path,
+      builder: (context, state) => const settingsChangePassword(),
     ),
     GoRoute(
       path: DeleteAccountScreen.path,
       builder: (context, state) => const DeleteAccountScreen(),
     ),
-
-
 
     // ---------- PRODUCER APP ROUTES ----------
     GoRoute(

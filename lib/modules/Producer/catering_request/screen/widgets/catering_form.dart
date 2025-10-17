@@ -160,7 +160,9 @@ class _CateringFormState extends State<CateringForm> {
 
               /// --- Submit Button ---
               isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator(
+                    color: AppColors.c500,
+                  ))
                   : CateringSubmitButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {

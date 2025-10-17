@@ -1,9 +1,12 @@
 import 'package:caterbid/core/config/app_constants.dart';
+import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
 import 'package:caterbid/modules/Producer/catering_request/repository/catering_repository.dart';
 import 'package:caterbid/modules/Producer/home/bloc/producer_home_bloc.dart';
 import 'package:caterbid/modules/Producer/home/repository/producer_repository.dart';
 import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
+import 'package:caterbid/modules/auth/forget_Password/forget_password_email/bloc/forget_password_bloc.dart';
+import 'package:caterbid/modules/auth/forget_Password/forget_password_email/repository/forget_password_repository.dart';
 import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
 import 'package:caterbid/modules/auth/login/repository/login_repository.dart';
 import 'package:caterbid/modules/auth/signup/bloc/sign_up_bloc.dart';
@@ -14,15 +17,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/routes/app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  const storage = FlutterSecureStorage();
 
   // Added only for testing purpose
   if (!kReleaseMode) {
-    await storage.deleteAll();
+    await SecureStorage.clearToken();
     print('removed all secure storage data');
   }
 
@@ -35,6 +36,7 @@ Future<void> main() async {
         BlocProvider(create: (_) => CateringrequestBloc(CateringRepository())),
         BlocProvider(create: (_) => ProducerHomeBloc(ProducerRepository())),
         BlocProvider(create: (_) => RequestsBloc(ProducerRepository())),
+        BlocProvider(create: (_) => ForgetPasswordBloc(ForgetpasswordRepository())),
         
       ],
       child: const MyApp(),

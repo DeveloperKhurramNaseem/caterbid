@@ -46,7 +46,7 @@ class _AccountSecurityContent extends StatelessWidget {
             showArrow: true,
             onTap: () {
               Navigator.of(context).pop(); 
-              context.push(ChangePasswordScreen.path);
+              context.push(settingsChangePassword.path);
             },
           ),
           SizedBox(height: h * 0.015),

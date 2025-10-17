@@ -2,6 +2,7 @@ import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'request_status_chip.dart';
 
 class RequestCard extends StatelessWidget {
@@ -25,11 +26,9 @@ class RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isActive = status.toLowerCase() == "open";
-
     // Responsive measurements
     final double w = Responsive.width(context);
     final double h = Responsive.height(context);
-
 
     return Container(
       margin: EdgeInsets.only(bottom: h * 0.02),
@@ -74,8 +73,14 @@ class RequestCard extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     final double fontSize = Responsive.responsiveSize(context, 16, 17, 20);
     final double priceSize = Responsive.responsiveSize(context, 16, 16, 19);
-    final double iconSize = Responsive.responsiveSize(context, 14, 16, 18);
-    final double spacing = Responsive.responsiveSize(context, 3, 4, 6);
+    final double iconSize = Responsive.responsiveSize(context, 22, 16, 18);
+    final double spacing = Responsive.responsiveSize(context, 4, 5, 7);
+    
+    final budget = amount;
+    //For later used
+    // final currency = request.currency.toUpperCase();
+    final formatCurrency = NumberFormat.currency(symbol: '\$ ');
+    String formatted = formatCurrency.format(budget); // $1,234.56
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -103,7 +108,7 @@ class RequestCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "\$ $amount",
+                formatted,
                 style: TextStyle(
                   color: AppColors.icon,
                   fontSize: priceSize,
@@ -123,9 +128,9 @@ class RequestCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: Responsive.responsiveSize(
                           context,
-                          12,
-                          13,
-                          15,
+                          16,
+                          25,
+                          30,
                         ),
                         color: AppColors.textDark,
                         fontWeight: FontWeight.w600,

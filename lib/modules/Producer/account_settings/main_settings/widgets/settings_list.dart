@@ -1,5 +1,8 @@
+import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/sheet/main_screen/account_security_sheet.dart';
+import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'setting_tile.dart';
 
 class SettingsList extends StatelessWidget {
@@ -10,7 +13,7 @@ class SettingsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Text( 
+        // Text(
         //   'Settings',
         //   style: TextStyle(
         //     fontSize: 20,
@@ -22,8 +25,7 @@ class SettingsList extends StatelessWidget {
           iconPath: 'assets/icons/account_icon.png',
           label: 'Account/Security Settings',
           onTap: () {
-                AccountSecuritySheet.show(context);
-
+            AccountSecuritySheet.show(context);
           },
         ),
         SettingTile(
@@ -38,6 +40,14 @@ class SettingsList extends StatelessWidget {
           label: 'Terms & Conditions',
           onTap: () {
             // TODO: show terms & conditions
+          },
+        ),
+        SettingTile(
+          iconPath: 'assets/icons/logout_icon.png',
+          label: 'Log Out',
+          onTap: (){
+            SecureStorage.clearToken();
+            context.go(LoginScreen.path);
           },
         ),
       ],

@@ -1,4 +1,4 @@
-import 'package:caterbid/modules/auth/screens/forgetPassword/forgetpassword_screen/main_screen/forgetpassword_screen.dart';
+import 'package:caterbid/modules/auth/forget_Password/forget_password_email/screen/main_screen/forgetpassword_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';

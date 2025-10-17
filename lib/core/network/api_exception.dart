@@ -5,58 +5,94 @@ class ApiException implements Exception {
   final String message;
   final Map<String, dynamic>? details;
 
-  ApiException({
-    this.statusCode,
-    required this.message,
-    this.details,
-  });
+  ApiException({this.statusCode, required this.message, this.details});
 
   @override
-  String toString() => 'ApiException($statusCode): $message';
+  String toString() => message; // Only show the message for user
 }
 
-/// Helper class to parse and normalize exceptions
 class ApiErrorHandler {
+  /// Handle common exceptions (network, timeout, format)
   static ApiException handle(dynamic error) {
-    if (error is ApiException) {
-      return error; 
-    } else if (error is SocketException) {
-      return ApiException(message: "No internet connection. Please check your network.");
+    if (error is ApiException) return error;
+
+    if (error is SocketException) {
+      return ApiException(message: "No internet connection.");
     } else if (error is FormatException) {
-      return ApiException(message: "Bad response format. Please try again later.");
+      return ApiException(message: "Invalid response format.");
     } else if (error.toString().contains("TimeoutException")) {
-      return ApiException(message: "Request timed out. Please try again.");
+      return ApiException(message: "Request timed out.");
     } else {
-      return ApiException(message: "Unexpected error occurred: ${error.toString()}");
+      return ApiException(message: "Something went wrong.");
     }
   }
 
-  ///To parse backend validation errors:
+  /// Parse backend API response errors
   static ApiException fromResponse(int statusCode, dynamic body) {
     String message = "Something went wrong";
     Map<String, dynamic>? errors;
 
     if (body is Map<String, dynamic>) {
-      // Extracting Possible error messages, which i know.
-      message = body['message'] ?? body['error'] ?? message;
+      // Use backend message or first validation error if exists
       errors = body['errors'];
+      if (errors != null && errors.isNotEmpty) {
+        final firstKey = errors.keys.first;
+        final firstError = errors[firstKey];
+        if (firstError is List && firstError.isNotEmpty) {
+          message = firstError.first.toString();
+        } else if (firstError != null) {
+          message = firstError.toString();
+        }
+      } else if (body['message'] != null) {
+        message = body['message'];
+      } else if (body['error'] != null) {
+        message = body['error'];
+      }
     }
 
+    // Map HTTP status codes to user-friendly messages
     switch (statusCode) {
       case 400:
       case 422:
-        return ApiException(statusCode: statusCode, message: message, details: errors);
+        return ApiException(
+          statusCode: statusCode,
+          message: message,
+          details: errors,
+        );
       case 401:
-        return ApiException(statusCode: statusCode, message: "Unauthorized. Please log in again.");
+        return ApiException(
+          statusCode: statusCode,
+          message: message.isNotEmpty
+              ? message
+              : "Unauthorized. Please log in.",
+        );
       case 403:
+        // **Check for isOTPverified flag**
+        if (body is Map<String, dynamic> && body['isOTPverified'] == false) {
+          return ApiException(
+            statusCode: statusCode,
+            message: message, // "Email not verified. OTP has been resent."
+            details: {'isOTPverified': false},
+          );
+        }
         return ApiException(statusCode: statusCode, message: "Access denied.");
       case 404:
-        return ApiException(statusCode: statusCode, message: "Resource not found.");
+        // Use backend message if available
+        return ApiException(
+          statusCode: statusCode,
+          message: message.isNotEmpty ? message : "Resource not found.",
+        );
       case 409:
-        return ApiException(statusCode: statusCode, message: "Conflict: $message");
+        return ApiException(
+          statusCode: statusCode,
+          message: "Conflict: $message",
+        );
       case 500:
       default:
-        return ApiException(statusCode: statusCode, message: "Server error. Please try again later.");
+        return ApiException(
+          statusCode: statusCode,
+          message: "Server error. Please try again later.",
+        );
     }
   }
 }

@@ -11,6 +11,7 @@ class LoginPasswordField extends StatelessWidget {
       label: "Password",
       obscureText: true,
       controller: controller,
+      validator: (v) => v == null || v.isEmpty ? 'Please enter your password' : null,
     );
   }
 }

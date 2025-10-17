@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:caterbid/core/network/api_exception.dart';
 import 'package:caterbid/core/utils/helpers/secure_storage.dart';
+import 'package:caterbid/modules/auth/login/model/Email_not_Verified_model.dart';
 import 'package:caterbid/modules/auth/login/model/login_request_model.dart';
 import 'package:caterbid/modules/auth/login/model/login_response_model.dart';
 import 'package:caterbid/modules/auth/login/repository/login_repository.dart';
 import 'package:equatable/equatable.dart';
-
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -22,14 +23,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     emit(LoginLoading());
     try {
-      final user = await repository.login(event.model);
+      final result = await repository.login(event.model);
 
-      // Token in Secure Storage
+      // Handle Email Not Verified
+      if (result is EmailNotVerifiedModel) {
+        emit(LoginEmailNotVerified(result));
+        return;
+      }
+
+      // Normal login success
+      final user = result as LoginResponseModel;
       await SecureStorage.saveToken(user.token);
-
       emit(LoginSuccess(user));
-    } catch (e) {
-      emit(LoginFailure(e.toString()));
+    } catch (error) {
+      final apiError = ApiErrorHandler.handle(error);
+      emit(LoginFailure(apiError.message));
     }
   }
 }

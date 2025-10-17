@@ -28,3 +28,22 @@ class LoginFailure extends LoginState {
   @override
   List<Object?> get props => [error];
 }
+
+class LoginOTPNotVerified extends LoginState {
+  final String message;
+  final String email;
+
+  const LoginOTPNotVerified(this.message, this.email);
+
+  @override
+  List<Object?> get props => [message, email];
+}
+
+class LoginEmailNotVerified extends LoginState {
+  final EmailNotVerifiedModel user;
+
+  const LoginEmailNotVerified(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}

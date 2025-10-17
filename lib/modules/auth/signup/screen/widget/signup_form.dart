@@ -22,7 +22,7 @@ class SignUpForm extends StatefulWidget {
 
 class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
-  final _storage = const FlutterSecureStorage();
+  // final _storage = const FlutterSecureStorage();
   final ScrollController _scrollController = ScrollController();
 
   bool _agree = false;

@@ -23,11 +23,11 @@ class LoginResponseModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "role": role,
-        "email": email,
-        "token": token,
-        "locationRequired": locationRequired,
-      };
+  // Map<String, dynamic> toJson() => {
+  //       "_id": id,
+  //       "role": role,
+  //       "email": email,
+  //       "token": token,
+  //       "locationRequired": locationRequired,
+  //     };
 }

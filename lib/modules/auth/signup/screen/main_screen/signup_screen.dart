@@ -1,5 +1,6 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
+import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/auth/signup/bloc/sign_up_bloc.dart';
 import 'package:caterbid/modules/auth/signup/bloc/sign_up_state.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/signup_footer.dart';
@@ -8,7 +9,6 @@ import 'package:caterbid/modules/auth/signup/screen/widget/signup_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 
 class SignUpScreen extends StatelessWidget {
   static const path = '/';
@@ -23,13 +23,8 @@ class SignUpScreen extends StatelessWidget {
       builder: (context, state) {
         final isLoading = state is SignUpLoading;
 
-        return OverlayLoaderWithAppIcon(
+        return LoaderOverlay(
           isLoading: isLoading,
-          appIcon: Image.asset('assets/icons/app_icon.png', width: 80, height: 80),
-          circularProgressColor: AppColors.c500,
-          overlayBackgroundColor: Colors.black.withOpacity(0.4),
-          child: AbsorbPointer(
-            absorbing: isLoading,
             child: Scaffold(
               resizeToAvoidBottomInset: true,
               backgroundColor: AppColors.appBackground,
@@ -57,7 +52,6 @@ class SignUpScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
         );
       },
     );

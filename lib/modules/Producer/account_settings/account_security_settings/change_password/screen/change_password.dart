@@ -8,15 +8,15 @@ import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 
 
-class ChangePasswordScreen extends StatefulWidget {
+class settingsChangePassword extends StatefulWidget {
   static const path = '/changepassword';
-  const ChangePasswordScreen({super.key});
+  const settingsChangePassword({super.key});
 
   @override
-  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+  State<settingsChangePassword> createState() => _ChangePasswordScreenState();
 }
 
-class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+class _ChangePasswordScreenState extends State<settingsChangePassword> {
   final TextEditingController oldPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();

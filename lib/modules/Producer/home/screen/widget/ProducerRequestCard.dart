@@ -20,7 +20,7 @@ class ProducerRequestCard extends StatelessWidget {
     final budget = request.budgetDollars;
     //For later used
     // final currency = request.currency.toUpperCase();
-    final formatCurrency = NumberFormat.currency(symbol: '\$');
+    final formatCurrency = NumberFormat.currency(symbol: '\$ ');
     String formatted = formatCurrency.format(budget); // $1,234.56
 
     return Container(
