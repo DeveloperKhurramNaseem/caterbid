@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/config/app_colors.dart'; // adjust path if needed
+import 'package:caterbid/core/config/app_colors.dart';
 
 /// A reusable AppBar with your logo centered.
 class AppLogoAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -17,7 +17,7 @@ class AppLogoAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: showBackButton,
       centerTitle: true,
       backgroundColor: backgroundColor ?? AppColors.appBackground,
       surfaceTintColor: backgroundColor ?? AppColors.appBackground,
@@ -33,7 +33,7 @@ class AppLogoAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-/// The main AppLogo widget for sizing and displaying the logo.
+/// Main AppLogo widget.
 class AppLogo extends StatelessWidget {
   final double? size;
   final bool insideAppBar;
@@ -48,9 +48,12 @@ class AppLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // Dynamically calculate size based on context
+    final double responsiveSize = (screenHeight * 0.20).clamp(90.0, 140.0);
+
     final double logoSize = insideAppBar
-        ? (size ?? kToolbarHeight * 0.7)
-        : (size ?? screenHeight * 0.12);
+        ? (size ?? responsiveSize * 0.30) // Bigger in app bar
+        : (size ?? responsiveSize);       // Even larger outside app bar
 
     return SizedBox(
       height: logoSize,

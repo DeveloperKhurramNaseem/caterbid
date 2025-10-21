@@ -3,7 +3,7 @@ import 'package:caterbid/core/config/app_constants.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
-class BusinessTypeDropdown extends StatelessWidget {
+class BusinessTypeDropdown extends StatefulWidget {
   final String? selectedType;
   final List<String> businessTypes;
   final bool isFocused;
@@ -20,16 +20,32 @@ class BusinessTypeDropdown extends StatelessWidget {
   });
 
   @override
+  State<BusinessTypeDropdown> createState() => _BusinessTypeDropdownState();
+}
+
+class _BusinessTypeDropdownState extends State<BusinessTypeDropdown> {
+  String? _errorText;
+
+  void _validate(String? value) {
+    setState(() {
+      _errorText = value == null ? 'Please select a Business Type' : null;
+    });
+    widget.onChanged(value);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FocusScope(
       child: Focus(
-        onFocusChange: onFocusChange,
+        onFocusChange: widget.onFocusChange,
         child: DropdownButtonHideUnderline(
           child: DropdownButtonFormField2<String>(
-            value: selectedType,
+            value: widget.selectedType,
             isExpanded: true,
-            decoration: const InputDecoration(border: InputBorder.none),
-
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              errorText: _errorText,
+            ),
             dropdownStyleData: DropdownStyleData(
               width: MediaQuery.of(context).size.width * 0.88,
               decoration: BoxDecoration(
@@ -47,7 +63,6 @@ class BusinessTypeDropdown extends StatelessWidget {
               maxHeight: 200,
               offset: const Offset(0, 8),
             ),
-
             buttonStyleData: ButtonStyleData(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               height: 58,
@@ -55,16 +70,15 @@ class BusinessTypeDropdown extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 color: Colors.grey.withOpacity(0.05),
                 border: Border.all(
-                  color: isFocused
-                      ? AppColors.c500
-                      : Colors.grey.withOpacity(0.3),
+                  color: _errorText != null
+                      ? Colors.redAccent
+                      : (widget.isFocused ? AppColors.c500 : Colors.grey.withOpacity(0.3)),
                   width: 1.4,
                 ),
               ),
             ),
-
             hint: Text(
-              'Select Business Type',
+              'Select a Business Type',
               style: TextStyle(
                 fontFamily: AppFonts.nunito,
                 fontWeight: FontWeight.w600,
@@ -72,18 +86,19 @@ class BusinessTypeDropdown extends StatelessWidget {
                 color: AppColors.textDark.withOpacity(0.7),
               ),
             ),
-
             iconStyleData: const IconStyleData(
-              icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.c500),
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.c500,
+              ),
             ),
-
-            items: businessTypes.map((type) {
+            items: widget.businessTypes.map((r) {
               return DropdownMenuItem<String>(
-                value: type,
+                value: r,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 2),
                   child: Text(
-                    type,
+                    r,
                     style: const TextStyle(
                       fontFamily: AppFonts.nunito,
                       fontWeight: FontWeight.w500,
@@ -94,9 +109,8 @@ class BusinessTypeDropdown extends StatelessWidget {
                 ),
               );
             }).toList(),
-
-            onChanged: onChanged,
-            validator: (val) => val == null ? 'Please select a business type' : null,
+            onChanged: _validate,
+            validator: (val) => val == null ? 'Please select a Business Type' : null,
           ),
         ),
       ),

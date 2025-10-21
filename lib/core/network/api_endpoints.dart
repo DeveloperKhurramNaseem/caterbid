@@ -13,10 +13,13 @@ class ApiEndpoints {
 
 
 
-  // Producer
+  // Producer(Requestee)
   static const String createCateringRequest = "$baseUrl/requestee/requests";
   static const String getMyRequests = "$baseUrl/requestee/my-requests";
 
+
+  //Provider
+  static const String bussinessProfileSetup = "$baseUrl/provider/profile";
 
 
 }

@@ -6,3 +6,8 @@ sealed class BusinessProfileEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class SubmitBusinessProfile extends BusinessProfileEvent {
+  final BusinessProfileRequestModel model;
+  const SubmitBusinessProfile(this.model);
+}

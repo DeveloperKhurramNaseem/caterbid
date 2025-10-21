@@ -1,3 +1,4 @@
+import 'package:caterbid/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/core/utils/responsive.dart';
@@ -15,7 +16,8 @@ class CateringAppBar extends StatelessWidget implements PreferredSizeWidget {
         fontWeight: FontWeight.w700,
         fontFamily: AppFonts.nunito,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackground,
+      surfaceTintColor: AppColors.appBackground,
       elevation: 0,
       iconTheme: const IconThemeData(color: Colors.black),
       centerTitle: false,

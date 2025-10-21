@@ -8,7 +8,7 @@ import 'package:caterbid/modules/Producer/catering_request/screen/main_screen/re
 import 'package:caterbid/modules/Producer/my_requests/screen/main_screen/my_requests_screen.dart';
 import 'package:caterbid/modules/Producer/payment/screen/main_screen/payment_success_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/main_settings/main_screen/setting_screen.dart';
-import 'package:caterbid/modules/Restaurant/business_profile/main_screen/set_business_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/screen/my_bids.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/screen/place_bid_screen.dart';
@@ -42,14 +42,22 @@ final GoRouter appRouter = GoRouter(
       path: VerifyEmailScreen.path,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        assert(
-          extra != null,
-          'You must pass data using "extra" when navigating to VerifyEmailScreen',
-        );
+        // assert(
+        //   extra != null,
+        //   'You must pass data using "extra" when navigating to VerifyEmailScreen',
+        // );
 
         final email = extra?['email'] ?? '';
         final role = extra?['role'] ?? '';
-        return VerifyEmailScreen(email: email, role: role);
+        final companyName = extra?['companyName'] ?? '';
+        final phoneNumber = extra?['phoneNumber'] ?? '';
+
+        return VerifyEmailScreen(
+          email: email,
+          role: role,
+          companyName: companyName,
+          phoneNumber: phoneNumber,
+        );
       },
     ),
 
@@ -153,7 +161,17 @@ final GoRouter appRouter = GoRouter(
     // ---------- Restaurant APP ROUTES ----------
     GoRoute(
       path: SetBusinessProfileScreen.path,
-      builder: (context, state) => const SetBusinessProfileScreen(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+
+        final companyName = extra?['companyName'] ?? '';
+        final phoneNumber = extra?['phoneNumber'] ?? '';
+
+        return SetBusinessProfileScreen(
+          companyName: companyName,
+          phoneNumber: phoneNumber,
+        );
+      },
     ),
     GoRoute(
       path: PlaceBidScreen.path,

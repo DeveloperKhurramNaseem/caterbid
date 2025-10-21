@@ -1,4 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
@@ -10,7 +11,7 @@ import 'package:caterbid/modules/auth/login/screen/widgets/login_password_field.
 import 'package:caterbid/modules/auth/login/screen/widgets/login_signup_text.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_welcome_text.dart';
 import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
-import 'package:caterbid/modules/Restaurant/business_profile/main_screen/set_business_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final w = Responsive.width(context);
+    final h = Responsive.height(context);
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
@@ -66,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
             VerifyEmailScreen.path,
             extra: {
               'email': state.user.email,
-              'role': 'requestee', // Hardcoded for testing
+              'role': state.user.role,
             },
           );
         } else if (state is LoginFailure) {
@@ -93,20 +96,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 40),
+                          SizedBox(height: h * 0.09),
                           const LoginWelcomeText(),
-                          const SizedBox(height: 40),
+                          SizedBox(height: h * 0.03),
                           LoginEmailField(controller: _emailController),
-                          const SizedBox(height: 20),
+                          SizedBox(height: h * 0.02),
                           LoginPasswordField(controller: _passwordController),
-                          const SizedBox(height: 10),
+                          SizedBox(height: h * 0.02),
                           const LoginForgotPassword(),
-                          const SizedBox(height: 40),
+                          SizedBox(height: h * 0.04),
                           LoginButton(
                             isLoading: isLoading,
                             onPressed: _onLoginPressed,
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: h * 0.03),
                           const LoginSignupText(),
                         ],
                       ),

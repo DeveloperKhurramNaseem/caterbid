@@ -22,10 +22,8 @@ class ForgetPasswordBloc
     emit(ForgetPasswordLoading());
 
     try {
-      // API call using the model
       final response = await repository.forgetPassword(event.model);
 
-      // You can return email from model directly or API response if it includes one
       emit(ForgetPasswordSuccess(event.model.email));
     } catch (error) {
       final apiError = ApiErrorHandler.handle(error);

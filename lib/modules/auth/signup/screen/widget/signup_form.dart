@@ -118,6 +118,9 @@ class _SignUpFormState extends State<SignUpForm> {
             extra: {
               'email': _email.text.trim(),
               'role': _roleForApi(_selectedRole),
+              'companyName': _company.text.trim(),
+              'phoneNumber': _fullPhoneNumber ?? _phone.text.trim(),
+
             },
           );
         } else if (state is SignUpFailure) {
@@ -177,6 +180,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     controller: _company,
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Enter company name' : null,
+                        capitalizeFirstLetter: true,
                   ),
                   SizedBox(height: isSmall ? 12 : h * 0.02),
                 ],

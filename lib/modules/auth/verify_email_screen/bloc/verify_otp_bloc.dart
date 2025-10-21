@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:caterbid/core/network/api_exception.dart';
+import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/model/verify_otp_request.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/model/verify_otp_response_model.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/repository/verify_otp_repository.dart';
 import 'package:equatable/equatable.dart';
 
@@ -21,6 +23,10 @@ class VerifyOtpBloc extends Bloc<VerifyOtpEvent, VerifyOtpState> {
     emit(VerifyOtpLoading());
     try {
       final response = await repository.verifyOtp(event.model);
+
+      // Save token immediately
+      await SecureStorage.saveToken(response.token);
+
       emit(VerifyOtpSuccess(response));
     } catch (error) {
       final apiError = ApiErrorHandler.handle(error);

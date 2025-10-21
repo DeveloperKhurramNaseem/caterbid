@@ -15,3 +15,4 @@ class VerifyOtpRequestModel {
         'otp': otp,
       };
 }
+

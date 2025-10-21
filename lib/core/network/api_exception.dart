@@ -67,17 +67,15 @@ class ApiErrorHandler {
               : "Unauthorized. Please log in.",
         );
       case 403:
-        // **Check for isOTPverified flag**
-        if (body is Map<String, dynamic> && body['isOTPverified'] == false) {
+        if (body is Map<String, dynamic> && body['isverified'] == false) {
           return ApiException(
             statusCode: statusCode,
-            message: message, // "Email not verified. OTP has been resent."
-            details: {'isOTPverified': false},
+            message: message,
+            details: body,
           );
         }
         return ApiException(statusCode: statusCode, message: "Access denied.");
       case 404:
-        // Use backend message if available
         return ApiException(
           statusCode: statusCode,
           message: message.isNotEmpty ? message : "Resource not found.",

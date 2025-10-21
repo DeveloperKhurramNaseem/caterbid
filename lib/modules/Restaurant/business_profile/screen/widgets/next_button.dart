@@ -5,7 +5,7 @@ import 'package:caterbid/core/config/app_colors.dart';
 class NextButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const NextButton({super.key, required this.onPressed});
+  const NextButton({super.key, required this.onPressed, required bool isLoading});
 
   @override
   Widget build(BuildContext context) {

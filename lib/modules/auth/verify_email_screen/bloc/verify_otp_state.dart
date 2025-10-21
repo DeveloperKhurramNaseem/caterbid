@@ -12,13 +12,14 @@ final class VerifyOtpInitial extends VerifyOtpState {}
 
 final class VerifyOtpLoading extends VerifyOtpState {}
 
-final class VerifyOtpSuccess extends VerifyOtpState {
-  final Map<String, dynamic> response;
 
-  const VerifyOtpSuccess(this.response);
+final class VerifyOtpSuccess extends VerifyOtpState {
+  final VerifyOtpResponseModel user; 
+
+  const VerifyOtpSuccess(this.user);
 
   @override
-  List<Object> get props => [response];
+  List<Object> get props => [user];
 }
 
 final class VerifyOtpFailure extends VerifyOtpState {

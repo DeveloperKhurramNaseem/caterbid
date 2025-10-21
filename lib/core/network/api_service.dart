@@ -24,7 +24,11 @@ class ApiService {
     final headers = includeAuth ? await _getHeaders() : _baseHeaders;
     _logRequest("POST", url, body);
     try {
-      final response = await http.post(Uri.parse(url), headers: headers, body: jsonEncode(body));
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
       return _handleResponse(response);
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -54,6 +58,26 @@ class ApiService {
     } else {
       final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
       throw ApiErrorHandler.fromResponse(response.statusCode, body);
+    }
+  }
+
+  // PUT
+  Future<dynamic> put(
+    String url,
+    Map<String, dynamic> body, {
+    bool includeAuth = true,
+  }) async {
+    final headers = includeAuth ? await _getHeaders() : _baseHeaders;
+    _logRequest("PUT", url, body);
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+      return _handleResponse(response);
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
     }
   }
 

@@ -12,7 +12,6 @@ class VerifyResetOtpBloc extends Bloc<VerifyResetOtpEvent, VerifyResetOtpState> 
 
   VerifyResetOtpBloc(this.verifyOtpRepository) : super(VerifyResetOtpInitial()) {
     on<VerifyResetOtpEvent>((event, emit) {
-      // TODO: implement event handler
     });
 
     on<SubmitOtpEvent>(_onSubmitOtp);

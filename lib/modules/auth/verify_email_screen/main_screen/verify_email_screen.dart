@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/model/verify_otp_request.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +20,16 @@ class VerifyEmailScreen extends StatefulWidget {
   static const path = '/verifyemail';
   final String email;
   final String role;
+  final String companyName;
+  final String phoneNumber;
 
-  const VerifyEmailScreen({super.key, required this.email, required this.role});
+  const VerifyEmailScreen({
+    super.key,
+    required this.email,
+    required this.role,
+    required this.companyName,
+    required this.phoneNumber,
+  });
 
   @override
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
@@ -104,10 +114,31 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return BlocConsumer<VerifyOtpBloc, VerifyOtpState>(
       listener: (context, state) {
         if (state is VerifyOtpSuccess) {
+          final user = state.user;
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("OTP Verified Successfully!")),
           );
-          context.go(LoginScreen.path);
+
+          // Navigate based on user role
+          if (user.role.toLowerCase() == 'provider') {
+            context.go(
+              SetBusinessProfileScreen.path,
+              extra: {
+                'companyName': widget.companyName,
+                'phoneNumber': widget.phoneNumber,
+              },
+            );
+          } else if (user.role.toLowerCase() == 'requestee') {
+            context.go(ProducerHomeScreen.path);
+          } else {
+            // For Wrost Case Fallback
+            context.go(LoginScreen.path);
+          }
+        } else if (state is VerifyOtpFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error)));
         } else if (state is VerifyOtpFailure) {
           ScaffoldMessenger.of(
             context,

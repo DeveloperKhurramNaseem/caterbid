@@ -5,6 +5,8 @@ import 'package:caterbid/modules/Producer/catering_request/repository/catering_r
 import 'package:caterbid/modules/Producer/home/bloc/producer_home_bloc.dart';
 import 'package:caterbid/modules/Producer/home/repository/producer_repository.dart';
 import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/repository/business_profile_repository.dart';
 import 'package:caterbid/modules/auth/forget_Password/forget_password_email/bloc/forget_password_bloc.dart';
 import 'package:caterbid/modules/auth/forget_Password/forget_password_email/repository/forget_password_repository.dart';
 import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
@@ -37,6 +39,7 @@ Future<void> main() async {
         BlocProvider(create: (_) => ProducerHomeBloc(ProducerRepository())),
         BlocProvider(create: (_) => RequestsBloc(ProducerRepository())),
         BlocProvider(create: (_) => ForgetPasswordBloc(ForgetpasswordRepository())),
+        BlocProvider(create: (_) => BusinessProfileBloc(BusinessProfileRepository()))
         
       ],
       child: const MyApp(),

@@ -12,17 +12,20 @@ class LoginRepository {
     try {
       final response = await _apiService.post(
         ApiEndpoints.login,
-        {'email': model.email, 'password': model.password},
+        {
+          'email': model.email,
+          'password': model.password,
+        },
       );
 
       return LoginResponseModel.fromJson(response);
     } catch (error) {
       final apiError = ApiErrorHandler.handle(error);
 
-      // Special handling for email not verified
+      
       if (apiError.statusCode == 403 &&
           apiError.details != null &&
-          apiError.details!['isOTPverified'] == false) {
+          apiError.details!['isverified'] == false) {
         return EmailNotVerifiedModel.fromJson(apiError.details!, model.email);
       }
 

@@ -1,8 +1,8 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
+import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'request_status_chip.dart';
 
 class RequestCard extends StatelessWidget {
@@ -77,10 +77,7 @@ class RequestCard extends StatelessWidget {
     final double spacing = Responsive.responsiveSize(context, 4, 5, 7);
     
     final budget = amount;
-    //For later used
-    // final currency = request.currency.toUpperCase();
-    final formatCurrency = NumberFormat.currency(symbol: '\$ ');
-    String formatted = formatCurrency.format(budget); // $1,234.56
+    String formatted = CurrencyFormatter.format(budget); 
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

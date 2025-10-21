@@ -1,4 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
 import 'package:caterbid/core/utils/helpers/formatted_date.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/modules/Producer/home/model/producer_request_model.dart';
@@ -18,10 +19,7 @@ class ProducerRequestCard extends StatelessWidget {
     final formattedDate = DateFormatter.format(request.date);
 
     final budget = request.budgetDollars;
-    //For later used
-    // final currency = request.currency.toUpperCase();
-    final formatCurrency = NumberFormat.currency(symbol: '\$ ');
-    String formatted = formatCurrency.format(budget); // $1,234.56
+    String formatted = CurrencyFormatter.format(budget); 
 
     return Container(
       padding: EdgeInsets.all(w * 0.04),
