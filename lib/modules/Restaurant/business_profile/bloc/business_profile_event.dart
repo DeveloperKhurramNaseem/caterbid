@@ -11,3 +11,5 @@ class SubmitBusinessProfile extends BusinessProfileEvent {
   final BusinessProfileRequestModel model;
   const SubmitBusinessProfile(this.model);
 }
+
+

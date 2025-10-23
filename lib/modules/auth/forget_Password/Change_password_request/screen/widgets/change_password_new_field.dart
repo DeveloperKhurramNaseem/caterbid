@@ -1,16 +1,22 @@
+import 'package:caterbid/core/widgets/password_widget/custom_password_field.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/widgets/custom_textfield.dart';
 
 class ChangePasswordNewField extends StatelessWidget {
   final TextEditingController controller;
-  const ChangePasswordNewField({super.key, required this.controller});
+  final ValueChanged<String>? onChanged; 
+
+  const ChangePasswordNewField({
+    super.key,
+    required this.controller,
+    this.onChanged, 
+  });
 
   @override
   Widget build(BuildContext context) {
-    return CustomTextField(
+    return CustomPasswordField(
       label: "New Password",
-      obscureText: true,
       controller: controller,
+      onChanged: onChanged, 
     );
   }
 }

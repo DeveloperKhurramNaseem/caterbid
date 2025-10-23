@@ -4,11 +4,20 @@ import 'package:caterbid/core/config/app_constants.dart';
 
 class SpecialInstructionsField extends StatelessWidget {
   final String labelTextHolder;
-
   final TextEditingController controller;
-  
 
-  const SpecialInstructionsField({super.key, required this.controller, required this.labelTextHolder});
+  final IconData? iconData;
+  final String? iconAsset;
+  final VoidCallback? onIconTap;
+
+  const SpecialInstructionsField({
+    super.key,
+    required this.controller,
+    required this.labelTextHolder,
+    this.iconData,
+    this.iconAsset,
+    this.onIconTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +47,25 @@ class SpecialInstructionsField extends StatelessWidget {
           borderSide: BorderSide(width: 1.5, color: AppColors.c500),
         ),
         alignLabelWithHint: true,
+
+        ///  Conditional icon on the right
+        suffixIcon: (iconData != null || iconAsset != null)
+            ? InkWell(
+                onTap: onIconTap,
+                borderRadius: BorderRadius.circular(50),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: iconData != null
+                      ? Icon(iconData, color: AppColors.icon, size: 24)
+                      : Image.asset(
+                          iconAsset!,
+                          width: 24,
+                          height: 24,
+                          color: AppColors.icon,
+                        ),
+                ),
+              )
+            : null,
       ),
     );
   }

@@ -25,7 +25,7 @@ class LoginRepository {
       
       if (apiError.statusCode == 403 &&
           apiError.details != null &&
-          apiError.details!['isverified'] == false) {
+          apiError.details!['isOTPverified'] == false) {
         return EmailNotVerifiedModel.fromJson(apiError.details!, model.email);
       }
 

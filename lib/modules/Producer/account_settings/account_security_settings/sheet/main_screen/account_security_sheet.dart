@@ -1,5 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/change_password.dart';
+import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/sheet/widgets/setting_tile.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/sheet/widgets/sheet_header.dart';
@@ -46,7 +46,7 @@ class _AccountSecurityContent extends StatelessWidget {
             showArrow: true,
             onTap: () {
               Navigator.of(context).pop(); 
-              context.push(settingsChangePassword.path);
+              context.push(SettingsChangePassword.path);
             },
           ),
           SizedBox(height: h * 0.015),

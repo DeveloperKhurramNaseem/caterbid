@@ -1,5 +1,5 @@
+import 'package:caterbid/core/widgets/password_widget/custom_password_field.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/widgets/custom_textfield.dart';
 
 class LoginPasswordField extends StatelessWidget {
   final TextEditingController controller;
@@ -7,11 +7,12 @@ class LoginPasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomTextField(
+    return CustomPasswordField(
       label: "Password",
-      obscureText: true,
       controller: controller,
       validator: (v) => v == null || v.isEmpty ? 'Please enter your password' : null,
     );
   }
 }
+
+

@@ -6,7 +6,7 @@ import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/model/business_profile_request_model.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/location_field.dart';
-import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
+import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/config/app_colors.dart';

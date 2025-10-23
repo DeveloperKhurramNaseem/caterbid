@@ -1,9 +1,9 @@
-import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../config/app_colors.dart';
 import 'package:intl/intl.dart';
+import '../config/app_colors.dart';
+import '../config/app_constants.dart';
+import '../utils/responsive.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -29,26 +29,12 @@ class CustomTextField extends StatefulWidget {
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
-
-  ///  Raw value for API (unformatted)
-  String get rawValue => controller?.text.replaceAll(',', '') ?? '';
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  String? _errorText;
-  final _formatter = NumberFormat('#,###');
+  final _numberFormatter = NumberFormat('#,###');
 
-  void _validate(String value) {
-    if (widget.validator != null) {
-      setState(() {
-        _errorText = widget.validator!(value);
-      });
-    }
-  }
-
-  String _formatIfNeeded(String value) {
-    if (!widget.formatNumber) return value;
-
+  String _formatNumber(String value) {
     String clean = value.replaceAll(',', '');
     if (clean.isEmpty) return '';
 
@@ -58,14 +44,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
     try {
       int number = int.parse(intPart);
-      String formattedInt = _formatter.format(number);
+      String formattedInt = _numberFormatter.format(number);
       return decimalPart.isNotEmpty ? '$formattedInt.$decimalPart' : formattedInt;
     } catch (_) {
       return value;
     }
   }
 
-  String _capitalizeFirstLetter(String value) {
+  String _capitalize(String value) {
     if (!widget.capitalizeFirstLetter || value.isEmpty) return value;
     return value[0].toUpperCase() + value.substring(1);
   }
@@ -82,21 +68,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscureText: widget.obscureText,
       validator: widget.validator,
       keyboardType: widget.keyboardType,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       inputFormatters: widget.formatNumber
           ? [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))]
           : null,
       onChanged: (value) {
         String newValue = value;
-
-        // Format number if needed
-        if (widget.formatNumber) {
-          newValue = _formatIfNeeded(newValue);
-        }
-
-        // Capitalize first letter if needed
-        if (widget.capitalizeFirstLetter) {
-          newValue = _capitalizeFirstLetter(newValue);
-        }
+        if (widget.formatNumber) newValue = _formatNumber(newValue);
+        if (widget.capitalizeFirstLetter) newValue = _capitalize(newValue);
 
         if (widget.controller?.text != newValue) {
           widget.controller?.value = TextEditingValue(
@@ -104,8 +83,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
             selection: TextSelection.collapsed(offset: newValue.length),
           );
         }
-
-        _validate(newValue);
       },
       style: TextStyle(
         color: AppColors.textDark,
@@ -139,7 +116,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: const BorderSide(width: 1.5, color: Colors.redAccent),
         ),
-        errorText: _errorText,
         contentPadding: EdgeInsets.symmetric(
           horizontal: horizontalPadding,
           vertical: verticalPadding,

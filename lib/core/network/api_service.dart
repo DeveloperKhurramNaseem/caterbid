@@ -1,21 +1,29 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:caterbid/core/utils/logger.dart';
 import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:caterbid/core/network/api_exception.dart';
 
 class ApiService {
-  final Map<String, String> _baseHeaders = {'Content-Type': 'application/json'};
+  final Map<String, String> _baseHeaders = {
+    'Content-Type': 'application/json',
+  };
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await SecureStorage.getToken();
     if (token != null) {
-      return {..._baseHeaders, 'Authorization': 'Bearer $token'};
+      return {
+        ..._baseHeaders,
+        'Authorization': 'Bearer $token',
+      };
     }
     return _baseHeaders;
   }
 
-  // POST
+  // -------------------------------------------------
+  //  Standard JSON POST
+  // -------------------------------------------------
   Future<dynamic> post(
     String url,
     Map<String, dynamic> body, {
@@ -35,7 +43,9 @@ class ApiService {
     }
   }
 
-  // GET
+  // -------------------------------------------------
+  //  GET
+  // -------------------------------------------------
   Future<dynamic> get(String url, {bool includeAuth = true}) async {
     final headers = includeAuth ? await _getHeaders() : _baseHeaders;
     _logRequest("GET", url);
@@ -47,21 +57,9 @@ class ApiService {
     }
   }
 
-  // Response handler
-  dynamic _handleResponse(http.Response response) {
-    _logResponse(response);
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (response.body.isEmpty) return {};
-      final decoded = jsonDecode(response.body);
-      if (decoded is Map<String, dynamic> || decoded is List) return decoded;
-      throw ApiException(message: "Invalid JSON structure");
-    } else {
-      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
-      throw ApiErrorHandler.fromResponse(response.statusCode, body);
-    }
-  }
-
-  // PUT
+  // -------------------------------------------------
+  //  PUT
+  // -------------------------------------------------
   Future<dynamic> put(
     String url,
     Map<String, dynamic> body, {
@@ -81,7 +79,61 @@ class ApiService {
     }
   }
 
-  // Logging
+  // -------------------------------------------------
+  // Multipart POST (Form-Data)
+  // -------------------------------------------------
+  Future<dynamic> postMultipart(
+    String url, {
+    required Map<String, String> fields,
+    File? file,
+    String? fileFieldName = "attachment",
+    bool includeAuth = true,
+  }) async {
+    final headers = await _getHeaders();
+    headers.remove('Content-Type'); // let http handle it
+
+    _logRequest("POST (Multipart)", url, fields);
+
+    final request = http.MultipartRequest('POST', Uri.parse(url))
+      ..fields.addAll(fields)
+      ..headers.addAll(headers);
+
+    if (file != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(fileFieldName!, file.path),
+      );
+    }
+
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      return _handleResponse(response);
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
+  }
+
+  // -------------------------------------------------
+  //  Response Handler
+  // -------------------------------------------------
+  dynamic _handleResponse(http.Response response) {
+    _logResponse(response);
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isEmpty) return {};
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic> || decoded is List) return decoded;
+      throw ApiException(message: "Invalid JSON structure");
+    } else {
+      final body =
+          response.body.isNotEmpty ? jsonDecode(response.body) : {};
+      throw ApiErrorHandler.fromResponse(response.statusCode, body);
+    }
+  }
+
+  // -------------------------------------------------
+  //  Logging Helpers
+  // -------------------------------------------------
   void _logRequest(String method, String url, [Map<String, dynamic>? body]) {
     assert(() {
       AppLogger.log("📤 [$method] $url");

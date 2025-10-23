@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:caterbid/core/network/api_exception.dart';
-import 'package:caterbid/modules/Producer/home/model/producer_request_model.dart';
-import 'package:caterbid/modules/Producer/home/repository/producer_repository.dart';
+import 'package:caterbid/modules/Producer/home/active_request/model/producer_request_model.dart';
+import 'package:caterbid/modules/Producer/home/active_request/repository/producer_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

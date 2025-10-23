@@ -1,3 +1,4 @@
+import 'package:caterbid/core/widgets/password_widget/custom_password_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -76,6 +77,8 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   void _submit() {
+      FocusScope.of(context).unfocus();
+
     if (!_formKey.currentState!.validate()) {
       _scrollToTop();
       return;
@@ -113,6 +116,7 @@ class _SignUpFormState extends State<SignUpForm> {
       listener: (context, state) {
         if (state is SignUpSuccess) {
           _showSnack('Sign up successful! Please verify your email.');
+          
           context.push(
             VerifyEmailScreen.path,
             extra: {
@@ -184,9 +188,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                   SizedBox(height: isSmall ? 12 : h * 0.02),
                 ],
-                CustomTextField(
+                CustomPasswordField(
                   label: "Password",
-                  obscureText: true,
                   controller: _password,
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Enter password';
@@ -195,9 +198,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   },
                 ),
                 SizedBox(height: isSmall ? 12 : h * 0.02),
-                CustomTextField(
+                CustomPasswordField(
                   label: "Confirm Password",
-                  obscureText: true,
                   controller: _confirmPassword,
                   validator: (v) =>
                       v != _password.text ? 'Passwords do not match' : null,
@@ -212,6 +214,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   title: "Sign Up",
                   isEnabled: !isLoading && _agree,
                   onPressed: _submit,
+                
                 ),
               ],
             ),

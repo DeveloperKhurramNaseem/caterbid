@@ -67,7 +67,7 @@ class ApiErrorHandler {
               : "Unauthorized. Please log in.",
         );
       case 403:
-        if (body is Map<String, dynamic> && body['isverified'] == false) {
+        if (body is Map<String, dynamic> && body['isOTPverified'] == false) {
           return ApiException(
             statusCode: statusCode,
             message: message,

@@ -1,6 +1,6 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/modules/Restaurant/home/widegts/bids_header.dart';
+import 'package:caterbid/modules/Restaurant/home/screen/widegts/bids_header.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/widgets/active_bids_tab.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/widgets/fulfilled_bids_tab.dart' show FulfilledRequestsTab;
 import 'package:caterbid/modules/Restaurant/my_bids/widgets/header_with_tabs.dart';

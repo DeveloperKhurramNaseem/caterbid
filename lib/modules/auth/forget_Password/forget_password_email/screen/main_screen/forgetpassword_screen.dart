@@ -36,7 +36,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return BlocConsumer<ForgetPasswordBloc, ForgetPasswordState>(
       listener: (context, state) {
         if (state is ForgetPasswordSuccess) {
-          context.go(OTPScreen.path, extra: {'email': state.email});
+          context.push(OTPScreen.path, extra: {'email': state.email});
         } else if (state is ForgetPasswordFailure) {
           ScaffoldMessenger.of(
             context,

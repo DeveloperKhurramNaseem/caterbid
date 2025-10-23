@@ -1,5 +1,5 @@
 import 'package:caterbid/core/utils/helpers/formatted_date.dart';
-import 'package:caterbid/modules/Producer/home/model/producer_request_model.dart';
+import 'package:caterbid/modules/Producer/home/active_request/model/producer_request_model.dart';
 import 'package:flutter/material.dart';
 import 'request_card.dart';
 

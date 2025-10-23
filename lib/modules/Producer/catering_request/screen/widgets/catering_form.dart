@@ -1,7 +1,7 @@
 import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
 import 'package:caterbid/modules/Producer/catering_request/model/catering_request_model.dart';
-import 'package:caterbid/modules/Producer/home/bloc/producer_home_bloc.dart';
-import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Producer/home/active_request/bloc/producer_home_bloc.dart';
+import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
@@ -165,6 +165,8 @@ class _CateringFormState extends State<CateringForm> {
                   ))
                   : CateringSubmitButton(
                       onPressed: () {
+                          FocusScope.of(context).unfocus();
+
                         if (_formKey.currentState!.validate()) {
                           final dateTime = DateTime(
                             _selectedDate.year,

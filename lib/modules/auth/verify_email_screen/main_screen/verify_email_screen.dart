@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/model/verify_otp_request.dart';
@@ -18,6 +18,7 @@ import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   static const path = '/verifyemail';
+  
   final String email;
   final String role;
   final String companyName;
@@ -173,9 +174,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         SizedBox(height: h * 0.06),
                         const VerifyEmailHeading(),
                         SizedBox(height: h * 0.04),
-                        OTPFields(
+                        OTPFieldsPackage(
                           controllers: _controllers,
-                          focusNodes: _focusNodes,
                         ),
                         SizedBox(height: h * 0.05),
                         VerifyButton(

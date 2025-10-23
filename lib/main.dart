@@ -2,8 +2,10 @@ import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
 import 'package:caterbid/modules/Producer/catering_request/repository/catering_repository.dart';
-import 'package:caterbid/modules/Producer/home/bloc/producer_home_bloc.dart';
-import 'package:caterbid/modules/Producer/home/repository/producer_repository.dart';
+import 'package:caterbid/modules/Producer/home/active_request/bloc/producer_home_bloc.dart';
+import 'package:caterbid/modules/Producer/home/active_request/repository/producer_repository.dart';
+import 'package:caterbid/modules/Producer/home/active_request_bid/bloc/bids_bloc.dart';
+import 'package:caterbid/modules/Producer/home/active_request_bid/repository/producer_bid_repository.dart';
 import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/repository/business_profile_repository.dart';
@@ -38,9 +40,13 @@ Future<void> main() async {
         BlocProvider(create: (_) => CateringrequestBloc(CateringRepository())),
         BlocProvider(create: (_) => ProducerHomeBloc(ProducerRepository())),
         BlocProvider(create: (_) => RequestsBloc(ProducerRepository())),
-        BlocProvider(create: (_) => ForgetPasswordBloc(ForgetpasswordRepository())),
-        BlocProvider(create: (_) => BusinessProfileBloc(BusinessProfileRepository()))
-        
+        BlocProvider(
+          create: (_) => ForgetPasswordBloc(ForgetpasswordRepository()),
+        ),
+        BlocProvider(
+          create: (_) => BusinessProfileBloc(BusinessProfileRepository()),
+        ),
+        // BlocProvider(create: (context) => BidsBloc(BidsRepository())),
       ],
       child: const MyApp(),
     ),
@@ -57,6 +63,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(fontFamily: AppFonts.nunito),
 
       routerConfig: appRouter,
+
+      // <-- Global keyboard dismiss
+      builder: (context, child) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus &&
+                currentFocus.focusedChild != null) {
+              currentFocus.focusedChild!.unfocus();
+            }
+          },
+          child: child,
+        );
+      },
     );
   }
 }

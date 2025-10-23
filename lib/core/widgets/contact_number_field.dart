@@ -18,15 +18,13 @@ class ContactNumberField extends StatefulWidget {
 class _ContactNumberFieldState extends State<ContactNumberField> {
   String? phoneNumber;
   String? countryCode = "+1"; 
-  bool isValid = true;
 
-  void _validateNumber(String number) {
+  bool _validateNumber(String number) {
     final cleanNumber = number.replaceAll(RegExp(r'[^0-9]'), '');
     if (countryCode == "+1" && !RegExp(r'^[0-9]{10}$').hasMatch(cleanNumber)) {
-      isValid = false;
-    } else {
-      isValid = true;
+      return false;
     }
+    return true;
   }
 
   @override
@@ -40,8 +38,7 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
       validator: (value) {
         final number = widget.controller?.text.trim() ?? '';
         if (number.isEmpty) return "Phone number can't be empty";
-        _validateNumber(number);
-        return isValid ? null : "Please enter a valid 10-digit number";
+        return _validateNumber(number) ? null : "Please enter a valid 10-digit number";
       },
       builder: (state) {
         return Column(
@@ -91,14 +88,19 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
                 setState(() {
                   phoneNumber = phone.number;
                   countryCode = phone.countryCode;
-                  _validateNumber(phone.number);
                 });
+
+                // Trigger form validation so error disappears when valid
+                state.validate();
+
                 final cleanNumber = phone.number.replaceAll(RegExp(r'[^0-9]'), '');
                 widget.onChanged?.call(cleanNumber);
                 state.didChange(phone.number);
               },
               onCountryChanged: (country) {
                 setState(() => countryCode = "+${country.dialCode}");
+                // Re-validate when country changes
+                state.validate();
               },
             ),
           ],
@@ -107,3 +109,4 @@ class _ContactNumberFieldState extends State<ContactNumberField> {
     );
   }
 }
+

@@ -1,16 +1,18 @@
 import 'package:caterbid/core/widgets/bottomtabbar.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
-import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/change_password.dart';
+import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
 import 'package:caterbid/modules/Producer/account_settings/edit_profile/main_screen/edit_profile_screen.dart';
-import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Producer/catering_request/screen/main_screen/request_screen.dart';
 import 'package:caterbid/modules/Producer/my_requests/screen/main_screen/my_requests_screen.dart';
 import 'package:caterbid/modules/Producer/payment/screen/main_screen/payment_success_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/main_settings/main_screen/setting_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
-import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
+import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/screen/my_bids.dart';
+import 'package:caterbid/modules/Restaurant/place_bid/bloc/place_bid_bloc.dart';
+import 'package:caterbid/modules/Restaurant/place_bid/repository/place_bid_repository.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/screen/place_bid_screen.dart';
 import 'package:caterbid/modules/auth/forget_Password/Change_password_request/bloc/change_password_request_bloc.dart';
 import 'package:caterbid/modules/auth/forget_Password/Change_password_request/repository/change_password_request_repository.dart';
@@ -27,6 +29,9 @@ import 'package:caterbid/modules/auth/signup/screen/main_screen/signup_screen.da
 import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
 
 final GoRouter appRouter = GoRouter(
+  restorationScopeId: null,
+
+
   initialLocation: LoginScreen.path,
   routes: [
     // ---------- AUTH ROUTES ----------
@@ -38,6 +43,7 @@ final GoRouter appRouter = GoRouter(
       path: LoginScreen.path,
       builder: (context, state) => const LoginScreen(),
     ),
+
     GoRoute(
       path: VerifyEmailScreen.path,
       builder: (context, state) {
@@ -104,8 +110,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const EditProfileScreen(),
     ),
     GoRoute(
-      path: settingsChangePassword.path,
-      builder: (context, state) => const settingsChangePassword(),
+      path: SettingsChangePassword.path,
+      builder: (context, state) => const SettingsChangePassword(),
     ),
     GoRoute(
       path: DeleteAccountScreen.path,
@@ -175,8 +181,16 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: PlaceBidScreen.path,
-      builder: (context, state) => const PlaceBidScreen(),
+      builder: (context, state) {
+        final requestId = state.extra as String; 
+
+        return BlocProvider(
+          create: (_) => PlaceBidBloc(PlaceBidRepository()),
+          child: PlaceBidScreen(requestId: requestId),
+        );
+      },
     ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navShell) => BottomNavBar(
         navigationShell: navShell,

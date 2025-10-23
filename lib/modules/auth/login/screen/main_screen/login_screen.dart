@@ -10,9 +10,9 @@ import 'package:caterbid/modules/auth/login/screen/widgets/login_forgot_password
 import 'package:caterbid/modules/auth/login/screen/widgets/login_password_field.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_signup_text.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_welcome_text.dart';
-import 'package:caterbid/modules/Producer/home/screen/main_screen/home_screen.dart';
+import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
-import 'package:caterbid/modules/Restaurant/home/main_screen/bids_home.dart';
+import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   void _onLoginPressed() {
+      FocusScope.of(context).unfocus();
+
     if (_formKey.currentState!.validate()) {
       final model = LoginRequestModel(
         email: _emailController.text.trim(),
