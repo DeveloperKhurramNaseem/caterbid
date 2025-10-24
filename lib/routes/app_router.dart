@@ -67,6 +67,8 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
+
+
     // ---------- ForgetPassword ROUTES ----------
     GoRoute(
       path: ForgetPasswordScreen.path,
@@ -100,6 +102,8 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
+
+
     // ---------- App Settings ROUTES ----------
     GoRoute(
       path: SettingsScreen.path,
@@ -117,6 +121,8 @@ final GoRouter appRouter = GoRouter(
       path: DeleteAccountScreen.path,
       builder: (context, state) => const DeleteAccountScreen(),
     ),
+
+    
 
     // ---------- PRODUCER APP ROUTES ----------
     GoRoute(

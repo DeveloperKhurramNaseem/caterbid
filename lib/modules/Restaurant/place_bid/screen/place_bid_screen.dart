@@ -107,12 +107,16 @@ class _PlaceBidScreenState extends State<PlaceBidScreen> {
                   CustomTextField(
                     label: "Number of People",
                     controller: peopleController,
+                    keyboardType: TextInputType.numberWithOptions(),
+                                        formatNumber: true,
                   ),
                   SizedBox(height: spacing / 1.5),
 
                   CustomTextField(
                     label: "Price",
+                    keyboardType: TextInputType.numberWithOptions(),
                     controller: priceController,
+                    formatNumber: true,
                     suffixIcon:
                         const Icon(Icons.attach_money, color: Colors.orange),
                   ),

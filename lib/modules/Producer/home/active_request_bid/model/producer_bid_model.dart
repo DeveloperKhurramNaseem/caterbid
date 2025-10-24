@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class BidModel {
   final String id;
   final BidRequest request;

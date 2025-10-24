@@ -49,6 +49,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   @override
   void initState() {
+  // print('🔍 VerifyEmailScreen initialized with:');
+  // print('📧 Email: ${widget.email}');
+  // print('👤 Role: ${widget.role}');
+  // print('🏢 Company: ${widget.companyName}');
+  // print('📱 Phone: ${widget.phoneNumber}');
     super.initState();
     _startTimer();
     for (var controller in _controllers) {
@@ -109,6 +114,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final w = Responsive.width(context);
     final h = Responsive.height(context);
 
