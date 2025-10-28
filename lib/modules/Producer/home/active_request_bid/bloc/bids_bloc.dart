@@ -15,6 +15,7 @@ class BidsBloc extends Bloc<BidsEvent, BidsState> {
   BidsBloc(this.repository) : super(BidsInitial()) {
     on<StartListeningBids>(_onStartListening);
     on<_BidsUpdated>(_onBidsUpdated);
+    on<_BidsFailed>(_onBidsFailed);
     on<StopListeningBids>(_onStopListening);
   }
 
@@ -24,19 +25,20 @@ class BidsBloc extends Bloc<BidsEvent, BidsState> {
   ) async {
     emit(BidsLoading());
 
-    // Cancel old listener if exists
     await _bidsSubscription?.cancel();
 
-    // Create periodic stream (poll every 3 seconds)
     final bidsStream = Stream.periodic(const Duration(seconds: 3))
-        .asyncMap((_) => repository.fetchBidsByRequestId(event.requestId))
-        .handleError((error) {
-      throw ApiErrorHandler.handle(error);
-    });
+        .asyncMap((_) async {
+          try {
+            return await repository.fetchBidsByRequestId(event.requestId);
+          } catch (error) {
+            throw ApiErrorHandler.handle(error);
+          }
+        });
 
     _bidsSubscription = bidsStream.listen(
       (bids) => add(_BidsUpdated(bids)),
-      onError: (error) => emit(BidsError(ApiErrorHandler.handle(error).message)),
+      onError: (error) => add(_BidsFailed(ApiErrorHandler.handle(error).message)),
     );
   }
 
@@ -46,6 +48,10 @@ class BidsBloc extends Bloc<BidsEvent, BidsState> {
     } else {
       emit(BidsLoaded(event.bids));
     }
+  }
+
+  void _onBidsFailed(_BidsFailed event, Emitter<BidsState> emit) {
+    emit(BidsError(event.message));
   }
 
   Future<void> _onStopListening(

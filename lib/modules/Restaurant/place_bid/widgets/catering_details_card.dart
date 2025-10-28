@@ -1,9 +1,28 @@
-import 'package:caterbid/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 
 class CateringDetailsCard extends StatelessWidget {
-  const CateringDetailsCard({super.key});
+  final String title;
+  final String postedBy;
+  final String price;
+  final String dateText;
+  final String timeText;
+  final String peopleText;
+  final String locationText;
+  final String specialInstruction;
+
+  const CateringDetailsCard({
+    super.key,
+    required this.title,
+    required this.postedBy,
+    required this.price,
+    required this.dateText,
+    required this.timeText,
+    required this.peopleText,
+    required this.locationText,
+    required this.specialInstruction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +48,7 @@ class CateringDetailsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Dinner for Film Crew",
+                title,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: fontLarge,
@@ -37,7 +56,7 @@ class CateringDetailsCard extends StatelessWidget {
                 ),
               ),
               Text(
-                "\$200",
+                price,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Colors.orange,
@@ -48,7 +67,7 @@ class CateringDetailsCard extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            "Posted by: AB Producer",
+            "Posted by: $postedBy",
             style: TextStyle(fontSize: fontSmall, color: Colors.grey[700]),
           ),
           SizedBox(height: 10),
@@ -56,11 +75,11 @@ class CateringDetailsCard extends StatelessWidget {
             children: [
               const Icon(Icons.calendar_month, color: Colors.orange, size: 18),
               SizedBox(width: 5),
-              Text("Sept 6, 2024", style: TextStyle(fontSize: fontSmall)),
+              Text(dateText, style: TextStyle(fontSize: fontSmall)),
               SizedBox(width: 12),
               const Icon(Icons.access_time, color: Colors.orange, size: 18),
               SizedBox(width: 5),
-              Text("1:30 pm", style: TextStyle(fontSize: fontSmall)),
+              Text(timeText, style: TextStyle(fontSize: fontSmall)),
             ],
           ),
           SizedBox(height: 6),
@@ -68,11 +87,11 @@ class CateringDetailsCard extends StatelessWidget {
             children: [
               const Icon(Icons.people_alt, color: Colors.orange, size: 18),
               SizedBox(width: 5),
-              Text("200 people", style: TextStyle(fontSize: fontSmall)),
+              Text(peopleText, style: TextStyle(fontSize: fontSmall)),
               SizedBox(width: 12),
               const Icon(Icons.location_on, color: Colors.orange, size: 18),
               SizedBox(width: 5),
-              Text("Hollywood, CA", style: TextStyle(fontSize: fontSmall)),
+              Text(locationText, style: TextStyle(fontSize: fontSmall)),
             ],
           ),
           Divider(height: 20, color: Colors.grey.shade300),
@@ -86,7 +105,7 @@ class CateringDetailsCard extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: "Need gluten-free for 50 people",
+                  text: specialInstruction,
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w400,

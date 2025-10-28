@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/modules/Restaurant/place_bid/screen/place_bid_screen.dart';
 import 'icon_info_row.dart';
 
 class BidRequestCard extends StatelessWidget {
-  final String requestId;
   final String title;
   final String postedBy;
   final String price;
@@ -16,10 +13,10 @@ class BidRequestCard extends StatelessWidget {
   final String locationText;
   final String specialInstructionTitle;
   final String specialInstruction;
+  final VoidCallback onPlaceBid;
 
   const BidRequestCard({
     super.key,
-    required this.requestId,
     required this.title,
     required this.postedBy,
     required this.price,
@@ -29,6 +26,7 @@ class BidRequestCard extends StatelessWidget {
     required this.locationText,
     required this.specialInstructionTitle,
     required this.specialInstruction,
+    required this.onPlaceBid,
   });
 
   @override
@@ -94,8 +92,8 @@ class BidRequestCard extends StatelessWidget {
             runSpacing: 6,
             spacing: 12,
             children: [
-              // IconInfoRow(icon: Icons.access_time, text: timeText),
               IconInfoRow(icon: Icons.calendar_today, text: dateText),
+              IconInfoRow(icon: Icons.access_time, text: timeText),
               IconInfoRow(icon: Icons.people_alt_outlined, text: peopleText),
               IconInfoRow(icon: Icons.location_on_outlined, text: locationText),
             ],
@@ -127,13 +125,7 @@ class BidRequestCard extends StatelessWidget {
             width: double.infinity,
             height: Responsive.responsiveSize(context, 44, 50, 56),
             child: ElevatedButton(
-              onPressed: () {
-                context.push(
-                  PlaceBidScreen.path,
-                  extra: requestId,
-                  
-                );
-              },
+              onPressed: onPlaceBid,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.c500,
                 shape: RoundedRectangleBorder(

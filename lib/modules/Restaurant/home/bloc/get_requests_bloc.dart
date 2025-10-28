@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:caterbid/core/network/api_exception.dart';
+import 'package:caterbid/core/widgets/location_formatter/location_formatter.dart';
 import 'package:caterbid/modules/Restaurant/home/model/requests_model.dart';
 import 'package:caterbid/modules/Restaurant/home/repository/get_resquest_list.dart';
 import 'package:equatable/equatable.dart';
@@ -11,6 +12,7 @@ part 'get_requests_state.dart';
 class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
   final ProviderRequestsRepository repository;
   StreamSubscription<List<ProviderRequest>>? _requestsSubscription;
+  final Map<String, String> _addressCache = {}; // Cache for addresses
 
   GetRequestsBloc(this.repository) : super(GetRequestsInitial()) {
     on<StartListeningRequests>(_onStartListening);
@@ -35,7 +37,41 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
     });
 
     _requestsSubscription = requestsStream.listen(
-      (requests) => add(_RequestsUpdated(requests)),
+      (requests) async {
+        // Fetch addresses for new requests
+        final updatedRequests = <ProviderRequest>[];
+        for (var request in requests) {
+          final cacheKey = '${request.location.latitude}_${request.location.longitude}';
+          String? formattedAddress = _addressCache[cacheKey];
+          
+          if (formattedAddress == null) {
+            formattedAddress = await LocationFormatter.getFormattedAddress(
+              request.location.latitude,
+              request.location.longitude,
+            );
+            _addressCache[cacheKey] = formattedAddress;
+          }
+
+          updatedRequests.add(ProviderRequest(
+            id: request.id,
+            location: request.location,
+            requestee: request.requestee,
+            title: request.title,
+            budgetCents: request.budgetCents,
+            budgetDollars: request.budgetDollars,
+            currency: request.currency,
+            numPeople: request.numPeople,
+            date: request.date,
+            status: request.status,
+            createdAt: request.createdAt,
+            updatedAt: request.updatedAt,
+            acceptedBidId: request.acceptedBidId,
+            formattedAddress: formattedAddress, // Include the address
+          ));
+        }
+
+        add(_RequestsUpdated(updatedRequests));
+      },
       onError: (error) =>
           emit(GetRequestsFailure(ApiErrorHandler.handle(error).message)),
     );

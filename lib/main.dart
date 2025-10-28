@@ -1,5 +1,7 @@
 import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/core/utils/helpers/secure_storage.dart';
+import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
+import 'package:caterbid/modules/Producer/account_settings/profile/repository/requestee_profile_repository.dart';
 import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
 import 'package:caterbid/modules/Producer/catering_request/repository/catering_repository.dart';
 import 'package:caterbid/modules/Producer/home/active_request/bloc/producer_home_bloc.dart';
@@ -7,6 +9,8 @@ import 'package:caterbid/modules/Producer/home/active_request/repository/produce
 import 'package:caterbid/modules/Producer/home/active_request_bid/bloc/bids_bloc.dart';
 import 'package:caterbid/modules/Producer/home/active_request_bid/repository/producer_bid_repository.dart';
 import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/repository/provider_profile_repository.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/repository/business_profile_repository.dart';
 import 'package:caterbid/modules/auth/forget_Password/forget_password_email/bloc/forget_password_bloc.dart';
@@ -46,7 +50,11 @@ Future<void> main() async {
         BlocProvider(
           create: (_) => BusinessProfileBloc(BusinessProfileRepository()),
         ),
-        // BlocProvider(create: (context) => BidsBloc(BidsRepository())),
+        BlocProvider(create: (_) => ProviderProfileBloc(ProviderRepository())),
+
+        BlocProvider(
+          create: (_) => RequesteeProfileBloc(RequesteeRepository()),
+        ),
       ],
       child: const MyApp(),
     ),

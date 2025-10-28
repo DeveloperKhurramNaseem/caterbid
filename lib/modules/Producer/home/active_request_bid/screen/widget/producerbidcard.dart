@@ -4,9 +4,13 @@ import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as path;
+import 'package:url_launcher/url_launcher.dart';
 
 class ProducerBidCard extends StatelessWidget {
-  final String imageUrl;
+
+
+  final String attachmentImageUrl;
   final String name;
   final String price;
   final String location;
@@ -15,13 +19,31 @@ class ProducerBidCard extends StatelessWidget {
 
   const ProducerBidCard({
     super.key,
-    required this.imageUrl,
+    required this.attachmentImageUrl,
     required this.name,
     required this.price,
     required this.location,
     required this.date,
     required this.description,
+
   });
+
+  // Check if the URL points to an image or PDF
+  bool _isImageFile(String url) {
+    final extension = path.extension(url).toLowerCase();
+    return ['.jpg', '.jpeg', '.png'].contains(extension);
+  }
+
+  // Open the attachment in a browser or native app
+  Future<void> _openAttachment(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      // Handle error (e.g., show a SnackBar)
+      throw 'Could not open $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +64,21 @@ class ProducerBidCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  imageUrl,
+                child: Image.asset(
+                  'assets/icons/app_icon.png', 
                   height: h * 0.08,
                   width: h * 0.08,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    print(
+                      'Failed to load asset: assets/icons/pdf_icon.png, Error: $error',
+                    );
+                    return Icon(
+                      Icons.broken_image,
+                      size: h * 0.08,
+                      color: Colors.grey,
+                    );
+                  },
                 ),
               ),
               SizedBox(width: w * 0.03),
@@ -80,8 +112,14 @@ class ProducerBidCard extends StatelessWidget {
           Text(description, style: TextStyle(fontSize: w * 0.034)),
           SizedBox(height: h * 0.012),
           GestureDetector(
-            onTap: () {
-              
+            onTap: () async {
+              try {
+                await _openAttachment(attachmentImageUrl);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to open attachment: $e')),
+                );
+              }
             },
             child: Text(
               "See attached menu 📎",

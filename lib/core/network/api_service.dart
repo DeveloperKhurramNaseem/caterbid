@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:caterbid/core/utils/logger.dart';
+import 'package:http_parser/http_parser.dart'; // Added for MediaType
+
 import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:caterbid/core/network/api_exception.dart';
+import 'package:path/path.dart' as path;
 
 class ApiService {
   final Map<String, String> _baseHeaders = {
@@ -89,8 +92,11 @@ class ApiService {
     String? fileFieldName = "attachment",
     bool includeAuth = true,
   }) async {
+
+  print('📤 PUT endpoint called: $url');
+
     final headers = await _getHeaders();
-    headers.remove('Content-Type'); // let http handle it
+    headers.remove('Content-Type'); // Let http handle multipart content type
 
     _logRequest("POST (Multipart)", url, fields);
 
@@ -99,19 +105,112 @@ class ApiService {
       ..headers.addAll(headers);
 
     if (file != null) {
+      final extension = path.extension(file.path).toLowerCase();
+      String mimeType;
+      switch (extension) {
+        case '.jpg':
+        case '.jpeg':
+          mimeType = 'image/jpeg';
+          break;
+        case '.png':
+          mimeType = 'image/png';
+          break;
+        case '.pdf':
+          mimeType = 'application/pdf';
+          break;
+        default:
+          mimeType = 'application/octet-stream';
+          AppLogger.log('Warning: Unknown file extension $extension, using fallback MIME type');
+      }
+
+      AppLogger.log(
+        'Uploading file: ${file.path}, '
+        'Extension: $extension, '
+        'MIME Type: $mimeType, '
+        'Size: ${await file.length()} bytes',
+      );
+
       request.files.add(
-        await http.MultipartFile.fromPath(fileFieldName!, file.path),
+        await http.MultipartFile.fromPath(
+          fileFieldName!,
+          file.path,
+          contentType: MediaType.parse(mimeType),
+        ),
       );
     }
 
     try {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
+      AppLogger.log('Response Status: ${response.statusCode}, Body: ${response.body}');
       return _handleResponse(response);
     } catch (error) {
+      AppLogger.log('Error uploading file: $error');
       throw ApiErrorHandler.handle(error);
     }
   }
+
+    // -------------------------------------------------
+  // Multipart PUT (Form-Data)
+  // -------------------------------------------------
+
+  Future<dynamic> putMultipart(
+  String url, {
+  required Map<String, String> fields,
+  File? file,
+  String? fileFieldName = "attachment",
+  bool includeAuth = true,
+}) async {
+
+  
+  final headers = await _getHeaders();
+  headers.remove('Content-Type'); // Let http handle multipart
+
+  _logRequest("PUT (Multipart)", url, fields);
+
+  final request = http.MultipartRequest('PUT', Uri.parse(url))
+    ..fields.addAll(fields)
+    ..headers.addAll(headers);
+
+  if (file != null) {
+    final extension = path.extension(file.path).toLowerCase();
+    String mimeType;
+    switch (extension) {
+      case '.jpg':
+      case '.jpeg':
+        mimeType = 'image/jpeg';
+        break;
+      case '.png':
+        mimeType = 'image/png';
+        break;
+      case '.pdf':
+        mimeType = 'application/pdf';
+        break;
+      default:
+        mimeType = 'application/octet-stream';
+        AppLogger.log('Warning: Unknown file extension $extension, using fallback MIME type');
+    }
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        fileFieldName!,
+        file.path,
+        contentType: MediaType.parse(mimeType),
+      ),
+    );
+  }
+
+  try {
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    AppLogger.log('Response Status: ${response.statusCode}, Body: ${response.body}');
+    return _handleResponse(response);
+  } catch (error) {
+    AppLogger.log('Error uploading file: $error');
+    throw ApiErrorHandler.handle(error);
+  }
+}
+
 
   // -------------------------------------------------
   //  Response Handler

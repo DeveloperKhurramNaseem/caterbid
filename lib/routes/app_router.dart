@@ -2,13 +2,18 @@ import 'package:caterbid/core/widgets/bottomtabbar.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
-import 'package:caterbid/modules/Producer/account_settings/edit_profile/main_screen/edit_profile_screen.dart';
+import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/main_screen/edit_profile_screen.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Producer/catering_request/screen/main_screen/request_screen.dart';
 import 'package:caterbid/modules/Producer/my_requests/screen/main_screen/my_requests_screen.dart';
 import 'package:caterbid/modules/Producer/payment/screen/main_screen/payment_success_screen.dart';
-import 'package:caterbid/modules/Producer/account_settings/main_settings/main_screen/setting_screen.dart';
+import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/main_screen/requestee_setting_screen.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/edit_profile/main_screen/provider_edit_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/main_settings/screen/provider_settings_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/home/model/requests_model.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/screen/my_bids.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/bloc/place_bid_bloc.dart';
@@ -26,7 +31,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:caterbid/modules/auth/signup/screen/main_screen/signup_screen.dart';
-import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/screen/main_screen/verify_email_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   restorationScopeId: null,
@@ -55,13 +60,13 @@ final GoRouter appRouter = GoRouter(
 
         final email = extra?['email'] ?? '';
         final role = extra?['role'] ?? '';
-        final companyName = extra?['companyName'] ?? '';
+        // final companyName = extra?['companyName'] ?? '';
         final phoneNumber = extra?['phoneNumber'] ?? '';
 
         return VerifyEmailScreen(
           email: email,
           role: role,
-          companyName: companyName,
+          // companyName: companyName,
           phoneNumber: phoneNumber,
         );
       },
@@ -104,25 +109,25 @@ final GoRouter appRouter = GoRouter(
 
 
 
-    // ---------- App Settings ROUTES ----------
+    // ---------- Requestee App Settings ROUTES ----------
     GoRoute(
-      path: SettingsScreen.path,
-      builder: (context, state) => const SettingsScreen(),
+      path: RequesteeEditProfileScreen.path,
+      builder: (context, state) => const RequesteeEditProfileScreen(),
     ),
     GoRoute(
-      path: EditProfileScreen.path,
-      builder: (context, state) => const EditProfileScreen(),
+      path: RequesteeSettingsScreen.path,
+      builder: (context, state) => const RequesteeSettingsScreen(),
     ),
     GoRoute(
-      path: SettingsChangePassword.path,
-      builder: (context, state) => const SettingsChangePassword(),
+      path: RequesteeSettingsChangePassword.path,
+      builder: (context, state) => const RequesteeSettingsChangePassword(),
     ),
     GoRoute(
-      path: DeleteAccountScreen.path,
-      builder: (context, state) => const DeleteAccountScreen(),
+      path: RequesteeDeleteAccountScreen.path,
+      builder: (context, state) => const RequesteeDeleteAccountScreen(),
     ),
 
-    
+
 
     // ---------- PRODUCER APP ROUTES ----------
     GoRoute(
@@ -170,7 +175,7 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
 
-    // ---------- Restaurant APP ROUTES ----------
+    // ---------- Provider APP ROUTES ----------
     GoRoute(
       path: SetBusinessProfileScreen.path,
       builder: (context, state) {
@@ -185,17 +190,38 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: PlaceBidScreen.path,
-      builder: (context, state) {
-        final requestId = state.extra as String; 
+GoRoute(
+  path: PlaceBidScreen.path,
+  builder: (context, state) {
+    final request = state.extra as ProviderRequest;
 
-        return BlocProvider(
-          create: (_) => PlaceBidBloc(PlaceBidRepository()),
-          child: PlaceBidScreen(requestId: requestId),
-        );
-      },
+    return BlocProvider(
+      create: (_) => PlaceBidBloc(PlaceBidRepository()),
+      child: PlaceBidScreen(request: request),
+    );
+  },
+),
+
+
+    // ---------- Provider App Settings ROUTES ----------
+    GoRoute(
+      path: ProviderEditProfileScreen.path,
+      builder: (context, state) => const ProviderEditProfileScreen(),
     ),
+    GoRoute(
+      path: ProviderSettingsScreen.path,
+      builder: (context, state) => const ProviderSettingsScreen(),
+    ),
+    GoRoute(
+      path: ProviderChangePasswordScreen.path,
+      builder: (context, state) => const ProviderChangePasswordScreen(),
+    ),
+    GoRoute(
+      path: ProviderDeleteAccountScreen.path,
+      builder: (context, state) => const ProviderDeleteAccountScreen(),
+    ),
+
+
 
     StatefulShellRoute.indexedStack(
       builder: (context, state, navShell) => BottomNavBar(

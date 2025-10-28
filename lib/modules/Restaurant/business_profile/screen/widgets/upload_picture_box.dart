@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/helpers/dashed_border_painter.dart';
+import 'package:caterbid/core/utils/helpers/file_validation_helper.dart';
+import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/dashed_border_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/helpers/image_picker_helper.dart';
 import 'package:caterbid/core/utils/responsive.dart';
@@ -16,10 +17,15 @@ class UploadPictureBox extends StatefulWidget {
 class _UploadPictureBoxState extends State<UploadPictureBox> {
   File? _image;
 
-  Future<void> _uploadImage() async {
-    final picked = await ImagePickerHelper.pickImage(context);
-    if (picked != null) setState(() => _image = picked);
-  }
+Future<void> _uploadImage() async {
+  final picked = await ImagePickerHelper.pickFile(context);
+  if (picked == null) return;
+
+  final isValid = await FileValidationHelper.validateAndShow(context, picked);
+  if (!isValid) return;
+
+  setState(() => _image = picked);
+}
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:caterbid/core/network/api_endpoints.dart';
 import 'package:caterbid/modules/Producer/home/active_request_bid/model/producer_bid_model.dart';
 import 'package:flutter/material.dart';
 import 'producerbidcard.dart';
@@ -6,7 +7,11 @@ class BidsLoadedView extends StatelessWidget {
   final List<BidModel> bids;
   final double maxWidth;
 
-  const BidsLoadedView({super.key, required this.bids, required this.maxWidth});
+  const BidsLoadedView({
+    super.key,
+    required this.bids,
+    required this.maxWidth,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +26,25 @@ class BidsLoadedView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ...bids.map(
-            (bid) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: ProducerBidCard(
-                imageUrl: bid.attachment != null && bid.attachment!.isNotEmpty
-                    ? "https://api.cater-bid.com${bid.attachment}"
-                    : "https://picsum.photos/200",
-                name: bid.provider.companyName,
-                price:
-                    "\$${bid.amountDollars} / ${bid.request.numPeople} people",
-                location: "San Francisco, CA",
-                date: bid.request.date.toString(),
-                description: bid.description ?? 'No description available',
-              ),
-            ),
+            (bid) {
+              // Build attachment URL safely
+              final String imageUrl = (bid.attachment?.isNotEmpty ?? false)
+                  ? '${ApiEndpoints.baseUrl}${bid.attachment}'
+                  : 'https://picsum.photos/200'; // fallback image
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ProducerBidCard(
+                  attachmentImageUrl: imageUrl,
+                  name: bid.provider.companyName,
+                  price:
+                      "\$${bid.amountDollars} / ${bid.request.numPeople} people",
+                  location: "San Francisco, CA",
+                  date: bid.request.date.toString(),
+                  description: bid.description ?? 'No description available',
+                ),
+              );
+            },
           ),
         ],
       ),

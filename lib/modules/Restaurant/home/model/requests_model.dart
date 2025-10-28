@@ -33,7 +33,7 @@ class ProviderRequest {
   final Requestee? requestee;
   final String title;
   final int budgetCents;
-  final int budgetDollars; // ✅ int
+  final int budgetDollars;
   final String currency;
   final int numPeople;
   final DateTime date;
@@ -41,6 +41,7 @@ class ProviderRequest {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? acceptedBidId;
+  final String? formattedAddress; // New field for pre-fetched address
 
   ProviderRequest({
     required this.id,
@@ -56,6 +57,7 @@ class ProviderRequest {
     required this.createdAt,
     required this.updatedAt,
     this.acceptedBidId,
+    this.formattedAddress,
   });
 
   factory ProviderRequest.fromJson(Map<String, dynamic> json) {
@@ -67,7 +69,7 @@ class ProviderRequest {
           : null,
       title: json['title'] as String,
       budgetCents: (json['budgetCents'] as num).toInt(),
-      budgetDollars: (json['budgetDollars'] as num).toInt(), 
+      budgetDollars: (json['budgetDollars'] as num).toInt(),
       currency: json['currency'] as String,
       numPeople: (json['numPeople'] as num).toInt(),
       date: DateTime.parse(json['date'] as String),
@@ -75,6 +77,7 @@ class ProviderRequest {
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       acceptedBidId: json['acceptedBidId'] as String?,
+      formattedAddress: json['formattedAddress'] as String?, // Optional: if backend provides it
     );
   }
 }

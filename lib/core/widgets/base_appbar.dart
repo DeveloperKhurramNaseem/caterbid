@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
 import 'package:caterbid/core/widgets/notification_screen.dart';
-import 'package:caterbid/core/widgets/profile_avater.dart';
+import 'package:caterbid/data/screen/profile_avater.dart';
 
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showLogo;

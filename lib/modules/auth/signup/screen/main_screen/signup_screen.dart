@@ -6,7 +6,7 @@ import 'package:caterbid/modules/auth/signup/bloc/sign_up_state.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/signup_footer.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/signup_form.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/signup_heading.dart';
-import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/screen/main_screen/verify_email_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

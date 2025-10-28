@@ -12,6 +12,20 @@ class ApiException implements Exception {
 }
 
 class ApiErrorHandler {
+
+   static String errorMessage(String error) {
+    switch (error.toLowerCase()) {
+      case 'network_error':
+        return 'Network error. Please check your connection and try again.';
+      case 'invalid_request':
+        return 'Invalid bid data. Please check your inputs.';
+      case 'server_error':
+        return 'Server error. Please try again later.';
+      default:
+        return 'An error occurred: $error';
+    }
+  }
+
   /// Handle common exceptions (network, timeout, format)
   static ApiException handle(dynamic error) {
     if (error is ApiException) return error;
@@ -94,3 +108,4 @@ class ApiErrorHandler {
     }
   }
 }
+

@@ -7,9 +7,9 @@ import 'package:caterbid/modules/Producer/account_settings/account_security_sett
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 
-class DeleteAccountScreen extends StatelessWidget {
+class RequesteeDeleteAccountScreen extends StatelessWidget {
   static const String path = '/deleteaccount';
-  const DeleteAccountScreen({super.key});
+  const RequesteeDeleteAccountScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

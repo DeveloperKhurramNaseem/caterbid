@@ -1,7 +1,10 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/user_session.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
+import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
 import 'package:caterbid/modules/auth/login/model/login_request_model.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_button.dart';
@@ -13,7 +16,7 @@ import 'package:caterbid/modules/auth/login/screen/widgets/login_welcome_text.da
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
-import 'package:caterbid/modules/auth/verify_email_screen/main_screen/verify_email_screen.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/screen/main_screen/verify_email_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -51,12 +54,19 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         if (state is LoginSuccess) {
           final user = state.user;
+
+          UserSession.setRole(user.role); 
+
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text('Welcome ${user.email}!')));
 
           if (user.role == 'requestee') {
+           context.read<RequesteeProfileBloc>().add(LoadRequesteeProfileEvent());
+
             context.go(ProducerHomeScreen.path);
           } else if (user.role == 'provider') {
+  context.read<ProviderProfileBloc>().add(LoadProviderProfileEvent());
+
             if (user.locationRequired == true) {
               context.go(SetBusinessProfileScreen.path);
             } else {

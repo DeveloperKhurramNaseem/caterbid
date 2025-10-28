@@ -1,5 +1,6 @@
 class ApiEndpoints {
   static const String baseUrl = "https://api.cater-bid.com/api";
+  static const String serverUrl = 'https://api.cater-bid.com';
 
   // Auth
   static const String signUp = "$baseUrl/auth/signup";
@@ -20,12 +21,22 @@ class ApiEndpoints {
   static const String getMyRequests = "$baseUrl/requestee/my-requests";
   static String getActiveRequestBids(String requestId) =>
       "$baseUrl/requestee/my-requests/$requestId/bids";
+  static const String getRequesteeProfile = "$baseUrl/requestee/profile-details";
+  static const String updateRequesteeProfileDetails = "$baseUrl/requestee/profile";
+  static const String requesteeChangePassword = "$baseUrl/requestee/change-password";
+
+
+  
+
 
 
   //Provider
   static const String bussinessProfileSetup = "$baseUrl/provider/profile";
   static const String providerRequests = "$baseUrl/provider/requests";
   static const String placeBid = "$baseUrl/provider/bids";
+  static const String getProviderProfileDetails = "$baseUrl/provider/profile-details";
+  static const String providerChangePassword = "$baseUrl/provider/change-password";
+
 
   
 }

@@ -3,12 +3,16 @@ class VerifyOtpResponseModel {
   final String email;
   final String role;
   final String token;
+  final bool locationRequired;
+
 
   const VerifyOtpResponseModel({
     required this.id,
     required this.email,
     required this.role,
     required this.token,
+    required this.locationRequired,
+
   });
 
   factory VerifyOtpResponseModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +21,8 @@ class VerifyOtpResponseModel {
       email: json['email'] ?? '',
       role: json['role'] ?? '',
       token: json['token'] ?? '',
+      locationRequired: json['locationRequired'] ?? false,
+
     );
   }
 
@@ -25,5 +31,7 @@ class VerifyOtpResponseModel {
         'email': email,
         'role': role,
         'token': token,
+        'locationRequired': locationRequired,
+
       };
 }

@@ -3,6 +3,7 @@ import 'package:caterbid/core/widgets/custom_textfield.dart';
 import 'package:caterbid/core/widgets/navigationbar_title.dart';
 import 'package:caterbid/core/widgets/special_instructions_field.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/model/business_profile_request_model.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/location_field.dart';
@@ -87,8 +88,10 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
               listener: (context, state) {
                 if (state is BusinessProfileSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile Updated Successfully!')),
+                    const SnackBar(content: Text('Business Profile Setup Successfully!')),
                   );
+                  context.read<ProviderProfileBloc>().add(LoadProviderProfileEvent());
+
                   context.go(MyBidsScreen.path);
                 } else if (state is BusinessProfileFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(

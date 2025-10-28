@@ -4,7 +4,7 @@ class SignUpRequestModel {
   final String password;
   final String name;
   final String phoneNumber;
-  final String? companyName;
+  // final String? companyName;
 
   SignUpRequestModel({
     required this.role,
@@ -12,7 +12,7 @@ class SignUpRequestModel {
     required this.password,
     required this.name,
     required this.phoneNumber,
-    this.companyName,
+    // this.companyName,
   });
 
   Map<String, dynamic> toJson() {
@@ -24,10 +24,10 @@ class SignUpRequestModel {
       "phoneNumber": phoneNumber,
     };
 
-    // Only include `companyName` for providers
-    if (role == "provider" && companyName != null && companyName!.isNotEmpty) {
-      data["companyName"] = companyName;
-    }
+    // // Only include `companyName` for providers
+    // if (role == "provider" && companyName != null && companyName!.isNotEmpty) {
+    //   data["companyName"] = companyName;
+    // }
 
     return data;
   }

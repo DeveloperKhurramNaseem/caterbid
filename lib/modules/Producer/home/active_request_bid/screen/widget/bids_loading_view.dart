@@ -1,3 +1,4 @@
+import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'ProducerBidCardShimmer.dart';
 
@@ -6,10 +7,14 @@ class BidsLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final w = Responsive.width(context);
+    final h = Responsive.height(context);
+
+    return Column(
       children: [
+        SizedBox(height: h * 0.04),
+
         ProducerBidCardShimmer(),
-        SizedBox(height: 12),
         ProducerBidCardShimmer(),
       ],
     );

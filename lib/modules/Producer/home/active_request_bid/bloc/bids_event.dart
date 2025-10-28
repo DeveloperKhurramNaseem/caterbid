@@ -26,3 +26,11 @@ class _BidsUpdated extends BidsEvent {
 }
 
 class StopListeningBids extends BidsEvent {}
+
+class _BidsFailed extends BidsEvent {
+  final String message;
+  const _BidsFailed(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

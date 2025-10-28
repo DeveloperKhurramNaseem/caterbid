@@ -4,24 +4,27 @@ class PlaceBidRequest {
   final String requestId;
   final String amount;
   final String currency;
-  final String description;
+  final String? description;
   final File? attachment;
 
   PlaceBidRequest({
     required this.requestId,
     required this.amount,
     required this.currency,
-    required this.description,
+    this.description, // Made optional
     this.attachment,
   });
 
   /// Converts to Map for fields (multipart form-data)
   Map<String, String> toFields() {
-    return {
+    final fields = {
       'requestId': requestId,
       'amount': amount,
       'currency': currency,
-      'description': description,
     };
+    if (description != null) {
+      fields['description'] = description!;
+    }
+    return fields;
   }
 }

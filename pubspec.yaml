@@ -25,6 +25,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  file_picker: ^10.3.3 
+  path: ^1.9.1
+
 
   # State Management
   flutter_bloc: ^9.0.0
@@ -43,14 +47,22 @@ dependencies:
   pin_code_fields: ^8.0.1
 
 
+  #Location
+  geocoding: ^4.0.0
+  geolocator: ^14.0.2
 
   #Internet Request
   http: ^1.2.0
   equatable: ^2.0.7
+  http_parser: ^4.1.2
+  url_launcher: ^6.3.2
+
 
   #Storage
   flutter_secure_storage: 
   overlay_loader_with_app_icon: ^0.0.4
+  shared_preferences: ^2.5.3
+
 
 
 dev_dependencies:

@@ -8,7 +8,7 @@ import 'package:caterbid/core/utils/responsive.dart';
 import 'package:go_router/go_router.dart';
 
 
-class AccountSecuritySheet {
+class RequesteeAccountSecuritySheet {
   static void show(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -17,14 +17,11 @@ class AccountSecuritySheet {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      transitionAnimationController: AnimationController(
-        duration: const Duration(milliseconds: 350),
-        vsync: Navigator.of(context),
-      ),
       builder: (_) => const _AccountSecurityContent(),
     );
   }
 }
+
 
 class _AccountSecurityContent extends StatelessWidget {
   const _AccountSecurityContent();
@@ -46,7 +43,7 @@ class _AccountSecurityContent extends StatelessWidget {
             showArrow: true,
             onTap: () {
               Navigator.of(context).pop(); 
-              context.push(SettingsChangePassword.path);
+              context.push(RequesteeSettingsChangePassword.path);
             },
           ),
           SizedBox(height: h * 0.015),
@@ -55,7 +52,7 @@ class _AccountSecurityContent extends StatelessWidget {
             isDestructive: true,
             onTap: () {
               Navigator.of(context).pop(); 
-              context.push(DeleteAccountScreen.path);
+              context.push(RequesteeDeleteAccountScreen.path);
             },
           ),
           SizedBox(height: h * 0.03),

@@ -1,6 +1,7 @@
 import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
 import 'package:caterbid/core/utils/helpers/formatted_date.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/BidRequestCardShimmer.dart';
+import 'package:caterbid/modules/Restaurant/home/screen/widegts/request_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:caterbid/core/config/app_colors.dart';
@@ -9,7 +10,8 @@ import 'package:caterbid/modules/Restaurant/home/bloc/get_requests_bloc.dart';
 import 'package:caterbid/modules/Restaurant/home/repository/get_resquest_list.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/bids_header.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/requests_search_bar.dart';
-import 'package:caterbid/modules/Restaurant/home/screen/widegts/request_card.dart';
+import 'package:caterbid/modules/Restaurant/place_bid/screen/place_bid_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class MyBidsScreen extends StatefulWidget {
   static const path = '/businesshome';
@@ -45,7 +47,7 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
       value: _bloc,
       child: Scaffold(
         backgroundColor: AppColors.appBackground,
-        appBar: const Appbar(),
+        appBar: const Appbar(), // Ensure this is defined correctly
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -69,9 +71,9 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                         return ListView.builder(
                           itemCount: 5,
                           itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: const BidRequestCardShimmer(),
+                            return const Padding(
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: BidRequestCardShimmer(),
                             );
                           },
                         );
@@ -83,27 +85,38 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                           );
                         }
                         return ListView.builder(
+                          key: const ValueKey('requests_list'), // Ensure list stability
                           itemCount: requests.length,
                           itemBuilder: (context, index) {
                             final request = requests[index];
-                            final formatted = CurrencyFormatter.format(
+                            // Format data
+                            final formattedPrice = CurrencyFormatter.format(
                               request.budgetDollars,
                             );
+                            final formattedDate = DateFormatter.onlyDate(request.date);
+                            final formattedTime = DateFormatter.onlyTime(request.date);
+                            final formattedPeople = '${request.numPeople} people';
+                            final formattedLocation = request.formattedAddress ?? 'Unknown location';
 
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 16),
                               child: BidRequestCard(
+                                key: ValueKey(request.id), // Unique key to prevent rebuilds
                                 title: request.title,
                                 postedBy: request.requestee?.name ?? 'Unknown',
-                                price: formatted,
-                                dateText: DateFormatter.short(request.date),
-                                timeText: '',
-                                peopleText: '${request.numPeople} people',
-                                locationText:
-                                    'Lat: ${request.location.latitude.toStringAsFixed(4)}, Lng: ${request.location.longitude.toStringAsFixed(4)}',
+                                price: formattedPrice,
+                                dateText: formattedDate,
+                                timeText: formattedTime,
+                                peopleText: formattedPeople,
+                                locationText: formattedLocation,
                                 specialInstructionTitle: 'Special Instruction',
                                 specialInstruction: request.status,
-                                requestId: request.id,
+                                onPlaceBid: () {
+                                  context.push(
+                                    PlaceBidScreen.path,
+                                    extra: request,
+                                  );
+                                },
                               ),
                             );
                           },

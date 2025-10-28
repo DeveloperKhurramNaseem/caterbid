@@ -1,4 +1,3 @@
-import 'package:caterbid/modules/auth/signup/screen/widget/company_field.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/email_field.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/full_name_field.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/password_field.dart';
@@ -33,7 +32,7 @@ class _SignUpFormState extends State<SignUpForm> {
   final _confirmPassword = TextEditingController();
   final _name = TextEditingController();
   final _phone = TextEditingController();
-  final _company = TextEditingController();
+  // final _company = TextEditingController(); //  Removed company name field
 
   @override
   void dispose() {
@@ -42,7 +41,7 @@ class _SignUpFormState extends State<SignUpForm> {
     _confirmPassword.dispose();
     _name.dispose();
     _phone.dispose();
-    _company.dispose();
+    // _company.dispose(); //  Removed company name field
     _scrollController.dispose();
     super.dispose();
   }
@@ -68,7 +67,6 @@ class _SignUpFormState extends State<SignUpForm> {
 
   void _submit() {
     FocusScope.of(context).unfocus();
-    
 
     if (!_formKey.currentState!.validate()) {
       _scrollToTop();
@@ -81,6 +79,7 @@ class _SignUpFormState extends State<SignUpForm> {
       );
       return;
     }
+
     if (!_agree) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please agree to the policy')),
@@ -94,12 +93,12 @@ class _SignUpFormState extends State<SignUpForm> {
       password: _password.text.trim(),
       name: _name.text.trim(),
       phoneNumber: _fullPhoneNumber ?? _phone.text.trim(),
-      companyName: _selectedRole?.toLowerCase() == 'provider'
-          ? _company.text.trim()
-          : null,
+      // companyName: _selectedRole?.toLowerCase() == 'provider'
+      //     ? _company.text.trim()
+      //     : null, //  Company name removed for provider
     );
 
-    widget.onSubmit(model); // <-- Pass model to screen
+    widget.onSubmit(model);
   }
 
   @override
@@ -123,10 +122,13 @@ class _SignUpFormState extends State<SignUpForm> {
             EmailField(controller: _email),
             SizedBox(height: isSmall ? 12 : h * 0.02),
             PhoneField(controller: _phone, onChanged: (v) => _fullPhoneNumber = v),
-            if (_selectedRole?.toLowerCase() == 'provider') ...[
-              SizedBox(height: isSmall ? 12 : h * 0.02),
-              CompanyNameField(controller: _company),
-            ],
+
+            //  Removed company name field section
+            // if (_selectedRole?.toLowerCase() == 'provider') ...[
+            //   SizedBox(height: isSmall ? 12 : h * 0.02),
+            //   CompanyNameField(controller: _company),
+            // ],
+
             SizedBox(height: isSmall ? 12 : h * 0.02),
             PasswordField(
               controller: _password,
@@ -160,5 +162,3 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 }
-
-
