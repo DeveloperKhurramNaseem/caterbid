@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/model/update_provider_model.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/repository/provider_profile_repository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/model/provider_profile_model.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/model/update_provider_model.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/repository/provider_profile_repository.dart';
 
 part 'provider_profile_event.dart';
 part 'provider_profile_state.dart';
@@ -14,39 +14,46 @@ class ProviderProfileBloc extends Bloc<ProviderProfileEvent, ProviderProfileStat
   ProviderProfileBloc(this.repo) : super(ProviderProfileInitial()) {
     on<LoadProviderProfileEvent>(_onLoadProfile);
     on<UpdateProviderProfileEvent>(_onUpdateProfile);
-    on<ValidateAndSaveProviderEvent>(_onValidateAndSave);
     on<LogoutProviderProfileEvent>(_onLogoutProfile);
+    on<ValidateAndSaveProfileEvent>(_onValidateAndSave);
   }
 
   Future<void> _onValidateAndSave(
-    ValidateAndSaveProviderEvent event,
+    ValidateAndSaveProfileEvent event,
     Emitter<ProviderProfileState> emit,
   ) async {
-    if (event.name.isEmpty ||
-        event.companyName.isEmpty ||
+    if (event.companyName.isEmpty ||
         event.businessType.isEmpty ||
         event.phoneNumber.isEmpty) {
-      emit(const ProviderProfileError('Please fill in all required fields.'));
+      emit(ProviderProfileError('Please fill in all required fields.'));
       return;
     }
 
-    add(UpdateProviderProfileEvent(
-      name: event.name,
-      companyName: event.companyName,
-      businessType: event.businessType,
-      description: event.description,
-      phoneNumber: event.phoneNumber,
-      lat: event.lat,
-      lng: event.lng,
-      profilePicture: event.profilePicture,
-    ));
+    add(
+      UpdateProviderProfileEvent(
+        name: event.name,
+        companyName: event.companyName,
+        businessType: event.businessType,
+        description: event.description,
+        phoneNumber: event.phoneNumber,
+        lat: event.lat,
+        lng: event.lng,
+        profilePicture: event.profilePicture,
+      ),
+    );
   }
 
   Future<void> _onLoadProfile(
     LoadProviderProfileEvent event,
     Emitter<ProviderProfileState> emit,
   ) async {
-    emit(ProviderProfileLoading());
+    final currentState = state;
+    if (currentState is ProviderProfileLoaded) {
+      emit(ProviderProfileLoadingKeepOld(currentState.user));
+    } else {
+      emit(ProviderProfileLoading());
+    }
+
     try {
       final user = await repo.fetchProfile();
       emit(ProviderProfileLoaded(user));

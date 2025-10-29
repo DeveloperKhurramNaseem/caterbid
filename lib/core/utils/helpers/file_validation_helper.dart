@@ -13,7 +13,7 @@ class FileValidationResult {
 /// Helper for validating picked image/file before upload
 class FileValidationHelper {
   static const List<String> allowedExtensions = ['.jpg', '.jpeg', '.png', '.pdf'];
-  static const int maxSize = 3 * 1024 * 1024; // 1MB
+  static const int maxSize = 1 * 1024 * 1024; // 1MB
 
   /// Validates a file and returns [FileValidationResult]
   static Future<FileValidationResult> validateFile(File file) async {

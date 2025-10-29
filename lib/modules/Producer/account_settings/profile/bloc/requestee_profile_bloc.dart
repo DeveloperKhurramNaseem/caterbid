@@ -41,7 +41,7 @@ class RequesteeProfileBloc
     );
   }
 
-  // ✅ Load (with cache)
+  //  Load (with cache)
   Future<void> _onLoadProfile(
     LoadRequesteeProfileEvent event,
     Emitter<RequesteeProfileState> emit,
@@ -61,7 +61,7 @@ class RequesteeProfileBloc
     }
   }
 
-  // ✅ Update profile
+  //  Update profile
   Future<void> _onUpdateProfile(
     UpdateRequesteeProfileEvent event,
     Emitter<RequesteeProfileState> emit,

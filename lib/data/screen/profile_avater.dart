@@ -2,9 +2,9 @@ import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/utils/user_session.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/main_screen/requestee_setting_screen.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/main_settings/screen/provider_settings_screen.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/main_settings/screen/provider_settings_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,12 +24,15 @@ class ProfileAvatar extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       child: GestureDetector(
         onTap: () {
-          if (isRequestee) {
+          print("Avatar tapped! isProvider: $isProvider");
 
+          if (isProvider) {
+            final route = ProviderSettingsScreen.path;
+            print("Pushing route: $route");
+            final canPush = context.push(route);
+            print("Push result: $canPush");
+          } else if (isRequestee) {
             context.push(RequesteeSettingsScreen.path);
-          } else if (isProvider) {
-            print("Provider: $isProvider");
-            context.push(ProviderSettingsScreen.path);
           }
         },
         // 👇 Only one BlocBuilder will ever be created
@@ -37,11 +40,13 @@ class ProfileAvatar extends StatelessWidget {
           builder: (_) {
             if (isProvider) {
               return BlocBuilder<ProviderProfileBloc, ProviderProfileState>(
-                builder: (context, state) => _buildProviderAvatar(state, radius),
+                builder: (context, state) =>
+                    _buildProviderAvatar(state, radius),
               );
             } else {
               return BlocBuilder<RequesteeProfileBloc, RequesteeProfileState>(
-                builder: (context, state) => _buildRequesteeAvatar(state, radius),
+                builder: (context, state) =>
+                    _buildRequesteeAvatar(state, radius),
               );
             }
           },

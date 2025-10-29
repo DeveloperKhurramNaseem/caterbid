@@ -1,3 +1,5 @@
+import 'package:caterbid/core/network/api_endpoints.dart';
+
 class BidModel {
   final String id;
   final BidRequest request;
@@ -6,7 +8,7 @@ class BidModel {
   final int amountDollars;
   final String currency;
   final String description;
-  final String? attachment; 
+  final String? attachment;
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -19,7 +21,7 @@ class BidModel {
     required this.amountDollars,
     required this.currency,
     required this.description,
-    this.attachment, 
+    this.attachment,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -34,14 +36,13 @@ class BidModel {
       amountDollars: json['amountDollars'] ?? 0,
       currency: json['currency'] ?? '',
       description: json['description'] ?? '',
-      attachment: json['attachment'], 
+      attachment: json['attachment'],
       status: json['status'] ?? '',
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 }
-
 
 class BidRequest {
   final String id;
@@ -94,30 +95,32 @@ class BidRequest {
   }
 
   Map<String, dynamic> toJson() => {
-        "_id": id,
-        "title": title,
-        "budgetCents": budgetCents,
-        "budgetDollars": budgetDollars,
-        "currency": currency,
-        "numPeople": numPeople,
-        "status": status,
-        "date": date.toIso8601String(),
-        "createdAt": createdAt.toIso8601String(),
-        "updatedAt": updatedAt.toIso8601String(),
-        "location": location?.toJson(),
-        "requesteeId": requestee?.toJson(),
-      };
+    "_id": id,
+    "title": title,
+    "budgetCents": budgetCents,
+    "budgetDollars": budgetDollars,
+    "currency": currency,
+    "numPeople": numPeople,
+    "status": status,
+    "date": date.toIso8601String(),
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+    "location": location?.toJson(),
+    "requesteeId": requestee?.toJson(),
+  };
 }
 
 class BidProvider {
   final String id;
   final String name;
   final String companyName;
+  final String? profilePicture;
 
   BidProvider({
     required this.id,
     required this.name,
     required this.companyName,
+    this.profilePicture,
   });
 
   factory BidProvider.fromJson(Map<String, dynamic> json) {
@@ -125,36 +128,29 @@ class BidProvider {
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       companyName: json['companyName'] ?? '',
+      profilePicture: json['profilePicture'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-        "companyName": companyName,
-      };
+    "_id": id,
+    "name": name,
+    "companyName": companyName,
+    "profilePicture": profilePicture,
+  };
 }
 
 class BidRequestee {
   final String id;
   final String name;
 
-  BidRequestee({
-    required this.id,
-    required this.name,
-  });
+  BidRequestee({required this.id, required this.name});
 
   factory BidRequestee.fromJson(Map<String, dynamic> json) {
-    return BidRequestee(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return BidRequestee(id: json['_id'] ?? '', name: json['name'] ?? '');
   }
 
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-      };
+  Map<String, dynamic> toJson() => {"_id": id, "name": name};
 }
 
 /// Location model (used in request)
@@ -162,23 +158,32 @@ class BidLocation {
   final String type;
   final List<double> coordinates;
 
-  BidLocation({
-    required this.type,
-    required this.coordinates,
-  });
+  BidLocation({required this.type, required this.coordinates});
 
   factory BidLocation.fromJson(Map<String, dynamic> json) {
     return BidLocation(
       type: json['type'] ?? '',
-      coordinates: (json['coordinates'] as List?)
+      coordinates:
+          (json['coordinates'] as List?)
               ?.map((e) => (e as num).toDouble())
               .toList() ??
           [],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "type": type,
-        "coordinates": coordinates,
-      };
+  Map<String, dynamic> toJson() => {"type": type, "coordinates": coordinates};
+}
+
+extension BidModelExtensions on BidModel {
+  String? get attachmentUrl =>
+      attachment?.isNotEmpty == true
+          ? Uri.parse(ApiEndpoints.baseUrl).resolve(attachment!).toString()
+          : null;
+
+  String? get providerProfileUrl =>
+      provider.profilePicture?.isNotEmpty == true
+          ? Uri.parse(ApiEndpoints.baseUrl)
+              .resolve(provider.profilePicture!)
+              .toString()
+          : null;
 }

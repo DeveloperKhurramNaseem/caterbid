@@ -7,6 +7,7 @@ abstract class ProviderProfileEvent extends Equatable {
 }
 
 class LoadProviderProfileEvent extends ProviderProfileEvent {}
+class RefreshProviderProfileEvent extends ProviderProfileEvent {}
 
 class UpdateProviderProfileEvent extends ProviderProfileEvent {
   final String name;
@@ -30,11 +31,19 @@ class UpdateProviderProfileEvent extends ProviderProfileEvent {
   });
 
   @override
-  List<Object?> get props =>
-      [name, companyName, businessType, description, phoneNumber, lat, lng, profilePicture];
+  List<Object?> get props => [
+        name,
+        companyName,
+        businessType,
+        description,
+        phoneNumber,
+        lat,
+        lng,
+        profilePicture,
+      ];
 }
 
-class ValidateAndSaveProviderEvent extends ProviderProfileEvent {
+class ValidateAndSaveProfileEvent extends ProviderProfileEvent {
   final String name;
   final String companyName;
   final String businessType;
@@ -44,7 +53,7 @@ class ValidateAndSaveProviderEvent extends ProviderProfileEvent {
   final double lng;
   final File? profilePicture;
 
-  const ValidateAndSaveProviderEvent({
+  const ValidateAndSaveProfileEvent({
     required this.name,
     required this.companyName,
     required this.businessType,
@@ -54,6 +63,18 @@ class ValidateAndSaveProviderEvent extends ProviderProfileEvent {
     required this.lng,
     this.profilePicture,
   });
+
+  @override
+  List<Object?> get props => [
+        name,
+        companyName,
+        businessType,
+        description,
+        phoneNumber,
+        lat,
+        lng,
+        profilePicture,
+      ];
 }
 
 class LogoutProviderProfileEvent extends ProviderProfileEvent {}

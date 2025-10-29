@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:caterbid/core/utils/user_session.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
@@ -124,6 +125,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         if (state is VerifyOtpSuccess) {
           final user = state.user;
 
+          // To load profile data 
+          UserSession.setRole(
+            user.role,
+          ); 
+          print("UserSession.role set to: ${UserSession.role}");
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("OTP Verified Successfully!")),
           );
@@ -139,14 +146,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 },
               );
             } else {
-
               // Already has location setup
               context.go(MyBidsScreen.path);
             }
           } else if (user.role.toLowerCase() == 'requestee') {
             context.go(ProducerHomeScreen.path);
-            context.read<RequesteeProfileBloc>().add(LoadRequesteeProfileEvent());
-
+            context.read<RequesteeProfileBloc>().add(
+              LoadRequesteeProfileEvent(),
+            );
           } else {
             // For Wrost Case Fallback
             context.go(LoginScreen.path);

@@ -15,7 +15,7 @@ class ProducerRequestCard extends StatelessWidget {
     final w = Responsive.width(context);
     final h = Responsive.height(context);
 
-    final formattedDate = DateFormatter.format(request.date);
+    final formattedDate = DateFormatter.formatExact(request.date);
 
     final budget = request.budgetDollars;
     String formatted = CurrencyFormatter.format(budget); 

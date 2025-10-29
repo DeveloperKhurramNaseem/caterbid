@@ -28,7 +28,7 @@ class RequestListView extends StatelessWidget {
         return RequestCard(
           title: req.title,
           location: req.formattedLocation,
-          dateTime: DateFormatter.format(req.date),
+          dateTime: DateFormatter.formatExact(req.date),
           amount: req.budgetDollars,
           peopleCount: req.numPeople,
           status: req.status,

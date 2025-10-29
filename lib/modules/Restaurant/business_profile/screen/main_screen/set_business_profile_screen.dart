@@ -1,40 +1,41 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/config/app_constants.dart';
+import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/widgets/contact_number_field.dart';
 import 'package:caterbid/core/widgets/custom_textfield.dart';
 import 'package:caterbid/core/widgets/navigationbar_title.dart';
 import 'package:caterbid/core/widgets/special_instructions_field.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
+
+import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/model/business_profile_request_model.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/location_field.dart';
-import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
-import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/config/app_constants.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/next_button.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/upload_picture_box.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/business_type_dropdown.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 
 class SetBusinessProfileScreen extends StatefulWidget {
   static const String path = '/setbusinessprofile';
-
-  final String companyName;
   final String phoneNumber;
 
-  const SetBusinessProfileScreen({
-    super.key,
-    required this.companyName,
-    required this.phoneNumber,
-  });
+  const SetBusinessProfileScreen({super.key, required this.phoneNumber});
 
   @override
-  State<SetBusinessProfileScreen> createState() => _SetBusinessProfileScreenState();
+  State<SetBusinessProfileScreen> createState() =>
+      _SetBusinessProfileScreenState();
 }
 
 class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
+  final GlobalKey<UploadPictureBoxState> uploadPictureKey =
+      GlobalKey<UploadPictureBoxState>();
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _businessNameController = TextEditingController();
@@ -52,13 +53,16 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
 
   String? selectedBusinessType;
   bool isDropdownFocused = false;
+  File? _profileImage;
 
   @override
   void initState() {
     super.initState();
-    _businessNameController.text = widget.companyName;
     _phoneController.text = widget.phoneNumber;
+    debugPrint('📱 Pre-filled phone number: ${_phoneController.text}');
   }
+
+  
 
   @override
   void dispose() {
@@ -88,10 +92,17 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
               listener: (context, state) {
                 if (state is BusinessProfileSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Business Profile Setup Successfully!')),
+                    const SnackBar(
+                      content: Text('Business Profile Setup Successfully!'),
+                    ),
                   );
-                  context.read<ProviderProfileBloc>().add(LoadProviderProfileEvent());
 
+                  // Refresh provider profile after creating business profile
+                  context.read<ProviderProfileBloc>().add(
+                        LoadProviderProfileEvent(),
+                      );
+
+                  // Navigate to home screen
                   context.go(MyBidsScreen.path);
                 } else if (state is BusinessProfileFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -103,33 +114,44 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                 }
               },
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontal,
+                  vertical: vertical,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const UploadPictureBox(),
+                      /// ✅ Upload Picture
+                      UploadPictureBox(
+                        key: uploadPictureKey,
+                        onImageChanged: (file) => _profileImage = file,
+                      ),
+
                       SizedBox(height: h * 0.02),
 
                       Text(
                         'Basic Information',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: Responsive.responsiveSize(context, 16, 18, 20),
+                          fontSize:
+                              Responsive.responsiveSize(context, 16, 18, 20),
                           fontFamily: AppFonts.poppins,
                           color: AppColors.textDark,
                         ),
                       ),
                       SizedBox(height: h * 0.015),
 
-                      /// Business Type
+                      /// Business Type Dropdown
                       BusinessTypeDropdown(
                         selectedType: selectedBusinessType,
                         businessTypes: businessTypes,
                         isFocused: isDropdownFocused,
-                        onChanged: (val) => setState(() => selectedBusinessType = val),
-                        onFocusChange: (focus) => setState(() => isDropdownFocused = focus),
+                        onChanged: (val) =>
+                            setState(() => selectedBusinessType = val),
+                        onFocusChange: (focus) =>
+                            setState(() => isDropdownFocused = focus),
                       ),
                       SizedBox(height: h * 0.015),
 
@@ -137,18 +159,18 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                       CustomTextField(
                         label: 'Business Name',
                         controller: _businessNameController,
-                        validator: (v) => v == null || v.isEmpty ? 'Enter business name' : null,
+                        validator: (v) => v == null || v.isEmpty
+                            ? 'Enter business name'
+                            : null,
                         capitalizeFirstLetter: true,
                       ),
                       SizedBox(height: h * 0.015),
 
                       /// Contact Number
-                      ContactNumberField(
-                        controller: _phoneController,
-                      ),
+                      ContactNumberField(controller: _phoneController),
                       SizedBox(height: h * 0.015),
 
-                      /// Location TextField
+                      /// Location
                       CustomTextField(
                         label: 'Location',
                         controller: _locationController,
@@ -170,9 +192,12 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                       NextButton(
                         isLoading: false, // handled globally by LoaderOverlay
                         onPressed: () {
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
+                          if (!_formKey.currentState!.validate()) return;
+
+                          // ✅ Validate upload picture box explicitly
+                          final imageError =
+                              uploadPictureKey.currentState?.validate();
+                          if (imageError != null) return;
 
                           if (selectedBusinessType == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -184,17 +209,30 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                             return;
                           }
 
+                          if (_profileImage == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please upload a picture'),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                            return;
+                          }
+
                           final model = BusinessProfileRequestModel(
                             companyName: _businessNameController.text.trim(),
                             businessType: selectedBusinessType!,
                             description: _descriptionController.text.trim(),
                             phoneNumber: _phoneController.text.trim(),
-                            lat: 37.7749,
-                            lng: -122.4194,
+                            lat: 37.7749, // placeholder
+                            lng: -122.4194, // placeholder
                           );
 
                           context.read<BusinessProfileBloc>().add(
-                                SubmitBusinessProfile(model),
+                                SubmitBusinessProfile(
+                                  model,
+                                  profilePicture: _profileImage,
+                                ),
                               );
                         },
                       ),

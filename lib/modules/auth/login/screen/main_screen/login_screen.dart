@@ -4,7 +4,7 @@ import 'package:caterbid/core/utils/user_session.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
 import 'package:caterbid/modules/auth/login/model/login_request_model.dart';
 import 'package:caterbid/modules/auth/login/screen/widgets/login_button.dart';

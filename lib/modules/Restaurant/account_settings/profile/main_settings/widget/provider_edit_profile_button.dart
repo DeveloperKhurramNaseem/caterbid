@@ -1,4 +1,4 @@
-import 'package:caterbid/modules/Restaurant/account_settings/edit_profile/main_screen/provider_edit_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/main_screen/provider_edit_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';

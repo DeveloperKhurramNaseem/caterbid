@@ -6,11 +6,11 @@ import 'package:caterbid/core/utils/responsive.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:caterbid/core/network/api_endpoints.dart';
 
 class ProducerBidCard extends StatelessWidget {
-
-
-  final String attachmentImageUrl;
+  final String? attachmentImageUrl;
+  final String? profileImageUrl; // new: provider profile picture
   final String name;
   final String price;
   final String location;
@@ -19,28 +19,25 @@ class ProducerBidCard extends StatelessWidget {
 
   const ProducerBidCard({
     super.key,
-    required this.attachmentImageUrl,
+    this.attachmentImageUrl,
+    this.profileImageUrl,
     required this.name,
     required this.price,
     required this.location,
     required this.date,
     required this.description,
-
   });
 
-  // Check if the URL points to an image or PDF
   bool _isImageFile(String url) {
     final extension = path.extension(url).toLowerCase();
     return ['.jpg', '.jpeg', '.png'].contains(extension);
   }
 
-  // Open the attachment in a browser or native app
   Future<void> _openAttachment(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      // Handle error (e.g., show a SnackBar)
       throw 'Could not open $url';
     }
   }
@@ -64,22 +61,29 @@ class ProducerBidCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/icons/app_icon.png', 
-                  height: h * 0.08,
-                  width: h * 0.08,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    print(
-                      'Failed to load asset: assets/icons/pdf_icon.png, Error: $error',
-                    );
-                    return Icon(
-                      Icons.broken_image,
-                      size: h * 0.08,
-                      color: Colors.grey,
-                    );
-                  },
-                ),
+                child: profileImageUrl != null
+                    ? Image.network(
+                        Uri.parse(ApiEndpoints.baseUrl)
+                            .resolve(profileImageUrl!)
+                            .toString(),
+                        height: h * 0.08,
+                        width: h * 0.08,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/icons/app_icon.png',
+                            height: h * 0.08,
+                            width: h * 0.08,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        'assets/icons/app_icon.png',
+                        height: h * 0.08,
+                        width: h * 0.08,
+                        fit: BoxFit.cover,
+                      ),
               ),
               SizedBox(width: w * 0.03),
               Expanded(
@@ -110,26 +114,30 @@ class ProducerBidCard extends StatelessWidget {
           ),
           SizedBox(height: h * 0.01),
           Text(description, style: TextStyle(fontSize: w * 0.034)),
-          SizedBox(height: h * 0.012),
-          GestureDetector(
-            onTap: () async {
-              try {
-                await _openAttachment(attachmentImageUrl);
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to open attachment: $e')),
-                );
-              }
-            },
-            child: Text(
-              "See attached menu 📎",
-              style: TextStyle(
-                color: Colors.teal,
-                fontWeight: FontWeight.w500,
-                fontSize: w * 0.035,
+
+          if (attachmentImageUrl != null) ...[
+            SizedBox(height: h * 0.012),
+            GestureDetector(
+              onTap: () async {
+                try {
+                  await _openAttachment(attachmentImageUrl!);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to open attachment: $e')),
+                  );
+                }
+              },
+              child: Text(
+                "See attached menu 📎",
+                style: TextStyle(
+                  color: Colors.teal,
+                  fontWeight: FontWeight.w500,
+                  fontSize: w * 0.035,
+                ),
               ),
             ),
-          ),
+          ],
+
           SizedBox(height: h * 0.015),
           SizedBox(
             width: double.infinity,

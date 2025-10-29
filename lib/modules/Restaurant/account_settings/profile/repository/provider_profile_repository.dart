@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:caterbid/core/network/api_endpoints.dart';
 import 'package:caterbid/core/network/api_service.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/model/provider_profile_model.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/model/update_provider_model.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/model/update_provider_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProviderRepository {

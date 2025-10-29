@@ -29,7 +29,7 @@ class PlaceBidScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is PlaceBidSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('✅ Bid placed successfully!')),
+              const SnackBar(content: Text('Bid placed successfully!')),
             );
             context.pop();
           } else if (state is PlaceBidFailure) {
@@ -59,8 +59,6 @@ class PlaceBidScreen extends StatelessWidget {
                 ),
                 SizedBox(height: spacing),
                 BidForm(
-                  initialPeople: request.numPeople.toString(),
-                  initialPrice: request.budgetDollars.toString(),
                   currency: request.currency,
                   requestId: request.id,
                   isLoading: isLoading,

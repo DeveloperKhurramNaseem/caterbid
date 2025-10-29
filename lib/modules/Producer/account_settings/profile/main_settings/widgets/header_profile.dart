@@ -19,10 +19,10 @@ class HeaderProfile extends StatelessWidget {
   });
 
   const HeaderProfile.loading({super.key})
-      : name = 'Loading...',
-        profileImageUrl = null,
-        firstLetter = '?',
-        isLoading = true;
+    : name = 'Loading...',
+      profileImageUrl = null,
+      firstLetter = '?',
+      isLoading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -47,17 +47,15 @@ class HeaderProfile extends StatelessWidget {
               backgroundColor: AppColors.c400,
               backgroundImage: profileImageUrl != null
                   ? NetworkImage(profileImageUrl!)
-                  : const AssetImage('assets/images/dummy_profile.jpg') as ImageProvider,
-              child: profileImageUrl == null
-                  ? Text(
-                      firstLetter.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: avatarRadius * 0.9,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
                   : null,
+              child: Text(
+                firstLetter.toUpperCase(),
+                style: TextStyle(
+                  fontSize: avatarRadius * 0.9,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
 

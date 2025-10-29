@@ -6,6 +6,7 @@ import 'provider_edit_profile_button.dart';
 
 class ProviderHeaderProfile extends StatelessWidget {
   final String name;
+  final String? companyName;
   final String? profileImageUrl;
   final String firstLetter;
   final bool isLoading;
@@ -13,6 +14,7 @@ class ProviderHeaderProfile extends StatelessWidget {
   const ProviderHeaderProfile({
     super.key,
     required this.name,
+    this.companyName,
     this.profileImageUrl,
     required this.firstLetter,
     this.isLoading = false,
@@ -20,6 +22,7 @@ class ProviderHeaderProfile extends StatelessWidget {
 
   const ProviderHeaderProfile.loading({super.key})
       : name = 'Loading...',
+        companyName = null,
         profileImageUrl = null,
         firstLetter = '?',
         isLoading = true;
@@ -35,7 +38,6 @@ class ProviderHeaderProfile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Avatar with accent border
           Container(
             padding: EdgeInsets.all(borderWidth),
             decoration: BoxDecoration(
@@ -47,23 +49,18 @@ class ProviderHeaderProfile extends StatelessWidget {
               backgroundColor: AppColors.c400,
               backgroundImage: profileImageUrl != null
                   ? NetworkImage(profileImageUrl!)
-                  : const AssetImage('assets/images/dummy_profile.jpg') as ImageProvider,
-              child: profileImageUrl == null
-                  ? Text(
-                      firstLetter.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: avatarRadius * 0.9,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
                   : null,
+              child: Text(
+                firstLetter.toUpperCase(),
+                style: TextStyle(
+                  fontSize: avatarRadius * 0.9,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
-
           SizedBox(width: spacing),
-
-          // Name and edit button
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,6 +75,17 @@ class ProviderHeaderProfile extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (companyName != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      companyName!,
+                      style: TextStyle(
+                        fontSize: Responsive.responsiveSize(context, 14, 15, 16),
+                        color: AppColors.textDark.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
                 SizedBox(height: Responsive.responsiveSize(context, 8, 10, 12)),
                 const ProviderEditProfileButton(),
               ],

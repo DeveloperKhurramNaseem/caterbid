@@ -12,8 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
 
 class BidForm extends StatefulWidget {
-  final String initialPeople;
-  final String initialPrice;
   final String currency;
   final String requestId;
   final bool isLoading;
@@ -21,8 +19,6 @@ class BidForm extends StatefulWidget {
 
   const BidForm({
     super.key,
-    required this.initialPeople,
-    required this.initialPrice,
     required this.currency,
     required this.requestId,
     this.isLoading = false,
@@ -36,7 +32,6 @@ class BidForm extends StatefulWidget {
 class _BidFormState extends State<BidForm> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imageFileNameController = TextEditingController();
-  final TextEditingController peopleController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   File? _attachedFile;
@@ -53,7 +48,6 @@ class _BidFormState extends State<BidForm> {
   void dispose() {
     descriptionController.dispose();
     imageFileNameController.dispose();
-    peopleController.dispose();
     priceController.dispose();
     super.dispose();
   }
@@ -131,23 +125,7 @@ Future<void> _pickAttachment() async {
             semanticsLabel: 'Your Bid Section',
           ),
           SizedBox(height: spacing / 2),
-          CustomTextField(
-            label: "Number of People",
-            controller: peopleController,
-            keyboardType: const TextInputType.numberWithOptions(),
-            formatNumber: true,
-            validator: (value) {
-              final cleanedValue = value?.replaceAll(',', '') ?? '';
-              if (cleanedValue.isEmpty) {
-                return 'Number of people is required';
-              }
-              final people = int.tryParse(cleanedValue);
-              if (people == null || people <= 0) {
-                return 'Enter a valid number of people';
-              }
-              return null;
-            },
-          ),
+
           SizedBox(height: spacing / 1.5),
           CustomTextField(
             label: "Price",

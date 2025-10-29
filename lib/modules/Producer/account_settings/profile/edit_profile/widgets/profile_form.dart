@@ -42,26 +42,31 @@ class _ProfileFormState extends State<ProfileForm> {
   void _fillControllers(RequesteeModel user) {
     final parts = (user.name ?? '').split(' ');
     firstNameController.text = parts.isNotEmpty ? parts.first : '';
-    lastNameController.text = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+    lastNameController.text = parts.length > 1
+        ? parts.sublist(1).join(' ')
+        : '';
     phoneController.text = user.phoneNumber ?? '';
   }
 
-  void _validateFields() {
-    final isValid = firstNameController.text.trim().isNotEmpty &&
-        lastNameController.text.trim().isNotEmpty &&
-        phoneController.text.trim().isNotEmpty;
-    setState(() => isSaveEnabled = isValid);
-  }
+void _validateFields() {
+  //  Only enable button if all required fields are filled
+  final areFieldsFilled =
+      firstNameController.text.trim().isNotEmpty &&
+      lastNameController.text.trim().isNotEmpty &&
+      phoneController.text.trim().isNotEmpty;
+
+  setState(() => isSaveEnabled = areFieldsFilled);
+}
 
   void _onSave() {
     context.read<RequesteeProfileBloc>().add(
-          ValidateAndSaveProfileEvent(
-            firstName: firstNameController.text.trim(),
-            lastName: lastNameController.text.trim(),
-            phoneNumber: phoneController.text.trim(),
-            profilePicture: pickedImage,
-          ),
-        );
+      ValidateAndSaveProfileEvent(
+        firstName: firstNameController.text.trim(),
+        lastName: lastNameController.text.trim(),
+        phoneNumber: phoneController.text.trim(),
+        profilePicture: pickedImage,
+      ),
+    );
   }
 
   @override
@@ -77,8 +82,14 @@ class _ProfileFormState extends State<ProfileForm> {
         ProfileImagePicker(
           initialImage: image,
           firstLetter: letter,
-          onImageChanged: (file) => setState(() => pickedImage = file),
+          onImageChanged: (file) {
+            setState(() {
+              pickedImage = file;
+            });
+            _validateFields(); 
+          },
         ),
+
         SizedBox(height: h * 0.05),
         NameFields(
           firstNameController: firstNameController,
@@ -89,8 +100,9 @@ class _ProfileFormState extends State<ProfileForm> {
         SizedBox(height: h * 0.2),
         SaveButton(
           isEnabled: isSaveEnabled,
-          isLoading: context.watch<RequesteeProfileBloc>().state
-              is RequesteeProfileUpdating,
+          isLoading:
+              context.watch<RequesteeProfileBloc>().state
+                  is RequesteeProfileUpdating,
           onPressed: _onSave,
         ),
       ],

@@ -10,8 +10,8 @@ import 'package:caterbid/modules/Producer/payment/screen/main_screen/payment_suc
 import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/main_screen/requestee_setting_screen.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/edit_profile/main_screen/provider_edit_profile_screen.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/main_settings/screen/provider_settings_screen.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/main_screen/provider_edit_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/main_settings/screen/provider_settings_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/Restaurant/home/model/requests_model.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
@@ -35,7 +35,6 @@ import 'package:caterbid/modules/auth/verify_email_screen/screen/main_screen/ver
 
 final GoRouter appRouter = GoRouter(
   restorationScopeId: null,
-
 
   initialLocation: LoginScreen.path,
   routes: [
@@ -72,8 +71,6 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-
-
     // ---------- ForgetPassword ROUTES ----------
     GoRoute(
       path: ForgetPasswordScreen.path,
@@ -107,8 +104,6 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-
-
     // ---------- Requestee App Settings ROUTES ----------
     GoRoute(
       path: RequesteeEditProfileScreen.path,
@@ -126,8 +121,6 @@ final GoRouter appRouter = GoRouter(
       path: RequesteeDeleteAccountScreen.path,
       builder: (context, state) => const RequesteeDeleteAccountScreen(),
     ),
-
-
 
     // ---------- PRODUCER APP ROUTES ----------
     GoRoute(
@@ -152,7 +145,7 @@ final GoRouter appRouter = GoRouter(
             icon: Icons.home,
             route: ProducerHomeScreen.path,
           ),
-          NavItem(label: 'My Bids', icon: Icons.checklist, route: MyBids.path),
+          NavItem(label: 'My Requests', icon: Icons.checklist, route: MyBids.path),
         ],
       ),
       branches: [
@@ -181,27 +174,22 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
 
-        final companyName = extra?['companyName'] ?? '';
         final phoneNumber = extra?['phoneNumber'] ?? '';
 
-        return SetBusinessProfileScreen(
-          companyName: companyName,
-          phoneNumber: phoneNumber,
+        return SetBusinessProfileScreen(phoneNumber: phoneNumber);
+      },
+    ),
+    GoRoute(
+      path: PlaceBidScreen.path,
+      builder: (context, state) {
+        final request = state.extra as ProviderRequest;
+
+        return BlocProvider(
+          create: (_) => PlaceBidBloc(PlaceBidRepository()),
+          child: PlaceBidScreen(request: request),
         );
       },
     ),
-GoRoute(
-  path: PlaceBidScreen.path,
-  builder: (context, state) {
-    final request = state.extra as ProviderRequest;
-
-    return BlocProvider(
-      create: (_) => PlaceBidBloc(PlaceBidRepository()),
-      child: PlaceBidScreen(request: request),
-    );
-  },
-),
-
 
     // ---------- Provider App Settings ROUTES ----------
     GoRoute(
@@ -220,8 +208,6 @@ GoRoute(
       path: ProviderDeleteAccountScreen.path,
       builder: (context, state) => const ProviderDeleteAccountScreen(),
     ),
-
-
 
     StatefulShellRoute.indexedStack(
       builder: (context, state, navShell) => BottomNavBar(

@@ -1,7 +1,7 @@
 import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/sheet/main_screen/account_security_sheet.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/bloc/provider_profile_bloc.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'provider_setting_tile.dart';

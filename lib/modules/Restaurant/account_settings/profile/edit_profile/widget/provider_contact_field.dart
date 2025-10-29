@@ -1,4 +1,4 @@
-import 'package:caterbid/core/widgets/custom_textfield.dart';
+import 'package:caterbid/core/widgets/contact_number_field.dart';
 import 'package:flutter/material.dart';
 
 class ProviderContactField extends StatelessWidget {
@@ -8,10 +8,8 @@ class ProviderContactField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomTextField(
-      label: "Phone Number",
+    return ContactNumberField(
       controller: controller,
-      keyboardType: TextInputType.phone,
     );
   }
 }
