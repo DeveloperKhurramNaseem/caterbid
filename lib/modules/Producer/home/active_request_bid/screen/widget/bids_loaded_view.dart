@@ -23,7 +23,7 @@ class BidsLoadedView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ...bids.map((bid) {
-            final bidDate = DateFormatter.formatExact(bid.createdAt);
+            final bidDate = DateFormatter.fullDateTime(bid.createdAt);
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),

@@ -48,17 +48,18 @@ class _ProfileFormState extends State<ProfileForm> {
     phoneController.text = user.phoneNumber ?? '';
   }
 
-void _validateFields() {
-  //  Only enable button if all required fields are filled
-  final areFieldsFilled =
-      firstNameController.text.trim().isNotEmpty &&
-      lastNameController.text.trim().isNotEmpty &&
-      phoneController.text.trim().isNotEmpty;
+  void _validateFields() {
+    //  Only enable button if all required fields are filled
+    final areFieldsFilled =
+        firstNameController.text.trim().isNotEmpty &&
+        lastNameController.text.trim().isNotEmpty &&
+        phoneController.text.trim().isNotEmpty;
 
-  setState(() => isSaveEnabled = areFieldsFilled);
-}
+    setState(() => isSaveEnabled = areFieldsFilled);
+  }
 
   void _onSave() {
+    if (!isSaveEnabled) return; // prevent saving if fields incomplete
     context.read<RequesteeProfileBloc>().add(
       ValidateAndSaveProfileEvent(
         firstName: firstNameController.text.trim(),
@@ -86,7 +87,7 @@ void _validateFields() {
             setState(() {
               pickedImage = file;
             });
-            _validateFields(); 
+            _validateFields();
           },
         ),
 
@@ -100,9 +101,11 @@ void _validateFields() {
         SizedBox(height: h * 0.2),
         SaveButton(
           isEnabled: isSaveEnabled,
-          isLoading:
-              context.watch<RequesteeProfileBloc>().state
-                  is RequesteeProfileUpdating,
+          isLoading: context.select<RequesteeProfileBloc, bool>(
+            (bloc) =>
+                bloc.state is RequesteeProfileUpdating ||
+                bloc.state is RequesteeProfileUpdatingKeepOld,
+          ),
           onPressed: _onSave,
         ),
       ],

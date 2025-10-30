@@ -33,11 +33,14 @@ class ProviderHeaderProfile extends StatelessWidget {
     final double borderWidth = Responsive.responsiveSize(context, 2, 6, 7);
     final double spacing = Responsive.responsiveSize(context, 20, 24, 28);
 
+    final bool hasImage = profileImageUrl != null && profileImageUrl!.isNotEmpty;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Avatar with border
           Container(
             padding: EdgeInsets.all(borderWidth),
             decoration: BoxDecoration(
@@ -46,21 +49,24 @@ class ProviderHeaderProfile extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: avatarRadius,
-              backgroundColor: AppColors.c400,
-              backgroundImage: profileImageUrl != null
-                  ? NetworkImage(profileImageUrl!)
-                  : null,
-              child: Text(
-                firstLetter.toUpperCase(),
-                style: TextStyle(
-                  fontSize: avatarRadius * 0.9,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              backgroundImage: hasImage ? NetworkImage(profileImageUrl!) : null,
+              child: !hasImage
+                  ? Text(
+                      firstLetter.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: avatarRadius * 0.9,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : null, 
             ),
           ),
+
           SizedBox(width: spacing),
+
+          // Name, company, and edit button
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -3,6 +3,7 @@ import 'package:caterbid/core/widgets/custom_textfield.dart';
 
 class LoginEmailField extends StatelessWidget {
   final TextEditingController controller;
+
   const LoginEmailField({super.key, required this.controller});
 
   @override
@@ -10,10 +11,14 @@ class LoginEmailField extends StatelessWidget {
     return CustomTextField(
       label: "Email",
       controller: controller,
-      validator: (v) {
-        if (v == null || v.isEmpty) return 'Enter valid email';
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
         final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-        if (!emailRegex.hasMatch(v)) return 'Invalid email';
+        if (!emailRegex.hasMatch(value)) {
+          return 'Please enter a valid email';
+        }
         return null;
       },
     );

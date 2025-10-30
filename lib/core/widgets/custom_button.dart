@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import '../../../../../core/config/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
-  final String title;
+  final String? title;
+  final Widget? child;
   final VoidCallback? onPressed;
   final bool isEnabled;
   final double borderRadius;
 
   const CustomButton({
     super.key,
-    required this.title,
+    this.title,
+    this.child,
     this.onPressed,
     this.isEnabled = true,
     this.borderRadius = 14,
@@ -28,8 +30,8 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         onPressed: isEnabled ? onPressed : null,
-        child: Text(
-          title,
+        child: child ?? Text(
+          title ?? '',
           style: const TextStyle(fontSize: 16, color: Colors.white),
         ),
       ),

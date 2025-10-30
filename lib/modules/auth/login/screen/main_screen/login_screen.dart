@@ -57,8 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
           UserSession.setRole(user.role); 
 
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Welcome ${user.email}!')));
+          // ScaffoldMessenger.of(context)
+          //     .showSnackBar(SnackBar(content: Text('Welcome ${user.email}!')));
 
           if (user.role == 'requestee') {
            context.read<RequesteeProfileBloc>().add(LoadRequesteeProfileEvent());

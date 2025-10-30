@@ -1,10 +1,27 @@
 part of 'get_my_bids_bloc.dart';
 
-sealed class GetMyBidsState extends Equatable {
+abstract class GetMyBidsState extends Equatable {
   const GetMyBidsState();
-  
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-final class GetMyBidsInitial extends GetMyBidsState {}
+class GetMyBidsInitial extends GetMyBidsState {}
+
+class GetMyBidsLoading extends GetMyBidsState {}
+
+class GetMyBidsLoaded extends GetMyBidsState {
+  final List<ProviderMyBidsModel> bids;
+  const GetMyBidsLoaded({required this.bids});
+
+  @override
+  List<Object?> get props => [bids];
+}
+
+class GetMyBidsError extends GetMyBidsState {
+  final String message;
+  const GetMyBidsError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

@@ -1,16 +1,16 @@
 import 'dart:io';
+import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/profile_image_picker.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_business_type_dropdown.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_company_field.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_contact_field.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_description_field.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_location_field.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_save_button.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/widgets/contact_number_field.dart';
-import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/profile_image_picker.dart';
-import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/save_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProviderProfileForm extends StatefulWidget {
@@ -78,17 +78,17 @@ class _ProfileFormState extends State<ProviderProfileForm> {
 
   void _onSave() {
     context.read<ProviderProfileBloc>().add(
-          ValidateAndSaveProfileEvent(
-            name: nameController.text.trim(),
-            companyName: companyNameController.text.trim(),
-            businessType: selectedBusinessType!,
-            description: descriptionController.text.trim(),
-            phoneNumber: phoneController.text.trim(),
-            lat: widget.user?.latitude ?? 37.7749,
-            lng: widget.user?.longitude ?? -122.4194,
-            profilePicture: pickedImage,
-          ),
-        );
+      ValidateAndSaveProfileEvent(
+        name: nameController.text.trim(),
+        companyName: companyNameController.text.trim(),
+        businessType: selectedBusinessType!,
+        description: descriptionController.text.trim(),
+        phoneNumber: phoneController.text.trim(),
+        lat: widget.user?.latitude ?? 37.7749,
+        lng: widget.user?.longitude ?? -122.4194,
+        profilePicture: pickedImage,
+      ),
+    );
   }
 
   @override
@@ -111,7 +111,7 @@ class _ProfileFormState extends State<ProviderProfileForm> {
         ),
         SizedBox(height: h * 0.05),
 
-                ProviderBusinessTypeDropdown(
+        ProviderBusinessTypeDropdown(
           selectedValue: selectedBusinessType,
           items: businessTypes,
           onChanged: (val) {
@@ -120,7 +120,6 @@ class _ProfileFormState extends State<ProviderProfileForm> {
           },
         ),
 
-      
         const SizedBox(height: 16),
 
         ProviderCompanyField(controller: companyNameController),
@@ -130,16 +129,17 @@ class _ProfileFormState extends State<ProviderProfileForm> {
         const SizedBox(height: 16),
 
         // ProviderLocationField(controller: locationController),
-
-        ProviderDescriptionField(
-          controller: descriptionController,
-        ),
+        ProviderDescriptionField(controller: descriptionController),
         SizedBox(height: h * 0.03),
 
+        // ... inside build() of _ProfileFormState
         SaveButton(
           isEnabled: isSaveEnabled,
-          isLoading: context.watch<ProviderProfileBloc>().state
-              is ProviderProfileUpdating,
+          isLoading: context.select<ProviderProfileBloc, bool>(
+            (bloc) =>
+                bloc.state is ProviderProfileUpdating ||
+                bloc.state is ProviderProfileUpdatingKeepOld,
+          ),
           onPressed: _onSave,
         ),
       ],

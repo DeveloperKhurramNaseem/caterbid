@@ -1,8 +1,6 @@
-import 'package:equatable/equatable.dart';
-
-class BidModel extends Equatable {
+class ProviderMyBidsModel {
   final String id;
-  final Request request;
+  final RequestDetail request;
   final String providerId;
   final int amountCents;
   final int amountDollars;
@@ -10,10 +8,12 @@ class BidModel extends Equatable {
   final String? description;
   final String? attachment;
   final String status;
+  final bool isDeleted;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int version;
 
-  const BidModel({
+  ProviderMyBidsModel({
     required this.id,
     required this.request,
     required this.providerId,
@@ -23,92 +23,116 @@ class BidModel extends Equatable {
     this.description,
     this.attachment,
     required this.status,
+    required this.isDeleted,
     required this.createdAt,
     required this.updatedAt,
+    required this.version,
   });
 
-  factory BidModel.fromJson(Map<String, dynamic> json) {
-    return BidModel(
-      id: json['_id'] as String,
-      request: Request.fromJson(json['requestId'] as Map<String, dynamic>),
-      providerId: json['providerId'] as String,
-      amountCents: json['amountCents'] as int,
-      amountDollars: json['amountDollars'] as int,
-      currency: json['currency'] as String,
-      description: json['description'] as String?,
-      attachment: json['attachment'] as String?,
-      status: json['status'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+  factory ProviderMyBidsModel.fromJson(Map<String, dynamic> json) {
+    return ProviderMyBidsModel(
+      id: json['_id'] ?? '',
+      request: RequestDetail.fromJson(json['requestId'] ?? {}),
+      providerId: json['providerId'] ?? '',
+      amountCents: json['amountCents'] ?? 0,
+      amountDollars: json['amountDollars'] ?? 0,
+      currency: json['currency'] ?? '',
+      description: json['description'],
+      attachment: json['attachment'],
+      status: json['status'] ?? '',
+      isDeleted: json['isDeleted'] ?? false,
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      version: json['__v'] ?? 0,
     );
   }
 
-  @override
-  List<Object?> get props => [
-        id,
-        request,
-        providerId,
-        amountCents,
-        amountDollars,
-        currency,
-        description,
-        attachment,
-        status,
-        createdAt,
-        updatedAt,
-      ];
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'requestId': request.toJson(),
+      'providerId': providerId,
+      'amountCents': amountCents,
+      'amountDollars': amountDollars,
+      'currency': currency,
+      'description': description,
+      'attachment': attachment,
+      'status': status,
+      'isDeleted': isDeleted,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      '__v': version,
+    };
+  }
 }
 
-class Request extends Equatable {
+class RequestDetail {
   final String id;
   final String title;
-  final DateTime? date;
+  final int numPeople;
+  final DateTime date;
   final String status;
-  final Location? location;
+  final bool isDeleted;
+  final Location location;
 
-  const Request({
+  RequestDetail({
     required this.id,
     required this.title,
-    this.date,
+    required this.numPeople,
+    required this.date,
     required this.status,
-    this.location,
+    required this.isDeleted,
+    required this.location,
   });
 
-  factory Request.fromJson(Map<String, dynamic> json) {
-    return Request(
-      id: json['_id'] as String,
-      title: json['title'] as String,
-      date: json['date'] != null ? DateTime.parse(json['date'] as String) : null,
-      status: json['status'] as String,
-      location: json['location'] != null
-          ? Location.fromJson(json['location'] as Map<String, dynamic>)
-          : null,
+  factory RequestDetail.fromJson(Map<String, dynamic> json) {
+    return RequestDetail(
+      id: json['_id'] ?? '',
+      title: json['title'] ?? '',
+      numPeople: json['numPeople'] ?? 0,
+      date: DateTime.tryParse(json['date'] ?? '') ?? DateTime.now(),
+      status: json['status'] ?? '',
+      isDeleted: json['isDeleted'] ?? false,
+      location: Location.fromJson(json['location'] ?? {}),
     );
   }
 
-  @override
-  List<Object?> get props => [id, title, date, status, location];
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'title': title,
+      'numPeople': numPeople,
+      'date': date.toIso8601String(),
+      'status': status,
+      'isDeleted': isDeleted,
+      'location': location.toJson(),
+    };
+  }
 }
 
-class Location extends Equatable {
+class Location {
   final String type;
   final List<double> coordinates;
 
-  const Location({
+  Location({
     required this.type,
     required this.coordinates,
   });
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-      type: json['type'] as String,
-      coordinates: (json['coordinates'] as List<dynamic>).cast<double>(),
+      type: json['type'] ?? '',
+      coordinates: (json['coordinates'] as List?)
+              ?.map((e) => (e as num).toDouble())
+              .toList() ??
+          [],
     );
   }
 
-  double get latitude => coordinates[1];
-  double get longitude => coordinates[0];
-
-  @override
-  List<Object?> get props => [type, coordinates];
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'coordinates': coordinates,
+    };
+  }
 }

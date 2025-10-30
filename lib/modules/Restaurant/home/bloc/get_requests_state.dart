@@ -12,9 +12,8 @@ class GetRequestsInitial extends GetRequestsState {}
 class GetRequestsLoading extends GetRequestsState {}
 
 class GetRequestsSuccess extends GetRequestsState {
-  final List<ProviderRequest> requests;
+  final List<FormattedProviderRequest> requests;
   const GetRequestsSuccess(this.requests);
-
   @override
   List<Object?> get props => [requests];
 }

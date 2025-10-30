@@ -10,7 +10,7 @@ class CateringDetailsCard extends StatelessWidget {
   final String timeText;
   final String peopleText;
   final String locationText;
-  final String specialInstruction;
+  final String? specialInstruction; // ✅ make nullable
 
   const CateringDetailsCard({
     super.key,
@@ -21,7 +21,7 @@ class CateringDetailsCard extends StatelessWidget {
     required this.timeText,
     required this.peopleText,
     required this.locationText,
-    required this.specialInstruction,
+    this.specialInstruction, // ✅ optional now
   });
 
   @override
@@ -29,6 +29,9 @@ class CateringDetailsCard extends StatelessWidget {
     final fontSmall = Responsive.responsiveSize(context, 12, 13, 14);
     final fontNormal = Responsive.responsiveSize(context, 14, 15, 16);
     final fontLarge = Responsive.responsiveSize(context, 16, 18, 20);
+
+    final hasSpecialInstruction =
+        specialInstruction != null && specialInstruction!.trim().isNotEmpty;
 
     return Container(
       padding: EdgeInsets.all(Responsive.responsiveSize(context, 10, 14, 16)),
@@ -89,32 +92,34 @@ class CateringDetailsCard extends StatelessWidget {
               SizedBox(width: 5),
               Text(peopleText, style: TextStyle(fontSize: fontSmall)),
               SizedBox(width: 12),
+            ],
+          ),
+          SizedBox(height: 6),
+
+          Row(
+            children: [
               const Icon(Icons.location_on, color: Colors.orange, size: 18),
               SizedBox(width: 5),
               Text(locationText, style: TextStyle(fontSize: fontSmall)),
             ],
           ),
-          Divider(height: 20, color: Colors.grey.shade300),
-          RichText(
-            text: TextSpan(
-              text: "Special Instruction\n",
+
+          if (hasSpecialInstruction) ...[
+            Divider(height: 20, color: Colors.grey.shade300),
+            Text(
+              "Special Instruction",
               style: TextStyle(
                 fontWeight: FontWeight.w700,
-                color: Colors.black,
                 fontSize: fontSmall,
+                color: Colors.black,
               ),
-              children: [
-                TextSpan(
-                  text: specialInstruction,
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.w400,
-                    fontSize: fontSmall,
-                  ),
-                ),
-              ],
             ),
-          ),
+            SizedBox(height: 4),
+            Text(
+              specialInstruction!,
+              style: TextStyle(fontSize: fontSmall, color: Colors.grey[700]),
+            ),
+          ],
         ],
       ),
     );

@@ -2,15 +2,16 @@ import 'package:caterbid/core/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 
-class ProviderSaveButton extends StatelessWidget {
+class SaveButton extends StatelessWidget {
   final VoidCallback? onPressed; 
   final bool isLoading;
   final bool isEnabled;
 
-  const ProviderSaveButton({
+  const SaveButton({
     super.key,
     required this.onPressed,
-    this.isLoading = false, required this.isEnabled,
+    this.isLoading = false,
+    required this.isEnabled,
   });
 
   @override
@@ -20,8 +21,21 @@ class ProviderSaveButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: h * 0.05),
       child: CustomButton(
-        title: isLoading ? "Saving..." : "Save Changes",
-        onPressed: isEnabled ? onPressed : null,
+        onPressed: isEnabled && !isLoading ? onPressed : null,
+        isEnabled: isEnabled && !isLoading,
+        child: isLoading
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Text(
+                "Save Changes",
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
       ),
     );
   }

@@ -20,3 +20,9 @@ class _RequestsUpdated extends GetRequestsEvent {
 }
 
 class StopListeningRequests extends GetRequestsEvent {}
+
+class _RefreshRequests extends GetRequestsEvent{
+
+}
+
+class ClearCacheEvent extends GetRequestsEvent {}

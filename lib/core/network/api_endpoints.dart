@@ -33,9 +33,12 @@ class ApiEndpoints {
   //Provider
   static const String bussinessProfileSetup = "$baseUrl/provider/profile";
   static const String providerRequests = "$baseUrl/provider/requests";
+  static const String getMybids = "$baseUrl/provider/bids";
+
   static const String placeBid = "$baseUrl/provider/bids";
   static const String getProviderProfileDetails = "$baseUrl/provider/profile-details";
   static const String providerChangePassword = "$baseUrl/provider/change-password";
+
 
 
   

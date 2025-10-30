@@ -11,8 +11,7 @@ class BidRequestCard extends StatelessWidget {
   final String timeText;
   final String peopleText;
   final String locationText;
-  final String specialInstructionTitle;
-  final String specialInstruction;
+  final String? specialInstruction; // ✅ made nullable
   final VoidCallback onPlaceBid;
 
   const BidRequestCard({
@@ -24,8 +23,7 @@ class BidRequestCard extends StatelessWidget {
     required this.timeText,
     required this.peopleText,
     required this.locationText,
-    required this.specialInstructionTitle,
-    required this.specialInstruction,
+    this.specialInstruction, // ✅ optional now
     required this.onPlaceBid,
   });
 
@@ -34,6 +32,9 @@ class BidRequestCard extends StatelessWidget {
     final pad = Responsive.responsiveSize(context, 12, 16, 20);
     final titleSize = Responsive.responsiveSize(context, 18, 20, 22);
     final labelSize = Responsive.responsiveSize(context, 12, 13, 14);
+
+    final hasSpecialInstruction =
+        specialInstruction != null && specialInstruction!.trim().isNotEmpty;
 
     return Container(
       width: double.infinity,
@@ -99,24 +100,26 @@ class BidRequestCard extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: Responsive.responsiveSize(context, 10, 12, 14)),
-          Divider(color: Colors.grey.withOpacity(0.25), thickness: 1),
-          SizedBox(height: Responsive.responsiveSize(context, 10, 12, 14)),
+          if (hasSpecialInstruction) ...[
+            SizedBox(height: Responsive.responsiveSize(context, 10, 12, 14)),
+            Divider(color: Colors.grey.withOpacity(0.25), thickness: 1),
+            SizedBox(height: Responsive.responsiveSize(context, 10, 12, 14)),
 
-          /// ---- Special Instructions ----
-          Text(
-            specialInstructionTitle,
-            style: TextStyle(
-              fontSize: labelSize,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
+            /// ---- Special Instructions ----
+            Text(
+              'Special Instruction',
+              style: TextStyle(
+                fontSize: labelSize,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          SizedBox(height: Responsive.responsiveSize(context, 6, 8, 10)),
-          Text(
-            specialInstruction,
-            style: TextStyle(fontSize: labelSize, color: Colors.black87),
-          ),
+            SizedBox(height: Responsive.responsiveSize(context, 6, 8, 10)),
+            Text(
+              specialInstruction!,
+              style: TextStyle(fontSize: labelSize, color: Colors.black87),
+            ),
+          ],
 
           SizedBox(height: Responsive.responsiveSize(context, 14, 16, 18)),
 

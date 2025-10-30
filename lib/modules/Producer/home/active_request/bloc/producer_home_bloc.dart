@@ -20,7 +20,10 @@ class ProducerHomeBloc extends Bloc<ProducerHomeEvent, ProducerHomeState> {
     Emitter<ProducerHomeState> emit,
   ) async {
     emit(ProducerHomeLoading());
-    await _fetchAndEmitLatestOpenRequest(emit, skipEmptyState: event.afterCreation);
+    await _fetchAndEmitLatestOpenRequest(
+      emit,
+      skipEmptyState: event.afterCreation,
+    );
   }
 
   Future<void> _onRefreshRequests(
@@ -43,8 +46,8 @@ class ProducerHomeBloc extends Bloc<ProducerHomeEvent, ProducerHomeState> {
         return;
       }
 
-      // Find the last request with "open" status
-      final latestOpenRequest = requests.lastWhere(
+      // Find the first request with "open" status
+      final latestOpenRequest = requests.firstWhere(
         (req) => req.status.toLowerCase() == 'open',
         orElse: () => ProducerRequest(
           id: '',

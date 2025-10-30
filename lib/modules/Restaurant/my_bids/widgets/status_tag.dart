@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/utils/responsive.dart';
 
 class StatusTag extends StatelessWidget {
   final String status;
@@ -9,31 +9,24 @@ class StatusTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double height = Responsive.responsiveSize(context, 22, 22, 24);
-    final double width = Responsive.responsiveSize(context, 61, 65, 70);
-    final double fontSize = Responsive.responsiveSize(context, 12, 13, 14);
-
-    final bool isActive = status.toLowerCase() == 'active';
-
+    final bool isActive = status == 'Active';
     return Container(
-      height: height,
-      width: width,
-      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.responsiveSize(context, 10, 12, 14),
+        vertical: Responsive.responsiveSize(context, 4, 5, 6),
+      ),
       decoration: BoxDecoration(
-        color: AppColors.icon,
-        borderRadius: BorderRadius.circular(6),
+        color: isActive ? AppColors.icon : Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        isActive ? 'Active' : 'Fulfilled',
+        status,
         style: TextStyle(
           color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: fontSize,
+          fontSize: Responsive.responsiveSize(context, 11, 12, 13),
+          fontWeight: FontWeight.w600,
         ),
       ),
-      
     );
-    
   }
 }
-

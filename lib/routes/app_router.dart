@@ -1,3 +1,4 @@
+import 'package:caterbid/core/network/api_service.dart';
 import 'package:caterbid/core/widgets/bottomtabbar.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
@@ -13,8 +14,13 @@ import 'package:caterbid/modules/Restaurant/account_settings/account_security_se
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/main_screen/provider_edit_profile_screen.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/main_settings/screen/provider_settings_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
+import 'package:caterbid/modules/Restaurant/home/bloc/get_requests_bloc.dart';
+import 'package:caterbid/modules/Restaurant/home/model/formatted_request_model.dart';
 import 'package:caterbid/modules/Restaurant/home/model/requests_model.dart';
+import 'package:caterbid/modules/Restaurant/home/repository/get_resquest_list.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
+import 'package:caterbid/modules/Restaurant/my_bids/bloc/get_my_bids_bloc.dart';
+import 'package:caterbid/modules/Restaurant/my_bids/repository/get_my_bids_repository.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/screen/my_bids.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/bloc/place_bid_bloc.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/repository/place_bid_repository.dart';
@@ -145,7 +151,11 @@ final GoRouter appRouter = GoRouter(
             icon: Icons.home,
             route: ProducerHomeScreen.path,
           ),
-          NavItem(label: 'My Requests', icon: Icons.checklist, route: MyBids.path),
+          NavItem(
+            label: 'My Requests',
+            icon: Icons.checklist,
+            route: MyBids.path,
+          ),
         ],
       ),
       branches: [
@@ -182,7 +192,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: PlaceBidScreen.path,
       builder: (context, state) {
-        final request = state.extra as ProviderRequest;
+        final request = state.extra as FormattedProviderRequest;
 
         return BlocProvider(
           create: (_) => PlaceBidBloc(PlaceBidRepository()),
@@ -226,15 +236,30 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: MyBidsScreen.path,
-              builder: (context, state) => const MyBidsScreen(),
+              builder: (context, state) {
+                return BlocProvider(
+                  create: (context) =>
+                      GetRequestsBloc(ProviderRequestsRepository())
+                        ..add(StartListeningRequests()),
+                  child: const MyBidsScreen(),
+                );
+              },
             ),
           ],
         ),
+
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: MyBids.path,
-              builder: (context, state) => const MyBids(),
+              builder: (context, state) {
+                return BlocProvider(
+                  create: (context) => GetMyBidsBloc(
+                    GetMyBidsProducerRepository(apiService: ApiService()),
+                  ),
+                  child: const MyBids(),
+                );
+              },
             ),
           ],
         ),

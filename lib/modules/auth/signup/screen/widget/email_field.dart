@@ -12,9 +12,9 @@ class EmailField extends StatelessWidget {
       controller: controller,
       keyboardType: TextInputType.emailAddress,
       validator: (v) {
-        if (v == null || v.isEmpty) return 'Enter valid email';
+        if (v == null || v.isEmpty) return 'Please enter a valid email';
         final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-        if (!emailRegex.hasMatch(v)) return 'Invalid email';
+        if (!emailRegex.hasMatch(v)) return 'Please enter a valid email';
         return null;
       },
     );
