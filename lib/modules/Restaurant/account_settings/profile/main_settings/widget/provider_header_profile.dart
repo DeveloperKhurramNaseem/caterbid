@@ -49,7 +49,7 @@ class ProviderHeaderProfile extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: avatarRadius,
-              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: AppColors.textDark,
               backgroundImage: hasImage ? NetworkImage(profileImageUrl!) : null,
               child: !hasImage
                   ? Text(

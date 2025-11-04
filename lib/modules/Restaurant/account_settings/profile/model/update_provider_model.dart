@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
+
 class UpdateProviderModel {
   final String name;
   final String companyName;
@@ -11,6 +13,9 @@ class UpdateProviderModel {
   final File? file;
   final String? profilePicture;
 
+  // NEW – human readable address (only for UI)
+  final String? formattedAddress;
+
   UpdateProviderModel({
     required this.name,
     required this.companyName,
@@ -21,6 +26,7 @@ class UpdateProviderModel {
     required this.lng,
     this.file,
     this.profilePicture,
+    this.formattedAddress,
   });
 
   Map<String, String> toFields() => {
@@ -33,32 +39,16 @@ class UpdateProviderModel {
         'lng': lng.toString(),
       };
 
-  factory UpdateProviderModel.fromJson(Map<String, dynamic> json) {
-    // Default coordinates (San Francisco for example)
-    const defaultLat = 37.7749;
-    const defaultLng = -122.4194;
-
-    final coords = json['location']?['coordinates'];
-    double lng = defaultLng;
-    double lat = defaultLat;
-
-    if (coords is List && coords.length == 2) {
-      // GeoJSON uses [longitude, latitude]
-      lng = (coords[0] is num) ? coords[0].toDouble() : defaultLng;
-      lat = (coords[1] is num) ? coords[1].toDouble() : defaultLat;
-    }
-
+  factory UpdateProviderModel.fromProviderModel(ProviderModel model) {
     return UpdateProviderModel(
-      name: json['name'] ?? '',
-      companyName: json['companyName'] ?? '',
-      businessType: json['businessType'] ?? '',
-      description: json['description'] ?? '',
-      phoneNumber: json['phoneNumber'] ?? '',
-      lat: lat,
-      lng: lng,
-      profilePicture: json['profilePicture'] != null
-          ? 'https://api.cater-bid.com${json['profilePicture']}'
-          : null,
+      name: model.name ?? '',
+      companyName: model.companyName ?? '',
+      businessType: model.businessType ?? '',
+      description: model.description ?? '',
+      phoneNumber: model.phoneNumber ?? '',
+      lat: model.latitude ?? 37.7749,
+      lng: model.longitude ?? -122.4194,
+      profilePicture: model.profilePicture,
     );
   }
 }

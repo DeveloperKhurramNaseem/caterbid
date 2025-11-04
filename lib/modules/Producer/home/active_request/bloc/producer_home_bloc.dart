@@ -1,5 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:caterbid/core/network/api_exception.dart';
+import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
+import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/core/utils/helpers/location_formatter.dart';
+import 'package:caterbid/modules/Producer/home/active_request/model/formatted_producer_request.dart';
 import 'package:caterbid/modules/Producer/home/active_request/model/producer_request_model.dart';
 import 'package:caterbid/modules/Producer/home/active_request/repository/producer_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -9,6 +13,7 @@ part 'producer_home_state.dart';
 
 class ProducerHomeBloc extends Bloc<ProducerHomeEvent, ProducerHomeState> {
   final ProducerRepository repository;
+  final Map<String, String> _addressCache = {};
 
   ProducerHomeBloc(this.repository) : super(ProducerHomeInitial()) {
     on<FetchProducerRequests>(_onFetchRequests);
@@ -46,32 +51,52 @@ class ProducerHomeBloc extends Bloc<ProducerHomeEvent, ProducerHomeState> {
         return;
       }
 
-      // Find the first request with "open" status
+      // Find first open request
       final latestOpenRequest = requests.firstWhere(
         (req) => req.status.toLowerCase() == 'open',
-        orElse: () => ProducerRequest(
-          id: '',
-          title: '',
-          budgetCents: 0,
-          budgetDollars: 0,
-          currency: '',
-          numPeople: 0,
-          status: '',
-          date: DateTime.now(),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          requestee: Requestee(id: '', name: ''),
-          location: Location(type: '', coordinates: []),
-        ),
+        orElse: () => ProducerRequest.empty(),
       );
 
       if (latestOpenRequest.id.isEmpty) {
-        // No open requests found
         emit(ProducerHomeEmpty());
         return;
       }
 
-      emit(ProducerHomeLoaded([latestOpenRequest]));
+      // --- Format address (cached) ---
+      String formattedAddress = "Unknown location";
+      if (latestOpenRequest.location.coordinates.length >= 2) {
+        final lat = latestOpenRequest.location.coordinates[1];
+        final lng = latestOpenRequest.location.coordinates[0];
+        final cacheKey = '${lat}_$lng';
+
+        if (_addressCache.containsKey(cacheKey)) {
+          formattedAddress = _addressCache[cacheKey]!;
+        } else {
+          formattedAddress = await LocationFormatter.getFormattedAddress(
+            latitude: lat,
+            longitude: lng,
+          );
+          _addressCache[cacheKey] = formattedAddress;
+        }
+      }
+
+      // --- Build formatted model for UI ---
+      final formatted = FormattedProducerRequest(
+        id: latestOpenRequest.id,
+        title: latestOpenRequest.title,
+        formattedBudget: CurrencyFormatter.format(
+          latestOpenRequest.budgetDollars,
+        ),
+        formattedDate: DateFormatter.format(latestOpenRequest.date),
+        formattedTime: DateFormatter.onlyTime(latestOpenRequest.date),
+        formattedPeople: '${latestOpenRequest.numPeople} people',
+        formattedLocation: formattedAddress,
+        status: latestOpenRequest.status,
+        rawDate: latestOpenRequest.date,
+        requestee: latestOpenRequest.requestee,
+      );
+
+      emit(ProducerHomeLoaded([formatted]));
     } catch (error) {
       emit(ProducerHomeError(ApiErrorHandler.handle(error).message));
     }

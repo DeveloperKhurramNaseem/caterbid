@@ -1,4 +1,3 @@
-// bloc/get_requests_bloc.dart
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:caterbid/core/utils/helpers/location_formatter.dart';
@@ -16,6 +15,7 @@ part 'get_requests_state.dart';
 
 class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
   final ProviderRequestsRepository repository;
+  
   Timer? _pollTimer;
 
   // Cache: request ID → formatted model
@@ -40,7 +40,7 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
     emit(GetRequestsLoading());
     await _loadAndFormat(emit);
     _pollTimer?.cancel();
-    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _pollTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       add(_RefreshRequests());
     });
   }
@@ -71,13 +71,17 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
         }
 
         // Format address (cached)
-        final addressKey = '${raw.location.latitude}_${raw.location.longitude}';
+        final lat = raw.location.latitude;
+        final lng = raw.location.longitude;
+        final addressKey = '${lat}_${lng}';
+
         var address = _addressCache[addressKey];
         if (address == null) {
-          address = await LocationFormatter.getFormattedAddress(
-            raw.location.latitude,
-            raw.location.longitude,
+          print(
+            "📍 lat: ${raw.location.latitude}, lng: ${raw.location.longitude}",
           );
+          // FIX: swap arguments
+          address = await LocationFormatter.getFormattedAddress(latitude: lat, longitude:lng);
           _addressCache[addressKey] = address;
         }
 
@@ -97,8 +101,7 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
           numPeople: raw.numPeople,
           status: raw.status,
           createdAt: raw.createdAt,
-          currency: raw.currency
-          
+          currency: raw.currency,
         );
 
         _formattedCache[raw.id] = formatted;

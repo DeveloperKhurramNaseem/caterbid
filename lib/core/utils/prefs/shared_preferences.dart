@@ -1,24 +1,23 @@
-// import 'dart:convert';
-// import 'package:caterbid/data/models/user_model.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// class UserPrefs {
-//   static const _userKey = 'user_profile';
+class SharedPrefs {
+  static Future<void> saveUserRole(String role) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_role', role);
+  }
 
-//   static Future<void> saveUser(UserModel user) async {
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.setString(_userKey, jsonEncode(user.toJson()));
-//   }
+  static Future<String?> getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_role');
+  }
 
-//   static Future<UserModel?> getUser() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final jsonStr = prefs.getString(_userKey);
-//     if (jsonStr == null) return null;
-//     return UserModel.fromJson(jsonDecode(jsonStr));
-//   }
+  static Future<void> saveLocationRequired(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('location_required', value);
+  }
 
-//   static Future<void> clear() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.remove(_userKey);
-//   }
-// }
+  static Future<bool?> getLocationRequired() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('location_required');
+  }
+}

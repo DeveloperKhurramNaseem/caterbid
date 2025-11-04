@@ -1,14 +1,16 @@
+import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:caterbid/core/widgets/custom_textfield.dart';
+import 'package:caterbid/core/config/app_colors.dart';
+import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
+import 'package:caterbid/core/utils/helpers/check_location_enabled.dart';
 import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
 import 'package:caterbid/modules/Producer/catering_request/model/catering_request_model.dart';
 import 'package:caterbid/modules/Producer/home/active_request/bloc/producer_home_bloc.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
-import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/core/widgets/custom_textfield.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'catering_date_time_picker.dart';
 import 'catering_special_instructions_field.dart';
 import 'catering_submit_button.dart';
@@ -28,8 +30,76 @@ class _CateringFormState extends State<CateringForm> {
   final _locationController = TextEditingController();
   final _specialController = TextEditingController();
 
+  double? _selectedLat;
+  double? _selectedLng;
+
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _peopleController.dispose();
+    _budgetController.dispose();
+    _locationController.dispose();
+    _specialController.dispose();
+    super.dispose();
+  }
+
+  /// --- Open Map Safely ---
+  Future<void> _openMap() async {
+    if (!mounted) return;
+
+    bool canOpen = await checkLocationEnabled(context);
+    if (!canOpen || !mounted) return;
+
+  final result = await context.push<Map<String, dynamic>>(ReusableMapPicker.path);
+
+
+    if (mounted && result != null) {
+      setState(() {
+        _locationController.text = result['address'] ?? '';
+        _selectedLat = result['lat'];
+        _selectedLng = result['lng'];
+      });
+    }
+  }
+
+  /// --- Submit Request ---
+  void _submitRequest() {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedLat == null || _selectedLng == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter location')),
+      );
+      return;
+    }
+
+    final dateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime.hour,
+      _selectedTime.minute,
+    );
+
+    final requestModel = CateringRequestModel(
+      title: _titleController.text.trim(),
+      budget: int.tryParse(_budgetController.rawValue) ?? 0,
+      currency: 'usd',
+      peopleCount: int.tryParse(_peopleController.rawValue) ?? 1,
+      date: dateTime,
+      lat: _selectedLat!,
+      lng: _selectedLng!,
+      description: _specialController.text,
+    );
+
+    context.read<CateringrequestBloc>().add(
+          CreateCateringRequest(requestModel),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,25 +107,25 @@ class _CateringFormState extends State<CateringForm> {
 
     return BlocConsumer<CateringrequestBloc, CateringrequestState>(
       listener: (context, state) {
-        if (state is CateringSuccess) {
+        if (!mounted) return;
 
+        if (state is CateringSuccess) {
+          context.read<ProducerHomeBloc>().add(
+                FetchProducerRequests(afterCreation: true),
+              );
           context.read<RequestsBloc>().add(RefreshMyRequests());
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Catering request created successfully!'),
             ),
           );
 
-          // Refresh home only after API confirms request creation
-          context.read<ProducerHomeBloc>().add(
-            FetchProducerRequests(afterCreation: true),
-          );
-
           context.go(ProducerHomeScreen.path, extra: true);
         } else if (state is CateringFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
         }
       },
       builder: (context, state) {
@@ -66,38 +136,32 @@ class _CateringFormState extends State<CateringForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// --- Title Field ---
+              // Title
               CustomTextField(
                 label: "Title",
                 controller: _titleController,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Title is required';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    (value == null || value.trim().isEmpty) ? 'Title is required' : null,
                 capitalizeFirstLetter: true,
               ),
               SizedBox(height: h * 0.02),
 
-              /// --- Number of People ---
+              // Number of People
               CustomTextField(
                 label: "Number of People",
                 controller: _peopleController,
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   final people = int.tryParse(value?.replaceAll(',', '') ?? '');
-                  if (people == null || people <= 0) {
-                    return 'Enter a valid number of people';
-                  }
-                  return null;
+                  return (people == null || people <= 0)
+                      ? 'Enter a valid number of people'
+                      : null;
                 },
                 formatNumber: true,
               ),
-
               SizedBox(height: h * 0.02),
 
-              /// --- Budget Field ---
+              // Budget
               CustomTextField(
                 label: "Budget",
                 controller: _budgetController,
@@ -112,17 +176,15 @@ class _CateringFormState extends State<CateringForm> {
                 ),
                 validator: (value) {
                   final budget = int.tryParse(value?.replaceAll(',', '') ?? '');
-                  if (budget == null || budget <= 0) {
-                    return 'Enter a valid budget';
-                  }
-                  return null;
+                  return (budget == null || budget <= 0)
+                      ? 'Enter a valid budget'
+                      : null;
                 },
                 formatNumber: true,
               ),
-
               SizedBox(height: h * 0.02),
 
-              /// --- Date & Time Picker ---
+              // Date & Time
               CateringDateTimePicker(
                 selectedDate: _selectedDate,
                 selectedTime: _selectedTime,
@@ -131,18 +193,20 @@ class _CateringFormState extends State<CateringForm> {
               ),
               SizedBox(height: h * 0.02),
 
-              /// --- Location Field ---
+              // Location
               CustomTextField(
                 label: "Location",
                 controller: _locationController,
+                readOnly: true,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Please choose your location from map' : null,
+                suffixIcon: Icon(Icons.location_on, color: AppColors.icon),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {
-                      // Future: Open map picker here
-                    },
+                    onPressed: _openMap,
                     child: const Text(
                       'Choose from Map',
                       style: TextStyle(
@@ -154,53 +218,16 @@ class _CateringFormState extends State<CateringForm> {
                 ],
               ),
 
-              /// --- Optional Field ---
+              // Special Instructions
               CateringSpecialInstructionsField(controller: _specialController),
               SizedBox(height: h * 0.04),
 
-              /// --- Submit Button ---
+              // Submit
               isLoading
-                  ? const Center(child: CircularProgressIndicator(
-                    color: AppColors.c500,
-                  ))
-                  : CateringSubmitButton(
-                      onPressed: () {
-                          FocusScope.of(context).unfocus();
-
-                        if (_formKey.currentState!.validate()) {
-                          final dateTime = DateTime(
-                            _selectedDate.year,
-                            _selectedDate.month,
-                            _selectedDate.day,
-                            _selectedTime.hour,
-                            _selectedTime.minute,
-                          );
-
-                          // Hardcoded lat/lng for now
-                          const lat = 37.7749;
-                          const lng = -122.4194;
-
-                          final requestModel = CateringRequestModel(
-                            title: _titleController.text.trim(),
-                            budget:
-                                int.tryParse(_budgetController.rawValue) ?? 0,
-
-                            currency: 'usd',
-                            peopleCount:
-                                int.tryParse(_peopleController.rawValue) ?? 1,
-
-                            date: dateTime,
-                            lat: lat,
-                            lng: lng,
-                            specialInstructions: _specialController.text.trim(),
-                          );
-
-                          context.read<CateringrequestBloc>().add(
-                            CreateCateringRequest(requestModel),
-                          );
-                        }
-                      },
-                    ),
+                  ? const Center(
+                      child: CircularProgressIndicator(color: AppColors.c500),
+                    )
+                  : CateringSubmitButton(onPressed: _submitRequest),
             ],
           ),
         );

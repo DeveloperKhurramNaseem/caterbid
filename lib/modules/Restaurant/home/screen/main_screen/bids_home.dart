@@ -1,6 +1,7 @@
 // screen/my_bids_screen.dart
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/home/bloc/get_requests_bloc.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/BidRequestCardShimmer.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/bids_header.dart';
@@ -11,9 +12,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class MyBidsScreen extends StatelessWidget {
+class MyBidsScreen extends StatefulWidget {
   static const path = '/businesshome';
   const MyBidsScreen({super.key});
+
+  @override
+  State<MyBidsScreen> createState() => _MyBidsScreenState();
+}
+
+class _MyBidsScreenState extends State<MyBidsScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Fetch provider profile first
+    context.read<ProviderProfileBloc>().add(LoadProviderProfileEvent());
+
+    // Load requests
+    // context.read<GetRequestsBloc>().add(StartListeningRequests());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +39,13 @@ class MyBidsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.appBackground,
-      appBar: const Appbar(), // Make sure this exists
+      appBar: const Appbar(),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontal,
+            vertical: vertical,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -62,10 +82,7 @@ class MyBidsScreen extends StatelessWidget {
                               locationText: req.formattedLocation,
                               specialInstruction: req.description,
                               onPlaceBid: () {
-                                context.push(
-                                  PlaceBidScreen.path,
-                                  extra: req, // Pass formatted data
-                                );
+                                context.push(PlaceBidScreen.path, extra: req);
                               },
                             ),
                           );

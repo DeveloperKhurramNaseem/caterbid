@@ -1,6 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'request_status_chip.dart';
@@ -9,8 +8,8 @@ class RequestCard extends StatelessWidget {
   final String title;
   final String location;
   final String dateTime;
-  final int amount;
-  final int peopleCount;
+  final String amount;
+  final String peopleCount;
   final String status;
 
   const RequestCard({
@@ -26,120 +25,117 @@ class RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isActive = status.toLowerCase() == "open";
-    // Responsive measurements
     final double w = Responsive.width(context);
     final double h = Responsive.height(context);
 
     return Container(
-      margin: EdgeInsets.only(bottom: h * 0.02),
+      margin: EdgeInsets.only(bottom: h * 0.018),
       padding: EdgeInsets.all(w * 0.04),
       decoration: BoxDecoration(
         color: AppColors.cardColor,
         borderRadius: BorderRadius.circular(
-          Responsive.responsiveSize(context, 12, 16, 20),
+          Responsive.responsiveSize(context, 16, 20, 24),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(context),
-          SizedBox(height: h * 0.005),
-          Text(
-            location,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w600,
-
-              fontSize: Responsive.responsiveSize(context, 12, 14, 16),
-            ),
-          ),
-          SizedBox(height: h * 0.002),
-          Text(
-            dateTime,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w600,
-              fontSize: Responsive.responsiveSize(context, 12, 14, 16),
-            ),
-          ),
-          SizedBox(height: h * 0.015),
-          RequestStatusChip(status: status, isActive: isActive),
-        ],
-      ),
-    );
-  }
-
-  /// Header with title (left) and amount + people (right)
-  Widget _buildHeader(BuildContext context) {
-    final double fontSize = Responsive.responsiveSize(context, 16, 17, 20);
-    final double priceSize = Responsive.responsiveSize(context, 16, 16, 19);
-    final double iconSize = Responsive.responsiveSize(context, 22, 16, 18);
-    final double spacing = Responsive.responsiveSize(context, 4, 5, 7);
-    
-    final budget = amount;
-    String formatted = CurrencyFormatter.format(budget); 
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 3,
-          child: Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: AppFonts.nunito,
-              fontWeight: FontWeight.w700,
-              fontSize: fontSize,
-              color: AppColors.textDark,
-              height: 1.2,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.start,
+          /// --- Title + Price Row ---
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// Title
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: AppFonts.nunito,
+                    fontWeight: FontWeight.w700,
+                    fontSize: Responsive.responsiveSize(context, 16, 17, 20),
+                    color: AppColors.textDark,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+
+              /// Amount
               Text(
-                formatted,
+                amount,
                 style: TextStyle(
                   color: AppColors.icon,
-                  fontSize: priceSize,
+                  fontSize: Responsive.responsiveSize(context, 16, 16, 19),
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: spacing),
+            ],
+          ),
+
+          SizedBox(height: h * 0.006),
+
+          /// --- Location & People Row ---
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Location
+              Expanded(
+                child: Text(
+                  location,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: Responsive.responsiveSize(context, 12, 13, 14),
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              /// People Count
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.group, size: iconSize, color: AppColors.icon),
-                  SizedBox(width: spacing),
-                  Flexible(
-                    child: Text(
-                      "$peopleCount people",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: Responsive.responsiveSize(
-                          context,
-                          16,
-                          25,
-                          30,
-                        ),
-                        color: AppColors.textDark,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  Icon(
+                    Icons.group,
+                    size: Responsive.responsiveSize(context, 15, 16, 17),
+                    color: AppColors.icon,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    peopleCount,
+                    style: TextStyle(
+                      fontSize: Responsive.responsiveSize(context, 13, 14, 15),
+                      color: AppColors.textDark,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-        ),
-      ],
+
+          SizedBox(height: h * 0.004),
+
+          /// --- DateTime ---
+          Text(
+            dateTime,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: Responsive.responsiveSize(context, 12, 12.5, 13.5),
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          SizedBox(height: h * 0.012),
+
+          /// --- Status Chip ---
+          RequestStatusChip(status: status, isActive: isActive),
+        ],
+      ),
     );
   }
 }

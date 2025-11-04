@@ -2,6 +2,7 @@ import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/utils/user_session.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
+import 'package:caterbid/core/widgets/error_banner.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
@@ -35,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   void _onLoginPressed() {
-      FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus();
 
     if (_formKey.currentState!.validate()) {
       final model = LoginRequestModel(
@@ -55,17 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state is LoginSuccess) {
           final user = state.user;
 
-          UserSession.setRole(user.role); 
-
-          // ScaffoldMessenger.of(context)
-          //     .showSnackBar(SnackBar(content: Text('Welcome ${user.email}!')));
+          UserSession.setRole(user.role);
 
           if (user.role == 'requestee') {
-           context.read<RequesteeProfileBloc>().add(LoadRequesteeProfileEvent());
+            context.read<RequesteeProfileBloc>().add(
+              LoadRequesteeProfileEvent(),
+            );
 
             context.go(ProducerHomeScreen.path);
           } else if (user.role == 'provider') {
-  context.read<ProviderProfileBloc>().add(LoadProviderProfileEvent());
+            context.read<ProviderProfileBloc>().add(LoadProviderProfileEvent());
 
             if (user.locationRequired == true) {
               context.go(SetBusinessProfileScreen.path);
@@ -74,26 +74,27 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           }
         } else if (state is LoginEmailNotVerified) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.user.email)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.user.email)));
 
           context.push(
             VerifyEmailScreen.path,
-            extra: {
-              'email': state.user.email,
-              'role': state.user.role,
-            },
+            extra: {'email': state.user.email, 'role': state.user.role},
           );
-        } else if (state is LoginFailure) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
       builder: (context, state) {
         final isLoading = state is LoginLoading;
+        String? errorMessage;
+
+        if (state is LoginFailure) {
+          errorMessage = state.error;
+        }
 
         return LoaderOverlay(
           isLoading: isLoading,
+
           child: Scaffold(
             appBar: AppLogoAppBar(),
             backgroundColor: AppColors.appBackground,
@@ -108,7 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: h * 0.09),
+                          SizedBox(height: h * 0.05),
+
+                          if (errorMessage != null)
+                            ErrorBanner(message: errorMessage),
+                          SizedBox(height: h * 0.02),
                           const LoginWelcomeText(),
                           SizedBox(height: h * 0.03),
                           LoginEmailField(controller: _emailController),

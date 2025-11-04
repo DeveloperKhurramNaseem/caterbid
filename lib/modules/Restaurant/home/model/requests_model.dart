@@ -3,14 +3,18 @@ class RequestLocation {
   final double longitude;
   final double latitude;
 
-  RequestLocation({required this.longitude, required this.latitude});
+  RequestLocation({
+    required this.longitude,
+    required this.latitude,
+  });
 
   factory RequestLocation.fromJson(Map<String, dynamic> json) {
-    final coords = json['coordinates'] as List<dynamic>;
-    return RequestLocation(
-      longitude: (coords[0] as num).toDouble(),
-      latitude: (coords[1] as num).toDouble(),
-    );
+    final coords = (json['coordinates'] as List?)?.cast<dynamic>() ?? [];
+    final lng = coords.isNotEmpty ? (coords[0] as num).toDouble() : 0.0;
+    final lat = coords.length > 1 ? (coords[1] as num).toDouble() : 0.0;
+
+    // Note: coordinates are [longitude, latitude]
+    return RequestLocation(latitude: lat, longitude: lng);
   }
 }
 
@@ -22,8 +26,8 @@ class Requestee {
 
   factory Requestee.fromJson(Map<String, dynamic> json) {
     return Requestee(
-      id: json['_id'] as String,
-      name: json['name'] as String,
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
     );
   }
 }
@@ -63,22 +67,22 @@ class ProviderRequest {
 
   factory ProviderRequest.fromJson(Map<String, dynamic> json) {
     return ProviderRequest(
-      id: json['_id'] as String,
-      location: RequestLocation.fromJson(json['location']),
+      id: json['_id'] ?? '',
+      location: RequestLocation.fromJson(json['location'] ?? {}),
       requestee: json['requesteeId'] != null
           ? Requestee.fromJson(json['requesteeId'])
           : null,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      budgetCents: (json['budgetCents'] as num).toInt(),
-      budgetDollars: (json['budgetDollars'] as num).toInt(),
-      currency: json['currency'] as String,
-      numPeople: (json['numPeople'] as num).toInt(),
-      date: DateTime.parse(json['date'] as String),
-      status: json['status'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      acceptedBidId: json['acceptedBidId'] as String?,
+      title: json['title'] ?? '',
+      description: json['description'],
+      budgetCents: (json['budgetCents'] ?? 0).toInt(),
+      budgetDollars: (json['budgetDollars'] ?? 0).toInt(),
+      currency: json['currency'] ?? '',
+      numPeople: (json['numPeople'] ?? 0).toInt(),
+      date: DateTime.tryParse(json['date'] ?? '') ?? DateTime.now(),
+      status: json['status'] ?? '',
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      acceptedBidId: json['acceptedBidId'],
     );
   }
 }

@@ -12,6 +12,7 @@ class ProviderModel extends Equatable {
   final bool? isVerified;
   final double? latitude;
   final double? longitude;
+  
 
   const ProviderModel({
     this.id,
@@ -93,4 +94,25 @@ class ProviderModel extends Equatable {
         latitude,
         longitude,
       ];
+}
+
+extension ProviderModelCopy on ProviderModel {
+  ProviderModel copyWith({
+    double? latitude,
+    double? longitude,
+  }) {
+    return ProviderModel(
+      id: id,
+      name: name,
+      companyName: companyName,
+      businessType: businessType,
+      description: description,
+      email: email,
+      phoneNumber: phoneNumber,
+      profilePicture: profilePicture,
+      isVerified: isVerified,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
 }

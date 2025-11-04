@@ -10,17 +10,28 @@ class IconInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = Responsive.responsiveSize(context, 12, 13, 14);
+    final textSize = Responsive.responsiveSize(context, 12, 13, 14);
+    final iconSize = Responsive.responsiveSize(context, 16, 18, 20);
+    final gap = Responsive.responsiveSize(context, 6, 8, 10);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start, //  Align icon to top of text
       children: [
-        Icon(
-          icon,
-          size: Responsive.responsiveSize(context, 16, 18, 20),
-          color: AppColors.icon,
+        Padding(
+          padding: EdgeInsets.only(top: 1), // fine-tune vertical alignment
+          child: Icon(icon, size: iconSize, color: AppColors.icon),
         ),
-        SizedBox(width: Responsive.responsiveSize(context, 6, 8, 10)),
-        Text(text, style: TextStyle(fontSize: size, color: Colors.black54)),
+        SizedBox(width: gap),
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(fontSize: textSize, color: Colors.black54),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true, //  allow proper wrapping
+          ),
+        ),
       ],
     );
   }

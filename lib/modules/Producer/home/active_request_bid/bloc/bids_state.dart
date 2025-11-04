@@ -11,7 +11,7 @@ final class BidsInitial extends BidsState {}
 class BidsLoading extends BidsState {}
 
 class BidsLoaded extends BidsState {
-  final List<BidModel> bids;
+  final List<FormattedBidModel> bids;
 
   const BidsLoaded(this.bids);
 

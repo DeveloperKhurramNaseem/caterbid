@@ -1,4 +1,4 @@
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/core/widgets/pull_to_refresh.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/widgets/bids_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,14 +18,20 @@ class MyBids extends StatefulWidget {
 
 class _MyBidsScreenState extends State<MyBids> {
   bool isActiveTab = true;
+  bool _isFirstLoad = true;
 
-@override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<GetMyBidsBloc>().add(FetchMyBidsEvent());
-  });
-}
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<GetMyBidsBloc>().add(FetchMyBidsEvent());
+    });
+  }
+
+  Future<void> _handleRefresh() async {
+    context.read<GetMyBidsBloc>().add(RefreshMyBidsEvent());
+    await Future.delayed(const Duration(milliseconds: 600));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,57 +57,99 @@ void initState() {
                 isActiveTab: isActiveTab,
                 onActiveTap: () {
                   setState(() => isActiveTab = true);
-                  context.read<GetMyBidsBloc>().add(const FilterBidsEvent(isActive: true));
+                  context
+                      .read<GetMyBidsBloc>()
+                      .add(const FilterBidsEvent(isActive: true));
                 },
                 onFulfilledTap: () {
                   setState(() => isActiveTab = false);
-                  context.read<GetMyBidsBloc>().add(const FilterBidsEvent(isActive: false));
+                  context
+                      .read<GetMyBidsBloc>()
+                      .add(const FilterBidsEvent(isActive: false));
                 },
               ),
               const SizedBox(height: 16),
               Expanded(
                 child: BlocBuilder<GetMyBidsBloc, GetMyBidsState>(
                   builder: (context, state) {
-                    if (state is GetMyBidsLoading) {
+                    // Show loader only for very first fetch
+                    if (state is GetMyBidsLoading && _isFirstLoad) {
                       return const Center(
-                        child: CircularProgressIndicator(color: AppColors.c500),
+                        child:
+                            CircularProgressIndicator(color: AppColors.icon),
                       );
-                    } else if (state is GetMyBidsLoaded) {
+                    }
+
+                    // Once first load completes, no more central loader
+                    if (state is GetMyBidsLoaded) {
+                      _isFirstLoad = false;
+
                       if (state.bids.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            "No bids found",
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                        return PullToRefresh(
+                          onRefresh: _handleRefresh,
+                          child: ListView(
+                            physics:
+                                const AlwaysScrollableScrollPhysics(), // enables pull
+                            children: const [
+                              SizedBox(height: 150),
+                              Center(
+                                child: Text(
+                                  "No bids found",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       }
 
-                      return ListView.builder(
-                        itemCount: state.bids.length,
-                        itemBuilder: (context, index) {
-                          final bid = state.bids[index];
-                         final bidDate = DateFormatter.formatExact(bid.request.date);
-                          return BidsCard(
-                            title: bid.request.title,
-                            postedBy: 'Cater Bid',
-                            location: bid.request.location.type,
-                            dateTime: bidDate,
-                            amount: "\$${bid.amountDollars}",
-                            peopleCount: bid.request.numPeople,
-                            status: bid.status,
-                            myBidAmount: "\$${bid.amountDollars}",
-                            myBidDescription: bid.description ?? "No details",
-                          );
-                        },
-                      );
-                    } else if (state is GetMyBidsError) {
-                      return Center(
-                        child: Text(
-                          state.message,
-                          style: const TextStyle(color: Colors.red),
+                      return PullToRefresh(
+                        onRefresh: _handleRefresh,
+                        child: ListView.builder(
+                          physics:
+                              const AlwaysScrollableScrollPhysics(), // needed for refresh
+                          itemCount: state.bids.length,
+                          itemBuilder: (context, index) {
+                            final bid = state.bids[index];
+                            return BidsCard(
+                              title: bid.title,
+                              postedBy: 'Cater Bid',
+                              location: bid.formattedLocation,
+                              dateTime: bid.formattedDate,
+                              amount: bid.formattedAmount,
+                              peopleCount: bid.formattedPeople,
+                              status: bid.status,
+                              myBidAmount: bid.formattedAmount,
+                              myBidDescription:
+                                  bid.description ?? "No details",
+                            );
+                          },
                         ),
                       );
                     }
+
+                    if (state is GetMyBidsError) {
+                      _isFirstLoad = false;
+                      return PullToRefresh(
+                        onRefresh: _handleRefresh,
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(height: h * 0.3),
+                            Center(
+                              child: Text(
+                                state.message,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
                     return const SizedBox();
                   },
                 ),

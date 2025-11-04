@@ -27,13 +27,23 @@ class ProviderChangePasswordFields extends StatelessWidget {
         CustomPasswordField(
           label: "New Password",
           controller: newPasswordController,
-          onChanged: (value) =>
-              onPasswordChanged(value, confirmPasswordController.text),
+          onChanged: (_) {
+            onPasswordChanged(
+              newPasswordController.text,
+              confirmPasswordController.text,
+            );
+          },
         ),
         const SizedBox(height: 16),
         CustomPasswordField(
           label: "Confirm Password",
           controller: confirmPasswordController,
+          onChanged: (_) {
+            onPasswordChanged(
+              newPasswordController.text,
+              confirmPasswordController.text,
+            );
+          },
           validator: (value) {
             if (value != newPasswordController.text) {
               return 'Passwords do not match';

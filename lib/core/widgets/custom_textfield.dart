@@ -14,6 +14,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final bool capitalizeFirstLetter;
   final bool formatNumber;
+  final bool readOnly; // <-- NEW
 
   const CustomTextField({
     super.key,
@@ -25,6 +26,7 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType,
     this.capitalizeFirstLetter = false,
     this.formatNumber = false,
+    this.readOnly = false, // <-- NEW
   });
 
   @override
@@ -68,11 +70,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscureText: widget.obscureText,
       validator: widget.validator,
       keyboardType: widget.keyboardType,
+      readOnly: widget.readOnly, // <-- NEW
       autovalidateMode: AutovalidateMode.onUserInteraction,
       inputFormatters: widget.formatNumber
           ? [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))]
           : null,
       onChanged: (value) {
+        if (widget.readOnly) return; // prevent changes if read-only
+
         String newValue = value;
         if (widget.formatNumber) newValue = _formatNumber(newValue);
         if (widget.capitalizeFirstLetter) newValue = _capitalize(newValue);
@@ -85,7 +90,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         }
       },
       style: TextStyle(
-        color: AppColors.textDark,
+        color: widget.readOnly ? Colors.grey[700] : AppColors.textDark,
         fontFamily: AppFonts.nunito,
         fontWeight: FontWeight.w600,
         fontSize: fontSize,

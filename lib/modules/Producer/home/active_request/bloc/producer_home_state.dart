@@ -13,7 +13,7 @@ class ProducerHomeInitial extends ProducerHomeState {}
 class ProducerHomeLoading extends ProducerHomeState {}
 
 class ProducerHomeLoaded extends ProducerHomeState {
-  final List<ProducerRequest> requests;
+  final List<FormattedProducerRequest> requests;
   const ProducerHomeLoaded(this.requests);
 
   @override

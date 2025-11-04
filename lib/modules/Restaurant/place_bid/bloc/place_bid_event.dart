@@ -14,3 +14,5 @@ class SubmitPlaceBid extends PlaceBidEvent {
   @override
   List<Object?> get props => [bid];
 }
+
+class ResetPlaceBid extends PlaceBidEvent {}

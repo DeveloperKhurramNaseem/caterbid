@@ -1,11 +1,13 @@
 import 'package:caterbid/core/network/api_service.dart';
 import 'package:caterbid/core/widgets/bottomtabbar.dart';
+import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/main_screen/edit_profile_screen.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Producer/catering_request/screen/main_screen/request_screen.dart';
+import 'package:caterbid/modules/Producer/home/active_request_bid/model/formatted_bid_model.dart';
 import 'package:caterbid/modules/Producer/my_requests/screen/main_screen/my_requests_screen.dart';
 import 'package:caterbid/modules/Producer/payment/screen/main_screen/payment_success_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/main_screen/requestee_setting_screen.dart';
@@ -32,6 +34,13 @@ import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/bloc/veri
 import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/main_screen/OTPScreen.dart';
 import 'package:caterbid/modules/auth/forget_Password/forget_password_email/screen/main_screen/forgetpassword_screen.dart';
 import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/repository/verify_otp_repository.dart';
+import 'package:caterbid/modules/auth/login/bloc/login_bloc.dart';
+import 'package:caterbid/modules/auth/login/repository/login_repository.dart';
+import 'package:caterbid/modules/auth/signup/bloc/sign_up_bloc.dart';
+import 'package:caterbid/modules/auth/signup/repository/signup_repository.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/bloc/verify_otp_bloc.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/repository/verify_otp_repository.dart';
+import 'package:caterbid/modules/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,37 +51,44 @@ import 'package:caterbid/modules/auth/verify_email_screen/screen/main_screen/ver
 final GoRouter appRouter = GoRouter(
   restorationScopeId: null,
 
-  initialLocation: LoginScreen.path,
+  initialLocation: SplashScreen.path,
   routes: [
+    GoRoute(
+      path: SplashScreen.path,
+      builder: (context, state) => const SplashScreen(),
+    ),
     // ---------- AUTH ROUTES ----------
     GoRoute(
-      path: SignUpScreen.path,
-      builder: (context, state) => const SignUpScreen(),
+      path: LoginScreen.path,
+      builder: (context, state) => BlocProvider(
+        create: (_) => LoginBloc(LoginRepository()),
+        child: const LoginScreen(),
+      ),
     ),
     GoRoute(
-      path: LoginScreen.path,
-      builder: (context, state) => const LoginScreen(),
+      path: SignUpScreen.path,
+      builder: (context, state) => BlocProvider(
+        create: (_) => SignUpBloc(SignUpRepository()),
+        child: const SignUpScreen(),
+      ),
     ),
 
     GoRoute(
       path: VerifyEmailScreen.path,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        // assert(
-        //   extra != null,
-        //   'You must pass data using "extra" when navigating to VerifyEmailScreen',
-        // );
 
         final email = extra?['email'] ?? '';
         final role = extra?['role'] ?? '';
-        // final companyName = extra?['companyName'] ?? '';
         final phoneNumber = extra?['phoneNumber'] ?? '';
 
-        return VerifyEmailScreen(
-          email: email,
-          role: role,
-          // companyName: companyName,
-          phoneNumber: phoneNumber,
+        return BlocProvider(
+          create: (_) => VerifyOtpBloc(EmailVerifyOtpRepository()),
+          child: VerifyEmailScreen(
+            email: email,
+            role: role,
+            phoneNumber: phoneNumber,
+          ),
         );
       },
     ),
@@ -110,6 +126,12 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
+    // ---------- Map Settings ROUTES ----------
+    GoRoute(
+      path: ReusableMapPicker.path,
+      builder: (context, state) => const ReusableMapPicker(),
+    ),
+
     // ---------- Requestee App Settings ROUTES ----------
     GoRoute(
       path: RequesteeEditProfileScreen.path,
@@ -135,8 +157,13 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: PaymentScreen.path,
-      builder: (context, state) => const PaymentScreen(),
+      builder: (context, state) {
+        final bid =
+            state.extra as FormattedBidModel; // cast extra to your bid model
+        return PaymentScreen(bid: bid);
+      },
     ),
+
     GoRoute(
       path: PaymentSuccessScreen.path,
       builder: (context, state) => const PaymentSuccessScreen(),
@@ -193,7 +220,6 @@ final GoRouter appRouter = GoRouter(
       path: PlaceBidScreen.path,
       builder: (context, state) {
         final request = state.extra as FormattedProviderRequest;
-
         return BlocProvider(
           create: (_) => PlaceBidBloc(PlaceBidRepository()),
           child: PlaceBidScreen(request: request),

@@ -35,7 +35,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       // Normal login success
       final user = result as LoginResponseModel;
       await SecureStorage.saveToken(user.token);
-
+      await SharedPrefs.saveUserRole(user.role);
+      await SharedPrefs.saveLocationRequired(user.locationRequired);
 
       emit(LoginSuccess(user));
     } catch (error) {

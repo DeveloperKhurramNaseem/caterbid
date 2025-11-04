@@ -1,41 +1,55 @@
-import 'package:caterbid/core/network/api_endpoints.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
-import 'package:caterbid/modules/Producer/home/active_request_bid/model/producer_bid_model.dart';
 import 'package:flutter/material.dart';
 import 'producerbidcard.dart';
+import 'all_bids_bottom_sheet.dart';
+import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/modules/Producer/home/active_request_bid/model/formatted_bid_model.dart';
 
 class BidsLoadedView extends StatelessWidget {
-  final List<BidModel> bids;
+  final List<FormattedBidModel> bids;
   final double maxWidth;
 
   const BidsLoadedView({super.key, required this.bids, required this.maxWidth});
 
+  void _openAllBidsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AllBidsBottomSheet(bids: bids),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final latestBids = bids.length > 2 ? bids.sublist(0, 2) : bids;
+
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxWidth < 500 ? maxWidth : 500),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Bids Received (${bids.length})",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          // Header with "Bids Received" and "View All"
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Bids Received (${bids.length})",
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              if (bids.length > 2)
+                TextButton(
+                  onPressed: () => _openAllBidsSheet(context),
+                  child: const Text("View All"),
+                ),
+            ],
           ),
           const SizedBox(height: 12),
-          ...bids.map((bid) {
+          // Latest 2 bids
+          ...latestBids.map((bid) {
             final bidDate = DateFormatter.fullDateTime(bid.createdAt);
-
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: ProducerBidCard(
-                attachmentImageUrl: bid.attachmentUrl,
-                profileImageUrl: bid.providerProfileUrl,
-                name: bid.provider.companyName,
-                price:
-                    "\$${bid.amountDollars} / ${bid.request.numPeople} people",
-                location: "San Francisco, CA",
-                date: bidDate,
-                description: bid.description,
+              child: ProducerBidCard(bid: bid,
               ),
             );
           }),

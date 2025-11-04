@@ -1,9 +1,10 @@
+import 'package:caterbid/modules/Producer/home/active_request/model/formatted_producer_request.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/widget/ProducerRequestCard.dart';
 import 'package:caterbid/modules/Producer/home/active_request_bid/screen/main_screen/bids_section.dart';
 
 class HomeLoadedSection extends StatelessWidget {
-  final List requests;
+  final List<FormattedProducerRequest> requests;
   final double w;
   final double h;
 
@@ -27,7 +28,6 @@ class HomeLoadedSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: h * 0.02),
-
 
               ProducerRequestCard(request: request),
 

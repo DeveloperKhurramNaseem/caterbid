@@ -15,7 +15,7 @@ class DateFormatter {
   /// Full format in LOCAL time: "Oct 15, 2025, 4:30 PM"
   static String format(DateTime date) {
     try {
-      return DateFormat('MMM d, yyyy, h:mm a').format(date.toLocal());
+      return DateFormat('MMM d, yyyy, h:mm a').format(date);
     } catch (_) {
       return 'Invalid date';
     }

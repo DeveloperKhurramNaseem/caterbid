@@ -1,11 +1,10 @@
+import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/editing_appbar.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_profile_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/profile_form.dart';
-import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/editing_appbar.dart';
 
 class ProviderEditProfileScreen extends StatelessWidget {
   static const path = '/provider_edit_profile';
@@ -32,19 +31,15 @@ class ProviderEditProfileScreen extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            final isLoading = state is ProviderProfileLoading;
-            final user = (state is ProviderProfileLoaded)
-                ? state.user
-                : (state is ProviderProfileUpdatingKeepOld)
-                    ? state.user
-                    : null;
+            final user = switch (state) {
+              ProviderProfileLoaded() => state.user,
+              ProviderProfileUpdatingKeepOld() => state.user,
+              _ => null,
+            };
 
-            return isLoading
+            return state is ProviderProfileLoading
                 ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ProviderProfileForm(user: user),
-                  );
+                : ProviderProfileForm(user: user);
           },
         ),
       ),

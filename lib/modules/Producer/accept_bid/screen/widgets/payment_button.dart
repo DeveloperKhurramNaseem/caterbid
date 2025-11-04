@@ -1,10 +1,10 @@
-import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:caterbid/modules/Producer/payment/screen/main_screen/payment_success_screen.dart';
+import 'package:caterbid/core/utils/responsive.dart';
 
 class PaymentButton extends StatelessWidget {
-  const PaymentButton({super.key});
+  final VoidCallback? onPressed;
+
+  const PaymentButton({super.key, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,7 @@ class PaymentButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(25),
           ),
         ),
-        onPressed: () {
-          context.push(PaymentSuccessScreen.path);
-                },
+        onPressed: onPressed,
         child: const Text(
           "Pay",
           style: TextStyle(

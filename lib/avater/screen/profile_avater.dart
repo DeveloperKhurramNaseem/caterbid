@@ -95,7 +95,7 @@ class ProfileAvatar extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundImage: hasImage ? NetworkImage(user.profilePicture!) : null,
-        backgroundColor: hasImage ? null : AppColors.c300,
+        backgroundColor: hasImage ? null : AppColors.textDark,
         child: !hasImage
             ? Text(
                 name.isNotEmpty ? name[0].toUpperCase() : 'R',

@@ -15,3 +15,10 @@ class VerifyOtpButtonPressed extends VerifyOtpEvent {
   @override
   List<Object> get props => [model];
 }
+
+class ResendOtpButtonPressed extends VerifyOtpEvent {
+  final String email;
+  final String role;
+
+  ResendOtpButtonPressed({required this.email, required this.role});
+}

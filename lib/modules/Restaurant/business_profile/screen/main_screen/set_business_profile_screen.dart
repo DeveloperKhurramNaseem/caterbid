@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:caterbid/core/utils/helpers/check_location_enabled.dart';
+import 'package:caterbid/core/utils/prefs/shared_preferences.dart';
+import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +18,6 @@ import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/bloc/business_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/model/business_profile_request_model.dart';
-import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/location_field.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/next_button.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/upload_picture_box.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/business_type_dropdown.dart';
@@ -43,26 +45,20 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  final List<String> businessTypes = [
-    'Restaurant',
-    'Catering Service',
-    'Bakery',
-    'Food Truck',
-    'Home Chef',
-  ];
+  final List<String> businessTypes = ['Restaurant', 'Catering Service'];
 
   String? selectedBusinessType;
   bool isDropdownFocused = false;
   File? _profileImage;
 
+  double? _selectedLat;
+  double? _selectedLng;
+
   @override
   void initState() {
     super.initState();
     _phoneController.text = widget.phoneNumber;
-    debugPrint('📱 Pre-filled phone number: ${_phoneController.text}');
   }
-
-  
 
   @override
   void dispose() {
@@ -71,6 +67,26 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
     _locationController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  /// Opens map and gets selected location
+  Future<void> _pickLocation() async {
+    if (!mounted) return;
+
+    bool canOpen = await checkLocationEnabled(context);
+    if (!canOpen || !mounted) return;
+
+    final result = await context.push<Map<String, dynamic>>(
+      ReusableMapPicker.path,
+    );
+
+    if (mounted && result != null) {
+      setState(() {
+        _locationController.text = result['address'] ?? '';
+        _selectedLat = result['lat'];
+        _selectedLng = result['lng'];
+      });
+    }
   }
 
   @override
@@ -89,20 +105,20 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
             backgroundColor: AppColors.appBackground,
             appBar: NavigationbarTitle(title: 'Set Business Profile'),
             body: BlocListener<BusinessProfileBloc, BusinessProfileState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state is BusinessProfileSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Business Profile Setup Successfully!'),
                     ),
                   );
+                  // ✅ Update locationRequired flag for splash screen
+                  await SharedPrefs.saveLocationRequired(false);
 
-                  // Refresh provider profile after creating business profile
                   context.read<ProviderProfileBloc>().add(
-                        LoadProviderProfileEvent(),
-                      );
+                    LoadProviderProfileEvent(),
+                  );
 
-                  // Navigate to home screen
                   context.go(MyBidsScreen.path);
                 } else if (state is BusinessProfileFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -123,7 +139,7 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// ✅ Upload Picture
+                      /// Upload Picture
                       UploadPictureBox(
                         key: uploadPictureKey,
                         onImageChanged: (file) => _profileImage = file,
@@ -135,8 +151,12 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                         'Basic Information',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize:
-                              Responsive.responsiveSize(context, 16, 18, 20),
+                          fontSize: Responsive.responsiveSize(
+                            context,
+                            16,
+                            18,
+                            20,
+                          ),
                           fontFamily: AppFonts.poppins,
                           color: AppColors.textDark,
                         ),
@@ -170,15 +190,32 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                       ContactNumberField(controller: _phoneController),
                       SizedBox(height: h * 0.015),
 
-                      /// Location
+                      /// Location field (read-only)
                       CustomTextField(
                         label: 'Location',
                         controller: _locationController,
+                        readOnly: true,
+                        validator: (v) => v == null || v.isEmpty
+                            ? 'Please select a location'
+                            : null,
+                        suffixIcon: const Icon(
+                          Icons.location_on_outlined,
+                          color: AppColors.icon,
+                        ),
                       ),
-                      SizedBox(height: h * 0.015),
-
-                      /// Map Location Field
-                      const LocationField(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _pickLocation,
+                          child: const Text(
+                            'Choose from Map',
+                            style: TextStyle(
+                              color: AppColors.icon,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
                       SizedBox(height: h * 0.015),
 
                       /// Description
@@ -190,13 +227,12 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
 
                       /// Submit Button
                       NextButton(
-                        isLoading: false, // handled globally by LoaderOverlay
+                        isLoading: false,
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) return;
 
-                          // ✅ Validate upload picture box explicitly
-                          final imageError =
-                              uploadPictureKey.currentState?.validate();
+                          final imageError = uploadPictureKey.currentState
+                              ?.validate();
                           if (imageError != null) return;
 
                           if (selectedBusinessType == null) {
@@ -219,21 +255,31 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                             return;
                           }
 
+                          if (_selectedLat == null || _selectedLng == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please select location on map'),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                            return;
+                          }
+
                           final model = BusinessProfileRequestModel(
                             companyName: _businessNameController.text.trim(),
                             businessType: selectedBusinessType!,
                             description: _descriptionController.text.trim(),
                             phoneNumber: _phoneController.text.trim(),
-                            lat: 37.7749, // placeholder
-                            lng: -122.4194, // placeholder
+                            lat: _selectedLat!,
+                            lng: _selectedLng!,
                           );
 
                           context.read<BusinessProfileBloc>().add(
-                                SubmitBusinessProfile(
-                                  model,
-                                  profilePicture: _profileImage,
-                                ),
-                              );
+                            SubmitBusinessProfile(
+                              model,
+                              profilePicture: _profileImage,
+                            ),
+                          );
                         },
                       ),
                     ],

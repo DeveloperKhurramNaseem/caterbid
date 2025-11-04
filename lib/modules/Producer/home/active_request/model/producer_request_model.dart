@@ -44,6 +44,21 @@ class ProducerRequest {
     );
   }
 
+  factory ProducerRequest.empty() => ProducerRequest(
+    id: '',
+    title: '',
+    budgetCents: 0,
+    budgetDollars: 0,
+    currency: '',
+    numPeople: 0,
+    status: '',
+    date: DateTime.now(),
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    requestee: Requestee(id: '', name: ''),
+    location: Location(type: '', coordinates: []),
+  );
+
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
@@ -66,23 +81,14 @@ class Requestee {
   final String id;
   final String name;
 
-  Requestee({
-    required this.id,
-    required this.name,
-  });
+  Requestee({required this.id, required this.name});
 
   factory Requestee.fromJson(Map<String, dynamic> json) {
-    return Requestee(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-    );
+    return Requestee(id: json['_id'] ?? '', name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-    };
+    return {'_id': id, 'name': name};
   }
 }
 
@@ -90,27 +96,22 @@ class Location {
   final String type;
   final List<double> coordinates;
 
-  Location({
-    required this.type,
-    required this.coordinates,
-  });
+  Location({required this.type, required this.coordinates});
 
   factory Location.fromJson(Map<String, dynamic> json) {
-    final coords = (json['coordinates'] as List?)?.map((e) => (e as num).toDouble()).toList() ?? [];
-    return Location(
-      type: json['type'] ?? '',
-      coordinates: coords,
-    );
+    final coords =
+        (json['coordinates'] as List?)
+            ?.map((e) => (e as num).toDouble())
+            .toList() ??
+        [];
+    return Location(type: json['type'] ?? '', coordinates: coords);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'type': type,
-      'coordinates': coordinates,
-    };
+    return {'type': type, 'coordinates': coordinates};
   }
 
-    ///helper to safely return a formatted string
+  ///helper to safely return a formatted string
   String get formattedCoordinates {
     if (coordinates.length >= 2) {
       final lat = coordinates[1];
@@ -119,13 +120,8 @@ class Location {
     }
     return "Location not available";
   }
-
-  
 }
-
 
 extension ProducerRequestHelpers on ProducerRequest {
   String get formattedLocation => location.formattedCoordinates;
 }
-
-

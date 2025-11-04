@@ -30,3 +30,14 @@ final class VerifyOtpFailure extends VerifyOtpState {
   @override
   List<Object> get props => [error];
 }
+
+// Resend OTP states
+class ResendOtpLoading extends VerifyOtpState {}
+class ResendOtpSuccess extends VerifyOtpState {
+  final String message;
+  const ResendOtpSuccess(this.message);
+}
+class ResendOtpFailure extends VerifyOtpState {
+  final String error;
+  const ResendOtpFailure(this.error);
+}

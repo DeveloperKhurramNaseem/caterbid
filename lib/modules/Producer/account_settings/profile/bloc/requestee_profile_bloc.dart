@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:caterbid/core/utils/helpers/secure_storage.dart';
 import 'package:equatable/equatable.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/model/requestee_profile_model.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/model/update_requestee_model.dart';
@@ -88,12 +89,14 @@ class RequesteeProfileBloc
     }
   }
 
-  // ✅ Logout — clears cache and in-memory data
+  //  Logout — clears cache and in-memory data
   Future<void> _onLogoutProfile(
     LogoutRequesteeProfileEvent event,
     Emitter<RequesteeProfileState> emit,
   ) async {
     await repo.clearCache();
+   await SecureStorage.clearToken();
+
     emit(RequesteeProfileInitial());
   }
 }

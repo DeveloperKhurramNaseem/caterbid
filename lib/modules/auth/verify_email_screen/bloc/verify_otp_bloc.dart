@@ -11,11 +11,14 @@ part 'verify_otp_event.dart';
 part 'verify_otp_state.dart';
 
 class VerifyOtpBloc extends Bloc<VerifyOtpEvent, VerifyOtpState> {
-  final VerifyOtpRepository repository;
+  final EmailVerifyOtpRepository repository;
 
   VerifyOtpBloc(this.repository) : super(VerifyOtpInitial()) {
     on<VerifyOtpButtonPressed>(_onVerifyOtp);
+   on<ResendOtpButtonPressed>(_onResendOtp); // 👈 Add this
+
   }
+
 
   Future<void> _onVerifyOtp(
     VerifyOtpButtonPressed event,
@@ -32,6 +35,20 @@ class VerifyOtpBloc extends Bloc<VerifyOtpEvent, VerifyOtpState> {
     } catch (error) {
       final apiError = ApiErrorHandler.handle(error);
       emit(VerifyOtpFailure(apiError.message));
+    }
+  }
+
+    Future<void> _onResendOtp(
+    ResendOtpButtonPressed event,
+    Emitter<VerifyOtpState> emit,
+  ) async {
+    emit(ResendOtpLoading());
+    try {
+      await repository.resendOtp(email: event.email, role: event.role);
+      emit(ResendOtpSuccess("OTP has been resent successfully!"));
+    } catch (error) {
+      final apiError = ApiErrorHandler.handle(error);
+      emit(ResendOtpFailure(apiError.message));
     }
   }
 }

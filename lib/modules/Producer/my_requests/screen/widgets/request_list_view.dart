@@ -1,10 +1,9 @@
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
-import 'package:caterbid/modules/Producer/home/active_request/model/producer_request_model.dart';
 import 'package:flutter/material.dart';
+import 'package:caterbid/modules/Producer/home/active_request/model/formatted_producer_request.dart';
 import 'request_card.dart';
 
 class RequestListView extends StatelessWidget {
-  final List<ProducerRequest> requests;
+  final List<FormattedProducerRequest> requests;
 
   const RequestListView({super.key, required this.requests});
 
@@ -28,9 +27,9 @@ class RequestListView extends StatelessWidget {
         return RequestCard(
           title: req.title,
           location: req.formattedLocation,
-          dateTime: DateFormatter.formatExact(req.date),
-          amount: req.budgetDollars,
-          peopleCount: req.numPeople,
+          dateTime: req.formattedDate,
+          amount: req.formattedBudget,
+          peopleCount: req.formattedPeople,
           status: req.status,
         );
       },

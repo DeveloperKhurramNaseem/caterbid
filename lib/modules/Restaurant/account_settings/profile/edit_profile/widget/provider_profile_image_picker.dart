@@ -57,7 +57,7 @@ class _ProfileImagePickerState extends State<ProviderProfileImagePicker> {
               ),
               child: CircleAvatar(
                 radius: avatarRadius,
-                backgroundColor: AppColors.c300,
+                backgroundColor: AppColors.textDark,
                 backgroundImage: _image != null
                     ? FileImage(_image!)
                     : (widget.initialImage != null &&

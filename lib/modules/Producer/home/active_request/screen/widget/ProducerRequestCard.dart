@@ -1,12 +1,10 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
 import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/modules/Producer/home/active_request/model/producer_request_model.dart';
+import 'package:caterbid/modules/Producer/home/active_request/model/formatted_producer_request.dart';
 import 'package:flutter/material.dart';
 
 class ProducerRequestCard extends StatelessWidget {
-  final ProducerRequest request;
+final FormattedProducerRequest request;
 
   const ProducerRequestCard({super.key, required this.request});
 
@@ -15,10 +13,7 @@ class ProducerRequestCard extends StatelessWidget {
     final w = Responsive.width(context);
     final h = Responsive.height(context);
 
-    final formattedDate = DateFormatter.formatExact(request.date);
 
-    final budget = request.budgetDollars;
-    String formatted = CurrencyFormatter.format(budget); 
 
     return Container(
       padding: EdgeInsets.all(w * 0.04),
@@ -64,7 +59,7 @@ class ProducerRequestCard extends StatelessWidget {
                     ),
                     SizedBox(height: h * 0.006),
                     Text(
-                      "Hollywood, CA", // TODO: Replace when API provides location
+                      request.formattedLocation, 
                       style: TextStyle(
                         fontSize: w * 0.035,
                         color: Colors.grey[700],
@@ -72,7 +67,7 @@ class ProducerRequestCard extends StatelessWidget {
                     ),
                     SizedBox(height: h * 0.006),
                     Text(
-                      formattedDate,
+                      request.formattedDate,
                       style: TextStyle(
                         fontSize: w * 0.035,
                         color: Colors.grey[700],
@@ -87,7 +82,7 @@ class ProducerRequestCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    formatted,
+                    request.formattedBudget,
                     style: TextStyle(
                       color: AppColors.icon,
                       fontWeight: FontWeight.bold,
@@ -105,7 +100,7 @@ class ProducerRequestCard extends StatelessWidget {
                       ),
                       SizedBox(width: w * 0.008),
                       Text(
-                        "${request.numPeople} people",
+                        request.formattedPeople,
                         style: TextStyle(
                           fontSize: w * 0.035,
                           color: const Color(0xFF0A2A33),

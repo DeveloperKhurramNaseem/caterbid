@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:caterbid/core/utils/user_session.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
@@ -6,15 +5,16 @@ import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/
 import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/model/verify_otp_request.dart';
+import 'package:caterbid/modules/auth/verify_email_screen/screen/widgets/resend_otp_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
+import 'package:caterbid/core/widgets/error_banner.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/screen/widgets/otp_fields.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/screen/widgets/verify_button.dart';
-import 'package:caterbid/modules/auth/verify_email_screen/screen/widgets/verify_email_footer.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/screen/widgets/verify_email_heading.dart';
 import 'package:caterbid/modules/auth/verify_email_screen/bloc/verify_otp_bloc.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
@@ -24,14 +24,12 @@ class VerifyEmailScreen extends StatefulWidget {
 
   final String email;
   final String role;
-  // final String companyName;
   final String phoneNumber;
 
   const VerifyEmailScreen({
     super.key,
     required this.email,
     required this.role,
-    // required this.companyName,
     required this.phoneNumber,
   });
 
@@ -46,19 +44,11 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
-  Timer? _timer;
-  int _seconds = 30;
   bool _isButtonEnabled = false;
 
   @override
   void initState() {
-    // print('🔍 VerifyEmailScreen initialized with:');
-    // print('📧 Email: ${widget.email}');
-    // print('👤 Role: ${widget.role}');
-    // print('🏢 Company: ${widget.companyName}');
-    // print('📱 Phone: ${widget.phoneNumber}');
     super.initState();
-    _startTimer();
     for (var controller in _controllers) {
       controller.addListener(_checkFieldsFilled);
     }
@@ -69,21 +59,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (allFilled != _isButtonEnabled) {
       setState(() => _isButtonEnabled = allFilled);
     }
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds > 0) {
-        setState(() => _seconds--);
-      } else {
-        _timer?.cancel();
-      }
-    });
-  }
-
-  void _resetTimer() {
-    setState(() => _seconds = 30);
-    _startTimer();
   }
 
   void _onVerifyPressed() {
@@ -111,7 +86,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     for (var f in _focusNodes) {
       f.dispose();
     }
-    _timer?.cancel();
     super.dispose();
   }
 
@@ -124,29 +98,19 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       listener: (context, state) {
         if (state is VerifyOtpSuccess) {
           final user = state.user;
+          UserSession.setRole(user.role);
 
-          // To load profile data 
-          UserSession.setRole(
-            user.role,
-          ); 
-          print("UserSession.role set to: ${UserSession.role}");
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text("OTP Verified Successfully!")),
+          // );
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("OTP Verified Successfully!")),
-          );
-
-          // Navigate based on user role
           if (user.role.toLowerCase() == 'provider') {
             if (user.locationRequired) {
               context.go(
                 SetBusinessProfileScreen.path,
-                extra: {
-                  // 'companyName': widget.companyName,
-                  'phoneNumber': widget.phoneNumber,
-                },
+                extra: {'phoneNumber': widget.phoneNumber},
               );
             } else {
-              // Already has location setup
               context.go(MyBidsScreen.path);
             }
           } else if (user.role.toLowerCase() == 'requestee') {
@@ -155,14 +119,14 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               LoadRequesteeProfileEvent(),
             );
           } else {
-            // For Wrost Case Fallback
             context.go(LoginScreen.path);
           }
-        } else if (state is VerifyOtpFailure) {
+        }
+        if (state is ResendOtpSuccess) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.error)));
-        } else if (state is VerifyOtpFailure) {
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        } else if (state is ResendOtpFailure) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.error)));
@@ -170,6 +134,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       },
       builder: (context, state) {
         final isLoading = state is VerifyOtpLoading;
+        String? errorMessage;
+        if (state is VerifyOtpFailure) errorMessage = state.error;
 
         return OverlayLoaderWithAppIcon(
           isLoading: isLoading,
@@ -193,7 +159,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: h * 0.06),
+                        SizedBox(height: h * 0.03),
+                        if (errorMessage != null)
+                          ErrorBanner(message: errorMessage),
+                        SizedBox(height: h * 0.01),
                         const VerifyEmailHeading(),
                         SizedBox(height: h * 0.04),
                         OTPFieldsPackage(controllers: _controllers),
@@ -203,12 +172,20 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           onPressed: _onVerifyPressed,
                         ),
                         SizedBox(height: h * 0.03),
+                        //  Cleanly use the separated widget now
                         Center(
-                          child: VerifyEmailFooter(
-                            seconds: _seconds,
-                            onResend: _resetTimer,
+                          child: ResendOtpWidget(
+                            onResend: () {
+                              context.read<VerifyOtpBloc>().add(
+                                ResendOtpButtonPressed(
+                                  email: widget.email,
+                                  role: widget.role,
+                                ),
+                              );
+                            },
                           ),
                         ),
+                        SizedBox(height: h * 0.05),
                       ],
                     ),
                   ),

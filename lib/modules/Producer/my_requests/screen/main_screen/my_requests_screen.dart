@@ -50,7 +50,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                   builder: (context, state) {
                     if (state is RequestsLoading) {
                       return const Center(
-                        child: CircularProgressIndicator(color: AppColors.c500),
+                        child: CircularProgressIndicator(color: AppColors.icon),
                       );
                     } else if (state is RequestsLoaded) {
                       final requests = isActiveTab
@@ -58,7 +58,7 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                           : state.fulfilledRequests;
 
                       return RefreshIndicator(
-                        color: AppColors.c500,
+                        color: AppColors.icon,
 
                         onRefresh: () async {
                           context.read<RequestsBloc>().add(RefreshMyRequests());

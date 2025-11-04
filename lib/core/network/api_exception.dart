@@ -88,7 +88,7 @@ class ApiErrorHandler {
             details: body,
           );
         }
-        return ApiException(statusCode: statusCode, message: "Access denied.");
+        return ApiException(statusCode: statusCode, message: message);
       case 404:
         return ApiException(
           statusCode: statusCode,

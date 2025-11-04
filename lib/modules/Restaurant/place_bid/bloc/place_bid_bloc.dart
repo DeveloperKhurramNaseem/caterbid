@@ -17,15 +17,19 @@ class PlaceBidBloc extends Bloc<PlaceBidEvent, PlaceBidState> {
     });
 
     on<SubmitPlaceBid>(_SubmitPlaceBid);
+    on<ResetPlaceBid>((event, emit) => emit(PlaceBidInitial()));
   }
 
-  Future<void> _SubmitPlaceBid(SubmitPlaceBid event, Emitter<PlaceBidState> emit) async {
-          emit(PlaceBidLoading());
-      try {
-        await repository.placeBid(event.bid);
-        emit(PlaceBidSuccess());
-      } catch (e) {
-        emit(PlaceBidFailure(e.toString()));
-      }
+  Future<void> _SubmitPlaceBid(
+    SubmitPlaceBid event,
+    Emitter<PlaceBidState> emit,
+  ) async {
+    emit(PlaceBidLoading());
+    try {
+      await repository.placeBid(event.bid);
+      emit(PlaceBidSuccess());
+    } catch (e) {
+      emit(PlaceBidFailure(e.toString()));
+    }
   }
 }

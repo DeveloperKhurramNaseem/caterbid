@@ -11,7 +11,7 @@ class GetMyBidsInitial extends GetMyBidsState {}
 class GetMyBidsLoading extends GetMyBidsState {}
 
 class GetMyBidsLoaded extends GetMyBidsState {
-  final List<ProviderMyBidsModel> bids;
+  final List<FormattedProviderBid> bids;
   const GetMyBidsLoaded({required this.bids});
 
   @override

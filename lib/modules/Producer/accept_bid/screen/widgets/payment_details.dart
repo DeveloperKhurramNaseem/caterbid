@@ -1,59 +1,60 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:flutter/material.dart';
-
 import 'payment_row.dart';
-import '../../model/payment_model.dart';
 
 class PaymentDetails extends StatelessWidget {
-  final PaymentModel payment;
+  final String title;
+  final String location;
+  final String date;
+  final double amount;
 
-  const PaymentDetails({super.key, required this.payment});
+  const PaymentDetails({
+    super.key,
+    required this.title,
+    required this.location,
+    required this.date,
+    required this.amount,
+  });
 
   @override
   Widget build(BuildContext context) {
     final fontTitle = Responsive.responsiveSize(context, 18, 20, 22);
     final fontSub = Responsive.responsiveSize(context, 14, 15, 16);
 
-    final total = payment.subtotal + payment.platformFee;
+    final subtotal = amount;
+    final platformFee = subtotal * 0.05; // Example: 5% platform fee
+    final total = subtotal + platformFee;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title Row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              payment.title,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: fontTitle,
-                color: AppColors.textDark,
-              ),
-            ),
-            Text(
-              payment.date,
-              style: TextStyle(
-                fontSize: fontSub,
-                color: AppColors.textDark.withOpacity(0.7),
-              ),
-            ),
+            Text(title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: fontTitle,
+                  color: AppColors.textDark,
+                )),
+            Text(date,
+                style: TextStyle(
+                  fontSize: fontSub,
+                  color: AppColors.textDark.withOpacity(0.7),
+                )),
           ],
         ),
         const SizedBox(height: 4),
-        Text(
-          payment.location,
-          style: TextStyle(
-            fontSize: fontSub,
-            color: AppColors.textDark.withOpacity(0.7),
-          ),
-        ),
+        Text(location,
+            style: TextStyle(
+              fontSize: fontSub,
+              color: AppColors.textDark.withOpacity(0.7),
+            )),
         const SizedBox(height: 25),
-
-        PaymentRow(title: "Subtotal", amount: payment.subtotal),
+        PaymentRow(title: "Subtotal", amount: subtotal),
         const SizedBox(height: 10),
-        PaymentRow(title: "Platform Fee", amount: payment.platformFee),
+        PaymentRow(title: "Platform Fee", amount: platformFee),
         const SizedBox(height: 10),
         PaymentRow(title: "Total", amount: total, isTotal: true),
       ],

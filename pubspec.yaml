@@ -50,12 +50,16 @@ dependencies:
   #Location
   geocoding: ^4.0.0
   geolocator: ^14.0.2
+  google_maps_flutter: ^2.13.1
+  google_places_flutter: ^2.1.1
 
   #Internet Request
   http: ^1.2.0
   equatable: ^2.0.7
   http_parser: ^4.1.2
   url_launcher: ^6.3.2
+  webview_flutter: ^4.13.0
+
 
 
   #Storage

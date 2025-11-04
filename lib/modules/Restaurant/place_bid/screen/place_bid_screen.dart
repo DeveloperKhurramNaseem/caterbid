@@ -3,6 +3,7 @@ import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/network/api_exception.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:caterbid/modules/Restaurant/home/model/formatted_request_model.dart';
+import 'package:caterbid/modules/Restaurant/my_bids/bloc/get_my_bids_bloc.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/bloc/place_bid_bloc.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/widgets/catering_details_card.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/widgets/place_bid_appbar.dart';
@@ -27,9 +28,13 @@ class PlaceBidScreen extends StatelessWidget {
       body: BlocConsumer<PlaceBidBloc, PlaceBidState>(
         listener: (context, state) {
           if (state is PlaceBidSuccess) {
+              context.read<GetMyBidsBloc>().add(FetchMyBidsEvent());
+
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Bid placed successfully!')),
             );
+            
+            
             context.pop();
           } else if (state is PlaceBidFailure) {
             final errorMessage = ApiErrorHandler.errorMessage(state.error);

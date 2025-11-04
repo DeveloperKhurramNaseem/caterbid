@@ -1,5 +1,6 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
+import 'package:caterbid/core/widgets/error_banner.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';
 import 'package:caterbid/modules/auth/signup/bloc/sign_up_bloc.dart';
 import 'package:caterbid/modules/auth/signup/bloc/sign_up_state.dart';
@@ -23,21 +24,16 @@ class SignUpScreen extends StatelessWidget {
     return BlocConsumer<SignUpBloc, SignUpState>(
       listener: (context, state) {
         if (state is SignUpSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sign up successful! Please verify your email.')),
-          );
-          context.push(
-            VerifyEmailScreen.path,
-            extra: state.data, 
-          );
-        } else if (state is SignUpFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error)),
-          );
+          context.push(VerifyEmailScreen.path, extra: state.data);
         }
       },
       builder: (context, state) {
         final isLoading = state is SignUpLoading;
+        String? errorMessage;
+
+        if (state is SignUpFailure) {
+          errorMessage = state.error;
+        }
 
         return LoaderOverlay(
           isLoading: isLoading,
@@ -56,10 +52,17 @@ class SignUpScreen extends StatelessWidget {
                       children: [
                         SizedBox(height: h * 0.02),
                         const SignUpHeading(),
-                        SizedBox(height: h * 0.03),
+                        SizedBox(height: h * 0.01),
+
+                        // 🔴 Show error banner on top of form
+                        if (errorMessage != null)
+                          ErrorBanner(message: errorMessage),
+                        SizedBox(height: h * 0.02),
                         SignUpForm(
                           onSubmit: (model) {
-                            context.read<SignUpBloc>().add(SignUpButtonPressed(model));
+                            context.read<SignUpBloc>().add(
+                              SignUpButtonPressed(model),
+                            );
                           },
                         ),
                         SizedBox(height: h * 0.03),

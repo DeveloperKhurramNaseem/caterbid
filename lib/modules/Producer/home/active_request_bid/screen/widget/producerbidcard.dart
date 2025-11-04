@@ -1,6 +1,8 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
+import 'package:caterbid/core/utils/helpers/formatted_date.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
+import 'package:caterbid/modules/Producer/home/active_request_bid/model/formatted_bid_model.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/utils/responsive.dart';
 import 'package:go_router/go_router.dart';
@@ -9,24 +11,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:caterbid/core/network/api_endpoints.dart';
 
 class ProducerBidCard extends StatelessWidget {
-  final String? attachmentImageUrl;
-  final String? profileImageUrl; // new: provider profile picture
-  final String name;
-  final String price;
-  final String location;
-  final String date;
-  final String description;
+  final FormattedBidModel bid;
 
-  const ProducerBidCard({
-    super.key,
-    this.attachmentImageUrl,
-    this.profileImageUrl,
-    required this.name,
-    required this.price,
-    required this.location,
-    required this.date,
-    required this.description,
-  });
+  const ProducerBidCard({super.key, required this.bid});
 
   bool _isImageFile(String url) {
     final extension = path.extension(url).toLowerCase();
@@ -57,70 +44,57 @@ class ProducerBidCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Provider info
           Row(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: profileImageUrl != null
+                child: bid.providerProfileUrl != null
                     ? Image.network(
                         Uri.parse(ApiEndpoints.baseUrl)
-                            .resolve(profileImageUrl!)
+                            .resolve(bid.providerProfileUrl!)
                             .toString(),
                         height: h * 0.08,
                         width: h * 0.08,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/icons/app_icon.png',
-                            height: h * 0.08,
-                            width: h * 0.08,
-                            fit: BoxFit.cover,
-                          );
-                        },
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset('assets/icons/app_icon.png',
+                                height: h * 0.08, width: h * 0.08),
                       )
-                    : Image.asset(
-                        'assets/icons/app_icon.png',
-                        height: h * 0.08,
-                        width: h * 0.08,
-                        fit: BoxFit.cover,
-                      ),
+                    : Image.asset('assets/icons/app_icon.png',
+                        height: h * 0.08, width: h * 0.08),
               ),
               SizedBox(width: w * 0.03),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: w * 0.04,
-                      ),
-                    ),
-                    Text(
-                      price,
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.w600,
-                        fontSize: w * 0.035,
-                      ),
-                    ),
-                    Text(location, style: TextStyle(fontSize: w * 0.033)),
-                    Text(date, style: TextStyle(fontSize: w * 0.033)),
+                    Text(bid.providerCompany,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: w * 0.04)),
+                    Text("\$${bid.amountDollars} / ${bid.numPeople} people",
+                        style: TextStyle(
+                            color: Colors.orange,
+                            fontWeight: FontWeight.w600,
+                            fontSize: w * 0.035)),
+                    Text(bid.formattedLocation, style: TextStyle(fontSize: w * 0.033)),
+                    Text(DateFormatter.fullDateTime(bid.createdAt),
+                        style: TextStyle(fontSize: w * 0.033)),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: h * 0.01),
-          Text(description, style: TextStyle(fontSize: w * 0.034)),
 
-          if (attachmentImageUrl != null) ...[
+          SizedBox(height: h * 0.01),
+          Text(bid.description, style: TextStyle(fontSize: w * 0.034)),
+
+          if (bid.attachmentUrl != null) ...[
             SizedBox(height: h * 0.012),
             GestureDetector(
               onTap: () async {
                 try {
-                  await _openAttachment(attachmentImageUrl!);
+                  await _openAttachment(bid.attachmentUrl!);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to open attachment: $e')),
@@ -144,7 +118,7 @@ class ProducerBidCard extends StatelessWidget {
             height: h * 0.055,
             child: ElevatedButton(
               onPressed: () {
-                context.push(PaymentScreen.path);
+                context.push(PaymentScreen.path, extra: bid);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,

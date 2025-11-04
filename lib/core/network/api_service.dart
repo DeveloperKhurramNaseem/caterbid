@@ -211,6 +211,21 @@ class ApiService {
   }
 }
 
+// -------------------------------------------------
+// DELETE request
+// -------------------------------------------------
+Future<dynamic> delete(String url, Map map, {bool includeAuth = true}) async {
+  final headers = includeAuth ? await _getHeaders() : _baseHeaders;
+  _logRequest("DELETE", url);
+
+  try {
+    final response = await http.delete(Uri.parse(url), headers: headers);
+    return _handleResponse(response);
+  } catch (error) {
+    throw ApiErrorHandler.handle(error);
+  }
+}
+
 
   // -------------------------------------------------
   //  Response Handler
@@ -240,6 +255,8 @@ class ApiService {
       return true;
     }());
   }
+
+
 
   void _logResponse(http.Response response) {
     assert(() {

@@ -12,6 +12,7 @@ class BidModel {
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
+  String? formattedLocation; // <-- human-readable address
 
   BidModel({
     required this.id,
@@ -115,6 +116,7 @@ class BidProvider {
   final String name;
   final String companyName;
   final String? profilePicture;
+
 
   BidProvider({
     required this.id,

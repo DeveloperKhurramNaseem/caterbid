@@ -46,7 +46,7 @@ class HeaderProfile extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: avatarRadius,
-              backgroundColor: AppColors.appBackground,
+              backgroundColor: AppColors.textDark,
               backgroundImage: hasImage ? NetworkImage(profileImageUrl!) : null,
               child: !hasImage
                   ? Text(

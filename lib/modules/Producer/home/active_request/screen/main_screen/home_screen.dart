@@ -1,5 +1,6 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
 import 'package:caterbid/modules/Producer/home/active_request/bloc/producer_home_bloc.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/widget/error_state.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/widget/home_appbar.dart';
@@ -27,6 +28,12 @@ class _ProducerHomeScreenState extends State<ProducerHomeScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     context.read<ProducerHomeBloc>().add(FetchProducerRequests());
+
+    // Fetch latest profile from API
+    context.read<RequesteeProfileBloc>().add(
+      LoadRequesteeProfileEvent(),
+      
+    );
   }
 
   @override

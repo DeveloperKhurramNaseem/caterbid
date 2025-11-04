@@ -18,3 +18,10 @@ class FilterBidsEvent extends GetMyBidsEvent {
   @override
   List<Object?> get props => [isActive];
 }
+
+class RefreshMyBidsEvent extends GetMyBidsEvent {
+  const RefreshMyBidsEvent();
+  
+  @override
+  List<Object?> get props => [];
+}

@@ -90,8 +90,8 @@ class BidRequestCard extends StatelessWidget {
 
           /// ---- Icons Info ----
           Wrap(
-            runSpacing: 6,
-            spacing: 12,
+            spacing: Responsive.responsiveSize(context, 10, 12, 14),
+            runSpacing: Responsive.responsiveSize(context, 6, 8, 10),
             children: [
               IconInfoRow(icon: Icons.calendar_today, text: dateText),
               IconInfoRow(icon: Icons.access_time, text: timeText),

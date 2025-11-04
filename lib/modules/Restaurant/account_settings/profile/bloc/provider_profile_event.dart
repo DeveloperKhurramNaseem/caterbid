@@ -77,4 +77,10 @@ class ValidateAndSaveProfileEvent extends ProviderProfileEvent {
       ];
 }
 
+class UpdateLocationEvent extends ProviderProfileEvent {
+  final double lat;
+  final double lng;
+  const UpdateLocationEvent(this.lat, this.lng);
+}
+
 class LogoutProviderProfileEvent extends ProviderProfileEvent {}
