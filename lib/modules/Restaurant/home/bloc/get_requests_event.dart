@@ -26,12 +26,12 @@ class _RefreshRequests extends GetRequestsEvent{
 }
 class SearchRequestsEvent extends GetRequestsEvent {
   final String keyword;
-  SearchRequestsEvent(this.keyword);
+  const SearchRequestsEvent(this.keyword);
 }
 
 class SortRequestsEvent extends GetRequestsEvent {
   final String sortBy; // "oldest" or "latest"
-  SortRequestsEvent(this.sortBy);
+  const SortRequestsEvent(this.sortBy);
 }
 
 
