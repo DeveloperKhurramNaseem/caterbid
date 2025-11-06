@@ -1,6 +1,6 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/core/utils/user_session.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/user_session.dart';
 import 'package:caterbid/core/widgets/app_logo.dart';
 import 'package:caterbid/core/widgets/error_banner.dart';
 import 'package:caterbid/core/widgets/loader_overlay.dart';

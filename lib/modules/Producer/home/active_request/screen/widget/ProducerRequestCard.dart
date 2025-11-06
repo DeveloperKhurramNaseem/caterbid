@@ -1,5 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/Producer/home/active_request/model/formatted_producer_request.dart';
 import 'package:flutter/material.dart';
 

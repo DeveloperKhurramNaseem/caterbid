@@ -8,7 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:caterbid/core/widgets/custom_button.dart';
 import 'package:caterbid/modules/auth/signup/model/signup_request.dart';
 import 'package:caterbid/modules/auth/signup/screen/widget/agree_policy_row.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(SignUpRequestModel) onSubmit;

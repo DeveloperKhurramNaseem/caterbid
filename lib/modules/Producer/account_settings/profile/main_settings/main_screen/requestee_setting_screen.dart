@@ -1,5 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/widgets/custom_appbar.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/widgets/header_profile.dart';

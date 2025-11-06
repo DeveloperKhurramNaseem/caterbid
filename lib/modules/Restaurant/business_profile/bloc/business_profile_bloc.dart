@@ -26,6 +26,7 @@ class BusinessProfileBloc extends Bloc<BusinessProfileEvent, BusinessProfileStat
     if (event.model.businessType.isEmpty ||
         event.model.companyName.isEmpty ||
         event.model.phoneNumber.isEmpty ||
+         event.model.address.isEmpty ||
         event.profilePicture == null) {
       emit(BusinessProfileFailure("Please fill all required fields"));
       return;

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:caterbid/core/utils/helpers/secure_storage.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/auth_Utils.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/secure_storage.dart';
 import 'package:equatable/equatable.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/model/requestee_profile_model.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/model/update_requestee_model.dart';
@@ -95,7 +96,7 @@ class RequesteeProfileBloc
     Emitter<RequesteeProfileState> emit,
   ) async {
     await repo.clearCache();
-   await SecureStorage.clearToken();
+    await AuthUtils.cleanUpTokenData();
 
     emit(RequesteeProfileInitial());
   }

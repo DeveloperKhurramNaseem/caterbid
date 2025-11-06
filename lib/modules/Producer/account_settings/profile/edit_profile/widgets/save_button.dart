@@ -1,6 +1,6 @@
 import 'package:caterbid/core/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class SaveButton extends StatelessWidget {
   final VoidCallback? onPressed; 

@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:caterbid/core/utils/helpers/check_location_enabled.dart';
-import 'package:caterbid/core/utils/prefs/shared_preferences.dart';
+import 'package:caterbid/core/utils/helpers/location/check_location_enabled.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/shared_preferences.dart';
 import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/core/widgets/contact_number_field.dart';
 import 'package:caterbid/core/widgets/custom_textfield.dart';
 import 'package:caterbid/core/widgets/navigationbar_title.dart';
@@ -107,19 +107,24 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
             body: BlocListener<BusinessProfileBloc, BusinessProfileState>(
               listener: (context, state) async {
                 if (state is BusinessProfileSuccess) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  // Capture context-dependent references first
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  final profileBloc = context.read<ProviderProfileBloc>();
+                  final navigate = context.go; // capture navigation function
+
+                  // Show SnackBar immediately
+                  scaffoldMessenger.showSnackBar(
                     const SnackBar(
                       content: Text('Business Profile Setup Successfully!'),
                     ),
                   );
-                  // ✅ Update locationRequired flag for splash screen
+
+                  // Async call
                   await SharedPrefs.saveLocationRequired(false);
 
-                  context.read<ProviderProfileBloc>().add(
-                    LoadProviderProfileEvent(),
-                  );
-
-                  context.go(MyBidsScreen.path);
+                  // Safe to use captured references now
+                  profileBloc.add(LoadProviderProfileEvent());
+                  navigate(MyBidsScreen.path);
                 } else if (state is BusinessProfileFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -129,6 +134,7 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                   );
                 }
               },
+
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
                   horizontal: horizontal,
@@ -272,6 +278,7 @@ class _SetBusinessProfileScreenState extends State<SetBusinessProfileScreen> {
                             phoneNumber: _phoneController.text.trim(),
                             lat: _selectedLat!,
                             lng: _selectedLng!,
+                            address: _locationController.text.trim(),
                           );
 
                           context.read<BusinessProfileBloc>().add(

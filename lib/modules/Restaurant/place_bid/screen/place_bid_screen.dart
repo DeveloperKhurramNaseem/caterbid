@@ -1,7 +1,7 @@
 // modules/Restaurant/place_bid/screen/place_bid_screen.dart
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/network/api_exception.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/Restaurant/home/model/formatted_request_model.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/bloc/get_my_bids_bloc.dart';
 import 'package:caterbid/modules/Restaurant/place_bid/bloc/place_bid_bloc.dart';

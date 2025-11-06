@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class ProducerBidCardShimmer extends StatelessWidget {
   const ProducerBidCardShimmer({super.key});

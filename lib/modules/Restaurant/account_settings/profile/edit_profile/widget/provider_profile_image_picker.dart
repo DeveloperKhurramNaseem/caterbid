@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/helpers/file_validation_helper.dart';
-import 'package:caterbid/core/utils/helpers/image_picker_helper.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/helpers/validation/file_validation_helper.dart';
+import 'package:caterbid/core/utils/ui/image_picker_helper.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:flutter/material.dart';
 
 class ProviderProfileImagePicker extends StatefulWidget {

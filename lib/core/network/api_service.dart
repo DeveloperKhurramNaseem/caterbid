@@ -1,25 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:caterbid/core/utils/logger.dart';
+import 'package:caterbid/core/utils/helpers/logs/logger.dart';
 import 'package:http_parser/http_parser.dart'; // Added for MediaType
 
-import 'package:caterbid/core/utils/helpers/secure_storage.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/secure_storage.dart';
 import 'package:caterbid/core/network/api_exception.dart';
 import 'package:path/path.dart' as path;
 
 class ApiService {
-  final Map<String, String> _baseHeaders = {
-    'Content-Type': 'application/json',
-  };
+  final Map<String, String> _baseHeaders = {'Content-Type': 'application/json'};
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await SecureStorage.getToken();
     if (token != null) {
-      return {
-        ..._baseHeaders,
-        'Authorization': 'Bearer $token',
-      };
+      return {..._baseHeaders, 'Authorization': 'Bearer $token'};
     }
     return _baseHeaders;
   }
@@ -49,11 +44,25 @@ class ApiService {
   // -------------------------------------------------
   //  GET
   // -------------------------------------------------
-  Future<dynamic> get(String url, {bool includeAuth = true}) async {
+  Future<dynamic> get(
+    String url, {
+    Map<String, String>? queryParams,
+    bool includeAuth = true,
+  }) async {
     final headers = includeAuth ? await _getHeaders() : _baseHeaders;
-    _logRequest("GET", url);
+
+    // Build URI with query params
+    Uri uri;
+    if (queryParams != null && queryParams.isNotEmpty) {
+      uri = Uri.parse(url).replace(queryParameters: queryParams);
+    } else {
+      uri = Uri.parse(url);
+    }
+
+    _logRequest("GET", uri.toString());
+
     try {
-      final response = await http.get(Uri.parse(url), headers: headers);
+      final response = await http.get(uri, headers: headers);
       return _handleResponse(response);
     } catch (error) {
       throw ApiErrorHandler.handle(error);
@@ -92,8 +101,7 @@ class ApiService {
     String? fileFieldName = "attachment",
     bool includeAuth = true,
   }) async {
-
-  print('📤 PUT endpoint called: $url');
+    print('📤 PUT endpoint called: $url');
 
     final headers = await _getHeaders();
     headers.remove('Content-Type'); // Let http handle multipart content type
@@ -120,7 +128,9 @@ class ApiService {
           break;
         default:
           mimeType = 'application/octet-stream';
-          AppLogger.log('Warning: Unknown file extension $extension, using fallback MIME type');
+          AppLogger.log(
+            'Warning: Unknown file extension $extension, using fallback MIME type',
+          );
       }
 
       AppLogger.log(
@@ -142,7 +152,9 @@ class ApiService {
     try {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
-      AppLogger.log('Response Status: ${response.statusCode}, Body: ${response.body}');
+      AppLogger.log(
+        'Response Status: ${response.statusCode}, Body: ${response.body}',
+      );
       return _handleResponse(response);
     } catch (error) {
       AppLogger.log('Error uploading file: $error');
@@ -150,82 +162,83 @@ class ApiService {
     }
   }
 
-    // -------------------------------------------------
+  // -------------------------------------------------
   // Multipart PUT (Form-Data)
   // -------------------------------------------------
 
   Future<dynamic> putMultipart(
-  String url, {
-  required Map<String, String> fields,
-  File? file,
-  String? fileFieldName = "attachment",
-  bool includeAuth = true,
-}) async {
+    String url, {
+    required Map<String, String> fields,
+    File? file,
+    String? fileFieldName = "attachment",
+    bool includeAuth = true,
+  }) async {
+    final headers = await _getHeaders();
+    headers.remove('Content-Type'); // Let http handle multipart
 
-  
-  final headers = await _getHeaders();
-  headers.remove('Content-Type'); // Let http handle multipart
+    _logRequest("PUT (Multipart)", url, fields);
 
-  _logRequest("PUT (Multipart)", url, fields);
+    final request = http.MultipartRequest('PUT', Uri.parse(url))
+      ..fields.addAll(fields)
+      ..headers.addAll(headers);
 
-  final request = http.MultipartRequest('PUT', Uri.parse(url))
-    ..fields.addAll(fields)
-    ..headers.addAll(headers);
+    if (file != null) {
+      final extension = path.extension(file.path).toLowerCase();
+      String mimeType;
+      switch (extension) {
+        case '.jpg':
+        case '.jpeg':
+          mimeType = 'image/jpeg';
+          break;
+        case '.png':
+          mimeType = 'image/png';
+          break;
+        case '.pdf':
+          mimeType = 'application/pdf';
+          break;
+        default:
+          mimeType = 'application/octet-stream';
+          AppLogger.log(
+            'Warning: Unknown file extension $extension, using fallback MIME type',
+          );
+      }
 
-  if (file != null) {
-    final extension = path.extension(file.path).toLowerCase();
-    String mimeType;
-    switch (extension) {
-      case '.jpg':
-      case '.jpeg':
-        mimeType = 'image/jpeg';
-        break;
-      case '.png':
-        mimeType = 'image/png';
-        break;
-      case '.pdf':
-        mimeType = 'application/pdf';
-        break;
-      default:
-        mimeType = 'application/octet-stream';
-        AppLogger.log('Warning: Unknown file extension $extension, using fallback MIME type');
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          fileFieldName!,
+          file.path,
+          contentType: MediaType.parse(mimeType),
+        ),
+      );
     }
 
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        fileFieldName!,
-        file.path,
-        contentType: MediaType.parse(mimeType),
-      ),
-    );
+    try {
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      AppLogger.log(
+        'Response Status: ${response.statusCode}, Body: ${response.body}',
+      );
+      return _handleResponse(response);
+    } catch (error) {
+      AppLogger.log('Error uploading file: $error');
+      throw ApiErrorHandler.handle(error);
+    }
   }
 
-  try {
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-    AppLogger.log('Response Status: ${response.statusCode}, Body: ${response.body}');
-    return _handleResponse(response);
-  } catch (error) {
-    AppLogger.log('Error uploading file: $error');
-    throw ApiErrorHandler.handle(error);
+  // -------------------------------------------------
+  // DELETE request
+  // -------------------------------------------------
+  Future<dynamic> delete(String url, Map map, {bool includeAuth = true}) async {
+    final headers = includeAuth ? await _getHeaders() : _baseHeaders;
+    _logRequest("DELETE", url);
+
+    try {
+      final response = await http.delete(Uri.parse(url), headers: headers);
+      return _handleResponse(response);
+    } catch (error) {
+      throw ApiErrorHandler.handle(error);
+    }
   }
-}
-
-// -------------------------------------------------
-// DELETE request
-// -------------------------------------------------
-Future<dynamic> delete(String url, Map map, {bool includeAuth = true}) async {
-  final headers = includeAuth ? await _getHeaders() : _baseHeaders;
-  _logRequest("DELETE", url);
-
-  try {
-    final response = await http.delete(Uri.parse(url), headers: headers);
-    return _handleResponse(response);
-  } catch (error) {
-    throw ApiErrorHandler.handle(error);
-  }
-}
-
 
   // -------------------------------------------------
   //  Response Handler
@@ -239,8 +252,7 @@ Future<dynamic> delete(String url, Map map, {bool includeAuth = true}) async {
       if (decoded is Map<String, dynamic> || decoded is List) return decoded;
       throw ApiException(message: "Invalid JSON structure");
     } else {
-      final body =
-          response.body.isNotEmpty ? jsonDecode(response.body) : {};
+      final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
       throw ApiErrorHandler.fromResponse(response.statusCode, body);
     }
   }
@@ -255,8 +267,6 @@ Future<dynamic> delete(String url, Map map, {bool includeAuth = true}) async {
       return true;
     }());
   }
-
-
 
   void _logResponse(http.Response response) {
     assert(() {

@@ -4,7 +4,7 @@ import 'package:caterbid/modules/Producer/account_settings/account_security_sett
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/sheet/widgets/setting_tile.dart';
 import 'package:caterbid/modules/Producer/account_settings/account_security_settings/sheet/widgets/sheet_header.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:go_router/go_router.dart';
 
 

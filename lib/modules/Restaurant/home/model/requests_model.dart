@@ -47,6 +47,7 @@ class ProviderRequest {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? acceptedBidId;
+  final String? address;
 
   ProviderRequest({
     required this.id,
@@ -62,6 +63,7 @@ class ProviderRequest {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    this.address,
     this.acceptedBidId,
   });
 
@@ -82,7 +84,8 @@ class ProviderRequest {
       status: json['status'] ?? '',
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
-      acceptedBidId: json['acceptedBidId'],
+      acceptedBidId: json['acceptedBidId'], 
+      address: json['address'],
     );
   }
 }

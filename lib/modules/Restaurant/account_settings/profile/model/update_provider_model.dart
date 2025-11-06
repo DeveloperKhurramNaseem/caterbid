@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
 
 class UpdateProviderModel {
@@ -10,11 +9,9 @@ class UpdateProviderModel {
   final String phoneNumber;
   final double lat;
   final double lng;
+  final String? address; 
   final File? file;
   final String? profilePicture;
-
-  // NEW – human readable address (only for UI)
-  final String? formattedAddress;
 
   UpdateProviderModel({
     required this.name,
@@ -24,9 +21,9 @@ class UpdateProviderModel {
     required this.phoneNumber,
     required this.lat,
     required this.lng,
+    this.address,
     this.file,
     this.profilePicture,
-    this.formattedAddress,
   });
 
   Map<String, String> toFields() => {
@@ -37,6 +34,7 @@ class UpdateProviderModel {
         'phoneNumber': phoneNumber,
         'lat': lat.toString(),
         'lng': lng.toString(),
+        if (address != null) 'address': address!,
       };
 
   factory UpdateProviderModel.fromProviderModel(ProviderModel model) {
@@ -48,6 +46,7 @@ class UpdateProviderModel {
       phoneNumber: model.phoneNumber ?? '',
       lat: model.latitude ?? 37.7749,
       lng: model.longitude ?? -122.4194,
+      address: model.address, 
       profilePicture: model.profilePicture,
     );
   }

@@ -6,10 +6,21 @@ import 'package:caterbid/modules/Restaurant/home/model/requests_model.dart';
 class ProviderRequestsRepository {
   final ApiService _apiService = ApiService();
 
-  /// Fetch all open requests for the provider
-  Future<List<ProviderRequest>> fetchProviderRequests() async {
+  /// Fetch provider requests with optional search and sort
+  Future<List<ProviderRequest>> fetchProviderRequests({
+    String? search,
+    String? sort, // "oldest" or "latest"
+  }) async {
     try {
-      final response = await _apiService.get(ApiEndpoints.providerRequests);
+      // Build query params
+      final queryParams = <String, String>{};
+      if (search != null && search.isNotEmpty) queryParams['search'] = search;
+      if (sort != null && sort.isNotEmpty) queryParams['sort'] = sort;
+
+      final response = await _apiService.get(
+        ApiEndpoints.providerRequests,
+        queryParams: queryParams,
+      );
 
       if (response is List) {
         return response

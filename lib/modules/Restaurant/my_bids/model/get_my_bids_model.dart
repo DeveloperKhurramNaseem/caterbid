@@ -74,6 +74,9 @@ class RequestDetail {
   final String status;
   final bool isDeleted;
   final Location location;
+  final String requesteeName;
+  final int budgetDollars;
+  final String? address; // <-- NEW
 
   RequestDetail({
     required this.id,
@@ -83,6 +86,9 @@ class RequestDetail {
     required this.status,
     required this.isDeleted,
     required this.location,
+    required this.requesteeName,
+    required this.budgetDollars,
+    this.address, // <-- NEW
   });
 
   factory RequestDetail.fromJson(Map<String, dynamic> json) {
@@ -94,6 +100,9 @@ class RequestDetail {
       status: json['status'] ?? '',
       isDeleted: json['isDeleted'] ?? false,
       location: Location.fromJson(json['location'] ?? {}),
+      requesteeName: json['requesteeId']?['name'] ?? 'Unknown',
+      budgetDollars: json['budgetDollars'] ?? 0,
+      address: json['address'], // <-- NEW
     );
   }
 
@@ -106,9 +115,13 @@ class RequestDetail {
       'status': status,
       'isDeleted': isDeleted,
       'location': location.toJson(),
+      'requesteeName': requesteeName,
+      'budgetDollars': budgetDollars,
+      'address': address, // <-- NEW
     };
   }
 }
+
 
 class Location {
   final String type;

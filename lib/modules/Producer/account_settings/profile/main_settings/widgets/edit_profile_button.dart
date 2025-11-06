@@ -2,7 +2,7 @@ import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:go_router/go_router.dart';
 
 class EditProfileButton extends StatelessWidget {

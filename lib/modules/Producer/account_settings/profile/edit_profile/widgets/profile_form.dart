@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/core/widgets/contact_number_field.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/model/requestee_profile_model.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/name_fields.dart';

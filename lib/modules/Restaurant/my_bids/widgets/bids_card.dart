@@ -1,7 +1,7 @@
 import 'package:caterbid/modules/Restaurant/my_bids/widgets/info_text.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'mark_as_fullfilled.dart';
 import 'status_tag.dart';
 import 'card_header.dart';
@@ -57,99 +57,61 @@ class BidsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// --- Header ---
+              /// --- Header (now contains Title + Posted By) ---
               CardHeader(
                 title: title,
                 amount: amount,
                 peopleCount: peopleCount,
                 postedBy: postedBy,
               ),
-              // SizedBox(height: h * 0.001),
 
-              /// --- Meta Info ---
-              InfoText(value: postedBy),
-              SizedBox(height: h * 0.005),
+              // ---- Meta Info (location & date only) ----
+              SizedBox(height: h * 0.01),
               InfoText(value: location),
-              SizedBox(height: h * 0.005),
+              SizedBox(height: h * 0.004),
               InfoText(value: dateTime),
 
-              SizedBox(height: h * 0.005),
+              SizedBox(height: h * 0.008),
 
               const Divider(height: 18, color: Color(0xFFE0E0E0)),
 
               /// --- My Bid Details Section ---
               if (hasMyBid) ...[
-                Text(
-                  "My Bid Details",
-                  style: TextStyle(
-                    fontSize: Responsive.responsiveSize(context, 14, 16, 18),
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                SizedBox(height: h * 0.008),
-
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    /// Description
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        (myBidDescription?.isNotEmpty ?? false)
-                            ? myBidDescription!
-                            : "No description provided.",
-                        style: TextStyle(
-                          color: Colors.grey.shade800,
-                          fontSize: Responsive.responsiveSize(
-                            context,
-                            12,
-                            14,
-                            15,
-                          ),
-                          height: 1.4,
-                        ),
+                    Text(
+                      "My Bid Details",
+                      style: TextStyle(
+                        fontSize:
+                            Responsive.responsiveSize(context, 14, 16, 18),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
                       ),
                     ),
-                    SizedBox(width: w * 0.03),
-
-                    /// Bid Amount
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          // Text(
-                          //   "Bid Amount",
-                          //   style: TextStyle(
-                          //     color: Colors.grey.shade600,
-                          //     fontSize: Responsive.responsiveSize(
-                          //       context,
-                          //       11,
-                          //       13,
-                          //       14,
-                          //     ),
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
-                          // SizedBox(height: h * 0.002),
-                          Text(
-                            myBidAmount!,
-                            style: TextStyle(
-                              fontSize: Responsive.responsiveSize(
-                                context,
-                                13,
-                                15,
-                                17,
-                              ),
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.icon,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      myBidAmount!,
+                      style: TextStyle(
+                        fontSize:
+                            Responsive.responsiveSize(context, 13, 15, 17),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.icon,
                       ),
                     ),
                   ],
+                ),
+                SizedBox(height: h * 0.006),
+                Text(
+                  (myBidDescription?.isNotEmpty ?? false)
+                      ? myBidDescription!
+                      : "No description provided.",
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize:
+                        Responsive.responsiveSize(context, 12, 14, 15),
+                    height: 1.4,
+                  ),
                 ),
               ],
 

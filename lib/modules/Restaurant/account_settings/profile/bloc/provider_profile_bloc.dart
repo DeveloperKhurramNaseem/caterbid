@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:caterbid/core/utils/helpers/location_formatter.dart';
-import 'package:caterbid/core/utils/helpers/secure_storage.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/auth_Utils.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/secure_storage.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/model/update_provider_model.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/repository/provider_profile_repository.dart';
@@ -34,30 +34,22 @@ class ProviderProfileBloc extends Bloc<ProviderProfileEvent, ProviderProfileStat
     }
   }
 
-  Future<void> _onUpdateLocation(
-    UpdateLocationEvent event,
-    Emitter<ProviderProfileState> emit,
-  ) async {
-    // Only update UI locally — no API call
-    if (state is! ProviderProfileLoaded) return;
-    final current = (state as ProviderProfileLoaded).user;
+Future<void> _onUpdateLocation(
+  UpdateLocationEvent event,
+  Emitter<ProviderProfileState> emit,
+) async {
+  if (state is! ProviderProfileLoaded) return;
+  final current = (state as ProviderProfileLoaded).user;
 
-    try {
-      final formattedAddress =
-await LocationFormatter.getFormattedAddress(
-  latitude: event.lat,
-  longitude: event.lng,
-);
-      final updatedUser = current.copyWith(
-        latitude: event.lat,
-        longitude: event.lng,
-      );
+  final updatedUser = current.copyWith(
+    latitude: event.lat,
+    longitude: event.lng,
+    address: event.address, 
+  );
 
-      emit(ProviderProfileLoaded(updatedUser)); // Local state only
-    } catch (e) {
-      emit(ProviderProfileError('Failed to update location: $e'));
-    }
-  }
+  emit(ProviderProfileLoaded(updatedUser)); // Local state only
+}
+
 
   Future<void> _onValidateAndSave(
     ValidateAndSaveProfileEvent event,
@@ -79,6 +71,8 @@ await LocationFormatter.getFormattedAddress(
       phoneNumber: event.phoneNumber,
       lat: event.lat,
       lng: event.lng,
+          address: event.address, 
+
       profilePicture: event.profilePicture,
     ));
   }
@@ -105,6 +99,7 @@ await LocationFormatter.getFormattedAddress(
           lat: event.lat,
           lng: event.lng,
           file: event.profilePicture,
+          address: event.address
         ),
       );
 
@@ -119,7 +114,7 @@ await LocationFormatter.getFormattedAddress(
     Emitter<ProviderProfileState> emit,
   ) async {
     await repo.clearCache();
-    await SecureStorage.clearToken();
+      await AuthUtils.cleanUpTokenData();
 
     emit(ProviderProfileInitial());
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'producerbidcard.dart';
 import 'all_bids_bottom_sheet.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/core/utils/helpers/formatter/formatted_date.dart';
 import 'package:caterbid/modules/Producer/home/active_request_bid/model/formatted_bid_model.dart';
 
 class BidsLoadedView extends StatelessWidget {

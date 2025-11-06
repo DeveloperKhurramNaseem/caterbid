@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:caterbid/modules/Producer/my_requests/bloc/requests_bloc.dart';
 import 'package:caterbid/modules/Producer/my_requests/screen/widgets/header_with_tabs.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class MyRequestsScreen extends StatefulWidget {
   static const String path = '/myrequests';

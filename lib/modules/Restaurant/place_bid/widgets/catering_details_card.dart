@@ -1,7 +1,7 @@
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/icon_info_row.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class CateringDetailsCard extends StatelessWidget {
   final String title;

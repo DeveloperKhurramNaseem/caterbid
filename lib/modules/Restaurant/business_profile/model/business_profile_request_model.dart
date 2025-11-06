@@ -5,6 +5,7 @@ class BusinessProfileRequestModel {
   final String phoneNumber;
   final double lat;
   final double lng;
+  final String address;
 
   BusinessProfileRequestModel({
     required this.companyName,
@@ -13,6 +14,7 @@ class BusinessProfileRequestModel {
     required this.phoneNumber,
     required this.lat,
     required this.lng,
+    required this.address,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class BusinessProfileRequestModel {
       "phoneNumber": phoneNumber,
       "lat": lat,
       "lng": lng,
+      "address": address, 
     };
   }
 }

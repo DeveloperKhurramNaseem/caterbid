@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class NavigationbarTitle extends StatelessWidget
     implements PreferredSizeWidget {

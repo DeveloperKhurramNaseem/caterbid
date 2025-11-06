@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'icon_info_row.dart';
 
 class BidRequestCard extends StatelessWidget {

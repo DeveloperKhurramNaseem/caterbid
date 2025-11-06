@@ -1,8 +1,7 @@
 // formatted_my_bids_model.dart
 
-import 'package:caterbid/core/utils/helpers/location_formatter.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
-import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
+import 'package:caterbid/core/utils/helpers/formatter/formatted_date.dart';
+import 'package:caterbid/core/utils/helpers/formatter/currency_formatted.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/model/get_my_bids_model.dart';
 
 class FormattedProviderBid {
@@ -38,30 +37,16 @@ class MyBidsFormatter {
     final List<FormattedProviderBid> formattedList = [];
 
     for (final bid in bids) {
-      // Get coordinates (lat, lng)
-      final lat = bid.request.location.coordinates.length > 1
-          ? bid.request.location.coordinates[1]
-          : 0.0;
-      final lng = bid.request.location.coordinates.isNotEmpty
-          ? bid.request.location.coordinates[0]
-          : 0.0;
-
-      // Get formatted address
-      final address = await LocationFormatter.getFormattedAddress(
-        latitude: lat,
-        longitude: lng,
-      );
-
       final formatted = FormattedProviderBid(
         id: bid.id,
         title: bid.request.title,
-        postedBy: "Unknown", // TODO: will come from API later
+        postedBy: bid.request.requesteeName,
         formattedDate: DateFormatter.format(bid.request.date),
-        formattedAmount: CurrencyFormatter.format(bid.amountDollars),
+        formattedAmount: CurrencyFormatter.format(bid.request.budgetDollars),
         formattedPeople: bid.request.numPeople,
-        formattedLocation: address,
+        formattedLocation: bid.request.address ?? "Unknown location", 
         description: bid.description ?? "No description provided",
-        myBidAmount: "--", // TODO: waiting for API
+        myBidAmount: CurrencyFormatter.format(bid.amountDollars),
         status: bid.status,
       );
 

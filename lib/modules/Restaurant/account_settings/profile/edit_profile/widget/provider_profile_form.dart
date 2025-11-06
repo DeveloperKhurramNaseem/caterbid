@@ -1,18 +1,18 @@
 import 'dart:io';
-import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
-import 'package:caterbid/modules/Producer/account_settings/profile/edit_profile/widgets/profile_image_picker.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_profile_image_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_business_type_dropdown.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_company_field.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_contact_field.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_description_field.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_save_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
-import 'package:caterbid/modules/Restaurant/account_settings/profile/model/provider_profile_model.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_location_field.dart';
-import 'package:caterbid/core/utils/helpers/location_formatter.dart';
-import 'package:go_router/go_router.dart';
+import 'package:caterbid/modules/Restaurant/account_settings/profile/edit_profile/widget/provider_save_button.dart';
+import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
 
 class ProviderProfileForm extends StatefulWidget {
   final ProviderModel? user;
@@ -54,13 +54,11 @@ class _ProviderProfileFormState extends State<ProviderProfileForm> {
 
     if (widget.user != null) _fillControllers(widget.user!);
 
-
-  // Add listeners that affect the Save button
+    // Add listeners that affect the Save button
     nameController.addListener(_validateFields);
     companyNameController.addListener(_validateFields);
     phoneController.addListener(_validateFields);
     descriptionController.addListener(_validateFields);
-
   }
 
   void _fillControllers(ProviderModel user) {
@@ -73,47 +71,32 @@ class _ProviderProfileFormState extends State<ProviderProfileForm> {
     selectedLat = user.latitude;
     selectedLng = user.longitude;
 
-    locationController.text = 'Business Location';
-    _convertLatLngToAddress();
+    // Show address directly from API
+    locationController.text = user.address ?? 'Business Location';
   }
 
-void _validateFields() {
-  final user = widget.user;
+  void _validateFields() {
+    final user = widget.user;
 
-  final filled = nameController.text.trim().isNotEmpty &&
-      companyNameController.text.trim().isNotEmpty &&
-      phoneController.text.trim().isNotEmpty &&
-      selectedBusinessType != null;
+    final filled = nameController.text.trim().isNotEmpty &&
+        companyNameController.text.trim().isNotEmpty &&
+        phoneController.text.trim().isNotEmpty &&
+        selectedBusinessType != null;
 
-      
+    // Check if any value changed
+    final hasChanges = filled &&
+        (nameController.text.trim() != (user?.name ?? '') ||
+            companyNameController.text.trim() != (user?.companyName ?? '') ||
+            phoneController.text.trim() != (user?.phoneNumber ?? '') ||
+            (descriptionController.text.trim() != (user?.description ?? '')) ||
+            selectedBusinessType != user?.businessType ||
+            pickedImage != null ||
+            selectedLat != user?.latitude ||
+            selectedLng != user?.longitude ||
+            locationController.text.trim() != (user?.address ?? ''));
 
-  // Check if any value changed
-  final hasChanges = filled &&
-      (nameController.text.trim() != (user?.name ?? '') ||
-          companyNameController.text.trim() != (user?.companyName ?? '') ||
-          phoneController.text.trim() != (user?.phoneNumber ?? '') ||
-          (descriptionController.text.trim() != (user?.description ?? '')) ||
-          selectedBusinessType != user?.businessType ||
-          pickedImage != null ||
-          selectedLat != user?.latitude ||
-          selectedLng != user?.longitude);
-
-  setState(() => isSaveEnabled = hasChanges);
-}
-
-  Future<void> _convertLatLngToAddress() async {
-    if (selectedLat == null || selectedLng == null) return;
-    try {
-      final address = await LocationFormatter.getFormattedAddress(
-        latitude: selectedLat!,
-        longitude: selectedLng!,
-      );
-      if (mounted) locationController.text = address ?? 'Unknown location';
-    } catch (_) {
-      if (mounted) locationController.text = 'Failed to fetch address';
-    }
+    setState(() => isSaveEnabled = hasChanges);
   }
-  
 
   Future<void> _pickLocation() async {
     final result = await context.push<Map<String, dynamic>>(
@@ -128,8 +111,7 @@ void _validateFields() {
       locationController.text = result['address'] ?? 'Selected location';
     });
 
-  _validateFields();
-
+    _validateFields();
   }
 
   void _onSave() {
@@ -144,6 +126,7 @@ void _validateFields() {
             phoneNumber: phoneController.text.trim(),
             lat: selectedLat ?? widget.user?.latitude ?? 37.7749,
             lng: selectedLng ?? widget.user?.longitude ?? -122.4194,
+            address: locationController.text.trim(), // <-- include address
             profilePicture: pickedImage,
           ),
         );
@@ -160,7 +143,7 @@ void _validateFields() {
         children: [
           SizedBox(height: h * 0.03),
 
-          ProfileImagePicker(
+          ProviderProfileImagePicker(
             initialImage: user?.profilePicture,
             firstLetter: user?.firstLetter ?? '?',
             onImageChanged: (file) {
@@ -190,10 +173,10 @@ void _validateFields() {
             controller: locationController,
             onChooseFromMap: _pickLocation,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: h * 0.01),
 
           ProviderDescriptionField(controller: descriptionController),
-          SizedBox(height: h * 0.03),
+          SizedBox(height: h * 0.02),
 
           SaveButton(
             isEnabled: isSaveEnabled,

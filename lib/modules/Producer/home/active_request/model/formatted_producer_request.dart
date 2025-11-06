@@ -7,7 +7,7 @@ class FormattedProducerRequest {
   final String formattedDate;
   final String formattedTime;
   final String formattedPeople;
-  final String formattedLocation; // human-readable address
+  final String formattedLocation; 
   final String status;
   final DateTime rawDate;
   final Requestee requestee;

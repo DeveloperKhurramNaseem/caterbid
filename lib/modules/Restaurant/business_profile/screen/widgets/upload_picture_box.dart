@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/helpers/file_validation_helper.dart';
-import 'package:caterbid/core/utils/helpers/image_picker_helper.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/helpers/validation/file_validation_helper.dart';
+import 'package:caterbid/core/utils/ui/image_picker_helper.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/widgets/dashed_border_painter.dart';
 
 class UploadPictureBox extends StatefulWidget {

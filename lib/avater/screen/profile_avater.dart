@@ -1,6 +1,6 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/core/utils/user_session.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/user_session.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/main_settings/main_screen/requestee_setting_screen.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/main_settings/screen/provider_settings_screen.dart';
 import 'package:caterbid/modules/Producer/account_settings/profile/bloc/requestee_profile_bloc.dart';

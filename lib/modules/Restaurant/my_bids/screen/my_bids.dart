@@ -3,7 +3,7 @@ import 'package:caterbid/modules/Restaurant/my_bids/widgets/bids_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/bloc/get_my_bids_bloc.dart';
 import 'package:caterbid/modules/Restaurant/my_bids/widgets/header_with_tabs.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/widegts/bids_header.dart';
@@ -91,7 +91,7 @@ class _MyBidsScreenState extends State<MyBids> {
                             physics:
                                 const AlwaysScrollableScrollPhysics(), // enables pull
                             children: const [
-                              SizedBox(height: 150),
+                              SizedBox(height: 20),
                               Center(
                                 child: Text(
                                   "No bids found",
@@ -116,15 +116,16 @@ class _MyBidsScreenState extends State<MyBids> {
                             final bid = state.bids[index];
                             return BidsCard(
                               title: bid.title,
-                              postedBy: 'Cater Bid',
+                              postedBy: bid.postedBy,
                               location: bid.formattedLocation,
                               dateTime: bid.formattedDate,
-                              amount: bid.formattedAmount,
+                              amount: bid.formattedAmount
+,
                               peopleCount: bid.formattedPeople,
                               status: bid.status,
-                              myBidAmount: bid.formattedAmount,
+                              myBidAmount: bid.myBidAmount,
                               myBidDescription:
-                                  bid.description ?? "No details",
+                                  bid.description,
                             );
                           },
                         ),

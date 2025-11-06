@@ -1,37 +1,39 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:caterbid/core/utils/helpers/location_formatter.dart';
 import 'package:equatable/equatable.dart';
 import 'package:caterbid/core/network/api_exception.dart';
-import 'package:caterbid/core/utils/helpers/currency_formatted.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/core/utils/helpers/formatter/currency_formatted.dart';
+import 'package:caterbid/core/utils/helpers/formatter/formatted_date.dart';
 import 'package:caterbid/modules/Restaurant/home/model/requests_model.dart';
 import 'package:caterbid/modules/Restaurant/home/model/formatted_request_model.dart';
 import 'package:caterbid/modules/Restaurant/home/repository/get_resquest_list.dart';
-import 'package:path/path.dart';
 
 part 'get_requests_event.dart';
 part 'get_requests_state.dart';
 
 class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
   final ProviderRequestsRepository repository;
-  
   Timer? _pollTimer;
 
   // Cache: request ID → formatted model
   final Map<String, FormattedProviderRequest> _formattedCache = {};
-  // Address cache: lat_lng → address
-  final Map<String, String> _addressCache = {};
 
   GetRequestsBloc(this.repository) : super(GetRequestsInitial()) {
     on<StartListeningRequests>(_onStart);
     on<StopListeningRequests>(_onStop);
     on<_RefreshRequests>(_onRefresh);
     on<ClearCacheEvent>(_onClearCache);
+    on<SearchRequestsEvent>((event, emit) async {
+      await _loadAndFormat(emit, search: event.keyword);
+    });
+
+    on<SortRequestsEvent>((event, emit) async {
+      await _loadAndFormat(emit, sort: event.sortBy);
+    });
   }
 
   // -----------------------------------------------------------------
-  // Start → Loading → fetch → poll every 5s
+  // Start → Loading → fetch → poll every 15s
   // -----------------------------------------------------------------
   Future<void> _onStart(
     StartListeningRequests event,
@@ -58,34 +60,26 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
   // -----------------------------------------------------------------
   // Core: fetch + format + cache
   // -----------------------------------------------------------------
-  Future<void> _loadAndFormat(Emitter<GetRequestsState> emit) async {
+  Future<void> _loadAndFormat(
+    Emitter<GetRequestsState> emit, {
+    String? search,
+    String? sort,
+  }) async {
     try {
-      final rawList = await repository.fetchProviderRequests();
+      final rawList = await repository.fetchProviderRequests(
+        search: search,
+        sort: sort,
+      );
 
       final List<FormattedProviderRequest> formattedList = [];
 
-      final futures = rawList.map((raw) async {
-        // Return from cache if exists
+      for (final raw in rawList) {
+        // Reuse cache if available
         if (_formattedCache.containsKey(raw.id)) {
-          return _formattedCache[raw.id]!;
+          formattedList.add(_formattedCache[raw.id]!);
+          continue;
         }
 
-        // Format address (cached)
-        final lat = raw.location.latitude;
-        final lng = raw.location.longitude;
-        final addressKey = '${lat}_${lng}';
-
-        var address = _addressCache[addressKey];
-        if (address == null) {
-          print(
-            "📍 lat: ${raw.location.latitude}, lng: ${raw.location.longitude}",
-          );
-          // FIX: swap arguments
-          address = await LocationFormatter.getFormattedAddress(latitude: lat, longitude:lng);
-          _addressCache[addressKey] = address;
-        }
-
-        // Format all UI strings
         final formatted = FormattedProviderRequest(
           id: raw.id,
           location: raw.location,
@@ -96,7 +90,7 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
           formattedDate: DateFormatter.onlyDate(raw.date),
           formattedTime: DateFormatter.onlyTime(raw.date),
           formattedPeople: '${raw.numPeople} people',
-          formattedLocation: address,
+          formattedLocation: raw.address ?? "Unknown location",
           rawDate: raw.date,
           numPeople: raw.numPeople,
           status: raw.status,
@@ -105,11 +99,8 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
         );
 
         _formattedCache[raw.id] = formatted;
-        return formatted;
-      });
-
-      final results = await Future.wait(futures);
-      formattedList.addAll(results);
+        formattedList.add(formatted);
+      }
 
       if (formattedList.isEmpty) {
         emit(GetRequestsEmpty());
@@ -140,7 +131,6 @@ class GetRequestsBloc extends Bloc<GetRequestsEvent, GetRequestsState> {
   // -----------------------------------------------------------------
   void _onClearCache(ClearCacheEvent event, Emitter emit) {
     _formattedCache.clear();
-    _addressCache.clear();
   }
 
   @override

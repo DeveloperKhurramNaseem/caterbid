@@ -278,14 +278,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: MyBids.path,
-              builder: (context, state) {
-                return BlocProvider(
-                  create: (context) => GetMyBidsBloc(
-                    GetMyBidsProducerRepository(apiService: ApiService()),
-                  ),
-                  child: const MyBids(),
-                );
-              },
+              builder: (context, state) => const MyBids(),
             ),
           ],
         ),

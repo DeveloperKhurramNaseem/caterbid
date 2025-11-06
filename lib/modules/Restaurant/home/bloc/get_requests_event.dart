@@ -24,5 +24,15 @@ class StopListeningRequests extends GetRequestsEvent {}
 class _RefreshRequests extends GetRequestsEvent{
 
 }
+class SearchRequestsEvent extends GetRequestsEvent {
+  final String keyword;
+  SearchRequestsEvent(this.keyword);
+}
+
+class SortRequestsEvent extends GetRequestsEvent {
+  final String sortBy; // "oldest" or "latest"
+  SortRequestsEvent(this.sortBy);
+}
+
 
 class ClearCacheEvent extends GetRequestsEvent {}

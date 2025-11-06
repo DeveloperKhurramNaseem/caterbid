@@ -1,9 +1,10 @@
+import 'package:caterbid/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class EditingAppbar extends StatelessWidget implements PreferredSizeWidget {
-    final String title;
+  final String title;
 
   const EditingAppbar({super.key, required this.title});
 
@@ -22,6 +23,7 @@ class EditingAppbar extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: const IconThemeData(color: Colors.black),
       centerTitle: false,
       titleSpacing: 0,
+      surfaceTintColor: AppColors.appBackground,
     );
   }
 

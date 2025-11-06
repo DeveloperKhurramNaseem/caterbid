@@ -41,7 +41,7 @@ class FormattedBidModel {
     required this.date,
   });
 
-  factory FormattedBidModel.fromBid(BidModel bid, String formattedLocation) {
+  factory FormattedBidModel.fromBid(BidModel bid) {
     return FormattedBidModel(
       id: bid.id,
       requestId: bid.request.id,
@@ -58,7 +58,7 @@ class FormattedBidModel {
       status: bid.status,
       createdAt: bid.createdAt,
       updatedAt: bid.updatedAt,
-      formattedLocation: formattedLocation,
+      formattedLocation: bid.request.address ?? "Unknown location",
       numPeople: bid.request.numPeople,
       requesteeName: bid.request.requestee?.name ?? '',
     );

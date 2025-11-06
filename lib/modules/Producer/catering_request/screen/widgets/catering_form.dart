@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:caterbid/core/widgets/custom_textfield.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/core/widgets/map/reusable_map_picker.dart';
-import 'package:caterbid/core/utils/helpers/check_location_enabled.dart';
+import 'package:caterbid/core/utils/helpers/location/check_location_enabled.dart';
 import 'package:caterbid/modules/Producer/catering_request/bloc/cateringrequest_bloc.dart';
 import 'package:caterbid/modules/Producer/catering_request/model/catering_request_model.dart';
 import 'package:caterbid/modules/Producer/home/active_request/bloc/producer_home_bloc.dart';
@@ -93,7 +93,7 @@ class _CateringFormState extends State<CateringForm> {
       date: dateTime,
       lat: _selectedLat!,
       lng: _selectedLng!,
-      description: _specialController.text,
+      description: _specialController.text,     address: _locationController.text.trim(), 
     );
 
     context.read<CateringrequestBloc>().add(
@@ -198,6 +198,8 @@ class _CateringFormState extends State<CateringForm> {
                 label: "Location",
                 controller: _locationController,
                 readOnly: true,
+                maxLines: 5,
+                minLines: 1,
                 validator: (value) =>
                     (value == null || value.isEmpty) ? 'Please choose your location from map' : null,
                 suffixIcon: Icon(Icons.location_on, color: AppColors.icon),

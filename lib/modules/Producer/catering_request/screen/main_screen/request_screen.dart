@@ -2,7 +2,7 @@ import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/modules/Producer/catering_request/screen/widgets/catering_appbar.dart';
 import 'package:caterbid/modules/Producer/catering_request/screen/widgets/catering_form.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class NewCateringRequestScreen extends StatelessWidget {
   static const String path = '/newcateringrequest';

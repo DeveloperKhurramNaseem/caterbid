@@ -11,6 +11,7 @@ class ProducerRequest {
   final DateTime updatedAt;
   final Requestee requestee;
   final Location location;
+  final String? address; // <-- new
 
   ProducerRequest({
     required this.id,
@@ -25,6 +26,7 @@ class ProducerRequest {
     required this.updatedAt,
     required this.requestee,
     required this.location,
+    this.address, // <-- new
   });
 
   factory ProducerRequest.fromJson(Map<String, dynamic> json) {
@@ -41,23 +43,9 @@ class ProducerRequest {
       updatedAt: DateTime.parse(json['updatedAt']),
       requestee: Requestee.fromJson(json['requesteeId'] ?? {}),
       location: Location.fromJson(json['location'] ?? {}),
+      address: json['address'], // <-- new
     );
   }
-
-  factory ProducerRequest.empty() => ProducerRequest(
-    id: '',
-    title: '',
-    budgetCents: 0,
-    budgetDollars: 0,
-    currency: '',
-    numPeople: 0,
-    status: '',
-    date: DateTime.now(),
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
-    requestee: Requestee(id: '', name: ''),
-    location: Location(type: '', coordinates: []),
-  );
 
   Map<String, dynamic> toJson() {
     return {
@@ -73,6 +61,7 @@ class ProducerRequest {
       'updatedAt': updatedAt.toIso8601String(),
       'requesteeId': requestee.toJson(),
       'location': location.toJson(),
+      'address': address, // <-- new
     };
   }
 }

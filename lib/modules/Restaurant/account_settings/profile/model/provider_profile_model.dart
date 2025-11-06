@@ -12,7 +12,7 @@ class ProviderModel extends Equatable {
   final bool? isVerified;
   final double? latitude;
   final double? longitude;
-  
+  final String? address; // <-- NEW
 
   const ProviderModel({
     this.id,
@@ -26,6 +26,7 @@ class ProviderModel extends Equatable {
     this.isVerified,
     this.latitude,
     this.longitude,
+    this.address,
   });
 
   String get firstLetter => name?.isNotEmpty == true ? name![0].toUpperCase() : '?';
@@ -53,6 +54,7 @@ class ProviderModel extends Equatable {
       isVerified: json['isverified'] ?? false,
       latitude: coordinates.isNotEmpty ? coordinates[1] : -122.4194,
       longitude: coordinates.isNotEmpty ? coordinates[0] : 37.7749,
+      address: json['address']?.toString(), // <-- NEW
     );
   }
 
@@ -70,15 +72,29 @@ class ProviderModel extends Equatable {
           'type': 'Point',
           'coordinates': [longitude, latitude],
         },
+        'address': address, // <-- NEW
       };
 
-  Map<String, String> toFields() => {
-        if (name != null) 'name': name!,
-        if (companyName != null) 'companyName': companyName!,
-        if (businessType != null) 'businessType': businessType!,
-        if (description != null) 'description': description!,
-        if (phoneNumber != null) 'phoneNumber': phoneNumber!,
-      };
+  ProviderModel copyWith({
+    double? latitude,
+    double? longitude,
+    String? address, // <-- NEW
+  }) {
+    return ProviderModel(
+      id: id,
+      name: name,
+      companyName: companyName,
+      businessType: businessType,
+      description: description,
+      email: email,
+      phoneNumber: phoneNumber,
+      profilePicture: profilePicture,
+      isVerified: isVerified,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      address: address ?? this.address, // <-- NEW
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -93,26 +109,6 @@ class ProviderModel extends Equatable {
         isVerified,
         latitude,
         longitude,
+        address, // <-- NEW
       ];
-}
-
-extension ProviderModelCopy on ProviderModel {
-  ProviderModel copyWith({
-    double? latitude,
-    double? longitude,
-  }) {
-    return ProviderModel(
-      id: id,
-      name: name,
-      companyName: companyName,
-      businessType: businessType,
-      description: description,
-      email: email,
-      phoneNumber: phoneNumber,
-      profilePicture: profilePicture,
-      isVerified: isVerified,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-    );
-  }
 }

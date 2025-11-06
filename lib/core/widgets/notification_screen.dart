@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class NotificationIcon extends StatelessWidget {
   const NotificationIcon({super.key});

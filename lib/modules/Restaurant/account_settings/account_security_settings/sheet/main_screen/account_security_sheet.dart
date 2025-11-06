@@ -4,7 +4,7 @@ import 'package:caterbid/modules/Producer/account_settings/account_security_sett
 import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/change_password/screen/main_screen/change_password.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/delete_account/screen/delete_account_screen.dart.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:go_router/go_router.dart';
 
 class ProvidorAccountSecuritySheet {

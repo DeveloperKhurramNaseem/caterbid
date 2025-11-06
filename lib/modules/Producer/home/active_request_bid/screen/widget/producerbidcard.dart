@@ -1,10 +1,10 @@
 import 'package:caterbid/core/config/app_colors.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/core/utils/helpers/formatter/formatted_date.dart';
 import 'package:caterbid/modules/Producer/accept_bid/screen/main_screen/payment_screen.dart';
 import 'package:caterbid/modules/Producer/home/active_request_bid/model/formatted_bid_model.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart';

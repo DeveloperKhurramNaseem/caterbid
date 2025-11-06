@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:caterbid/core/network/api_exception.dart';
-import 'package:caterbid/core/utils/helpers/secure_storage.dart';
-import 'package:caterbid/core/utils/prefs/shared_preferences.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/secure_storage.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/shared_preferences.dart';
 import 'package:caterbid/modules/auth/login/model/Email_not_Verified_model.dart';
 import 'package:caterbid/modules/auth/login/model/login_request_model.dart';
 import 'package:caterbid/modules/auth/login/model/login_response_model.dart';
@@ -35,6 +35,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       // Normal login success
       final user = result as LoginResponseModel;
       await SecureStorage.saveToken(user.token);
+      await SharedPrefs.setTokenIssueDate(DateTime.now().toIso8601String());
       await SharedPrefs.saveUserRole(user.role);
       await SharedPrefs.saveLocationRequired(user.locationRequired);
 

@@ -58,6 +58,7 @@ class BidRequest {
   final DateTime updatedAt;
   final BidLocation? location;
   final BidRequestee? requestee;
+  final String? address; // <-- NEW
 
   BidRequest({
     required this.id,
@@ -72,6 +73,7 @@ class BidRequest {
     required this.updatedAt,
     this.location,
     this.requestee,
+    this.address, // <-- NEW
   });
 
   factory BidRequest.fromJson(Map<String, dynamic> json) {
@@ -92,24 +94,27 @@ class BidRequest {
       requestee: json['requesteeId'] != null
           ? BidRequestee.fromJson(json['requesteeId'])
           : null,
+      address: json['address'], // <-- NEW
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "_id": id,
-    "title": title,
-    "budgetCents": budgetCents,
-    "budgetDollars": budgetDollars,
-    "currency": currency,
-    "numPeople": numPeople,
-    "status": status,
-    "date": date.toIso8601String(),
-    "createdAt": createdAt.toIso8601String(),
-    "updatedAt": updatedAt.toIso8601String(),
-    "location": location?.toJson(),
-    "requesteeId": requestee?.toJson(),
-  };
+        "_id": id,
+        "title": title,
+        "budgetCents": budgetCents,
+        "budgetDollars": budgetDollars,
+        "currency": currency,
+        "numPeople": numPeople,
+        "status": status,
+        "date": date.toIso8601String(),
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+        "location": location?.toJson(),
+        "requesteeId": requestee?.toJson(),
+        "address": address, // <-- NEW
+      };
 }
+
 
 class BidProvider {
   final String id;

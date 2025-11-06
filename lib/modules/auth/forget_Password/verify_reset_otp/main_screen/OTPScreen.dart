@@ -1,5 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/auth/forget_Password/Change_password_request/screen/mainscreen/ChangePasswordScreen.dart';
 import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/bloc/verify_reset_otp_bloc.dart';
 import 'package:caterbid/modules/auth/forget_Password/verify_reset_otp/model/verify_otp_request.dart';

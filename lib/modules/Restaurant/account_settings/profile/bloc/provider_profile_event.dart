@@ -17,6 +17,7 @@ class UpdateProviderProfileEvent extends ProviderProfileEvent {
   final String phoneNumber;
   final double lat;
   final double lng;
+  final String? address; 
   final File? profilePicture;
 
   const UpdateProviderProfileEvent({
@@ -27,6 +28,7 @@ class UpdateProviderProfileEvent extends ProviderProfileEvent {
     required this.phoneNumber,
     required this.lat,
     required this.lng,
+    this.address,
     this.profilePicture,
   });
 
@@ -39,6 +41,7 @@ class UpdateProviderProfileEvent extends ProviderProfileEvent {
         phoneNumber,
         lat,
         lng,
+        address,
         profilePicture,
       ];
 }
@@ -51,6 +54,7 @@ class ValidateAndSaveProfileEvent extends ProviderProfileEvent {
   final String phoneNumber;
   final double lat;
   final double lng;
+  final String? address; 
   final File? profilePicture;
 
   const ValidateAndSaveProfileEvent({
@@ -61,6 +65,7 @@ class ValidateAndSaveProfileEvent extends ProviderProfileEvent {
     required this.phoneNumber,
     required this.lat,
     required this.lng,
+    this.address, 
     this.profilePicture,
   });
 
@@ -73,6 +78,7 @@ class ValidateAndSaveProfileEvent extends ProviderProfileEvent {
         phoneNumber,
         lat,
         lng,
+        address,
         profilePicture,
       ];
 }
@@ -80,7 +86,9 @@ class ValidateAndSaveProfileEvent extends ProviderProfileEvent {
 class UpdateLocationEvent extends ProviderProfileEvent {
   final double lat;
   final double lng;
-  const UpdateLocationEvent(this.lat, this.lng);
+  final String? address; 
+  const UpdateLocationEvent(this.lat, this.lng, {this.address});
 }
+
 
 class LogoutProviderProfileEvent extends ProviderProfileEvent {}

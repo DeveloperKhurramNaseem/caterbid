@@ -1,9 +1,10 @@
+import 'package:caterbid/core/config/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class PlaceBidAppbar extends StatelessWidget implements PreferredSizeWidget {
-    final String title;
+  final String title;
 
   const PlaceBidAppbar({super.key, required this.title});
 
@@ -18,6 +19,8 @@ class PlaceBidAppbar extends StatelessWidget implements PreferredSizeWidget {
         fontFamily: AppFonts.nunito,
       ),
       backgroundColor: Colors.white,
+      surfaceTintColor: AppColors.appBackground,
+
       elevation: 0,
       iconTheme: const IconThemeData(color: Colors.black),
       centerTitle: false,

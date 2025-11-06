@@ -4,7 +4,7 @@ import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/auth/forget_Password/Change_password_request/bloc/change_password_request_bloc.dart';
 import 'package:caterbid/modules/auth/forget_Password/Change_password_request/model/change_password_request.dart';
 import 'package:caterbid/modules/auth/forget_Password/Change_password_request/screen/widgets/change_password_button.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../config/app_colors.dart';
 import '../config/app_constants.dart';
-import '../utils/responsive.dart';
+import '../utils/ui/responsive.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -14,7 +14,10 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final bool capitalizeFirstLetter;
   final bool formatNumber;
-  final bool readOnly; // <-- NEW
+  final bool readOnly;
+  final int? maxLines; 
+  final int? minLines; 
+
 
   const CustomTextField({
     super.key,
@@ -26,7 +29,9 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType,
     this.capitalizeFirstLetter = false,
     this.formatNumber = false,
-    this.readOnly = false, // <-- NEW
+    this.readOnly = false,
+    this.maxLines,
+    this.minLines 
   });
 
   @override
@@ -70,13 +75,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscureText: widget.obscureText,
       validator: widget.validator,
       keyboardType: widget.keyboardType,
-      readOnly: widget.readOnly, // <-- NEW
+      readOnly: widget.readOnly,
+      maxLines: widget.maxLines ?? 1, 
+      minLines: widget.minLines ?? 1,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       inputFormatters: widget.formatNumber
           ? [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))]
           : null,
       onChanged: (value) {
-        if (widget.readOnly) return; // prevent changes if read-only
+        if (widget.readOnly) return;
 
         String newValue = value;
         if (widget.formatNumber) newValue = _formatNumber(newValue);

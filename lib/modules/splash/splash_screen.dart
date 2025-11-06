@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:caterbid/core/utils/user_session.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/auth_Utils.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/user_session.dart';
 import 'package:caterbid/modules/Restaurant/home/screen/main_screen/bids_home.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:caterbid/core/utils/helpers/secure_storage.dart';
-import 'package:caterbid/core/utils/prefs/shared_preferences.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/secure_storage.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/shared_preferences.dart';
 import 'package:caterbid/modules/Producer/home/active_request/screen/main_screen/home_screen.dart';
 import 'package:caterbid/modules/Restaurant/business_profile/screen/main_screen/set_business_profile_screen.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
@@ -40,39 +41,44 @@ class _SplashScreenState extends State<SplashScreen>
     _initApp();
   }
 
-  Future<void> _initApp() async {
-    await Future.delayed(const Duration(seconds: 3));
+Future<void> _initApp() async {
+  await Future.delayed(const Duration(seconds: 3));
 
-    final token = await SecureStorage.getToken();
-    final role = await SharedPrefs.getUserRole();
-    final locationRequired = await SharedPrefs.getLocationRequired();
+  final token = await SecureStorage.getToken();
+  final role = await SharedPrefs.getUserRole();
+  final issueDateString = await SharedPrefs.getTokenIssueDate();
+  final issueDate = issueDateString != null ? DateTime.tryParse(issueDateString) : null;
 
-    if (token == null || token.isEmpty) {
+  if (token == null || token.isEmpty) {
+    if (mounted) context.go(LoginScreen.path);
+    return;
+  }
+
+  if (issueDate != null) {
+    final ageInDays = DateTime.now().difference(issueDate).inDays;
+    if (ageInDays >= 29) {
+      await AuthUtils.cleanUpTokenData();
       if (mounted) context.go(LoginScreen.path);
       return;
     }
+  }
 
-    if (role == 'provider') {
-      UserSession.setRole('provider');
-
-      if (locationRequired == true) {
-        if (mounted) context.go(SetBusinessProfileScreen.path);
-      } else {
-        if (mounted) context.go(MyBidsScreen.path);
-      }
-    } else if (role == 'requestee') {
-      UserSession.setRole('requestee');
-
-      if (mounted) context.go(ProducerHomeScreen.path);
+  // Token still valid → continue normal flow
+  if (role == 'provider') {
+    UserSession.setRole('provider');
+    final locationRequired = await SharedPrefs.getLocationRequired();
+    if (locationRequired == true) {
+      if (mounted) context.go(SetBusinessProfileScreen.path);
     } else {
-      if (mounted) context.go(LoginScreen.path);
+      if (mounted) context.go(MyBidsScreen.path);
     }
+  } else if (role == 'requestee') {
+    UserSession.setRole('requestee');
+    if (mounted) context.go(ProducerHomeScreen.path);
+  } else {
+    if (mounted) context.go(LoginScreen.path);
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: Image.asset(
             'assets/icons/app_logo.png',
-            height: 95, // ↓ Decreased size
+            height: 90, // ↓ Decreased size
           ),
         ),
       ),

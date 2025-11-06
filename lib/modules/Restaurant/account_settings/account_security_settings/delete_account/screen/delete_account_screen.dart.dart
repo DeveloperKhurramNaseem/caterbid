@@ -10,7 +10,7 @@ import 'package:caterbid/modules/Restaurant/account_settings/profile/repository/
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:go_router/go_router.dart';
 
 class ProviderDeleteAccountScreen extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class DeleteAccountMessage extends StatelessWidget {
   const DeleteAccountMessage({super.key});

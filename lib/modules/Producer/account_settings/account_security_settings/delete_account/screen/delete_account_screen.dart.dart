@@ -9,7 +9,7 @@ import 'package:caterbid/modules/Producer/account_settings/account_security_sett
 import 'package:caterbid/modules/Producer/account_settings/profile/repository/requestee_profile_repository.dart';
 import 'package:caterbid/modules/auth/login/screen/main_screen/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 

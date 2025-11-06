@@ -3,8 +3,8 @@ import 'package:caterbid/modules/Restaurant/onboarding/screen/stripe_webview_scr
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
-import 'package:caterbid/core/utils/helpers/formatted_date.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
+import 'package:caterbid/core/utils/helpers/formatter/formatted_date.dart';
 import 'package:caterbid/modules/Producer/home/active_request_bid/model/formatted_bid_model.dart';
 import 'package:caterbid/modules/Producer/accept_bid/bloc/acceptbid_bloc.dart';
 import 'package:caterbid/modules/Producer/accept_bid/repository/accept_bid_repository.dart';

@@ -1,7 +1,7 @@
 import 'package:caterbid/modules/Producer/home/active_request/screen/widget/producer_create_request_button.dart';
 import 'package:flutter/material.dart';
 import 'package:caterbid/core/config/app_constants.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 
 class ProducerEmptyState extends StatelessWidget {
   const ProducerEmptyState({super.key});

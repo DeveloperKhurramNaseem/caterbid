@@ -22,6 +22,9 @@ class BusinessProfileRepository {
           "phoneNumber": model.phoneNumber,
           "lat": model.lat.toString(),
           "lng": model.lng.toString(),
+           "address": model.address,
+
+          
         },
         file: profilePicture,
         fileFieldName: "profilePicture", 

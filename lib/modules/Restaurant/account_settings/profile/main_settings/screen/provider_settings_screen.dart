@@ -1,5 +1,5 @@
 import 'package:caterbid/core/config/app_colors.dart';
-import 'package:caterbid/core/utils/responsive.dart';
+import 'package:caterbid/core/utils/ui/responsive.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/bloc/provider_profile_bloc.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/main_settings/widget/provider_custom_appbar.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/main_settings/widget/provider_header_profile.dart';

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:caterbid/core/utils/helpers/secure_storage.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/auth_Utils.dart';
+import 'package:caterbid/core/utils/helpers/storage/prefs/secure_storage.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/account_security_settings/delete_account/repository/providor_delete_account.dart';
 import 'package:caterbid/modules/Restaurant/account_settings/profile/repository/provider_profile_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -21,7 +22,7 @@ class ProviderDeleteAccountBloc extends Bloc<ProviderDeleteAccountEvent, Provide
         await _repository.deleteAccount();
 
         // 2️⃣ Clear auth token
-        await SecureStorage.clearToken();
+      await AuthUtils.cleanUpTokenData();
 
         // 3️⃣ Clear shared preferences / cached profile
         await _profileRepo.clearCache();
